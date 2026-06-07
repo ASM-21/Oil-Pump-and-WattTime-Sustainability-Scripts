@@ -1,0 +1,203 @@
+# Chapter 3 — Computed Numbers
+# 2026-03-22 21:51
+
+
+## Predictability
+- [Predictability] BPA TL captures % of oracle: 35
+- [Predictability] CAISO_N TL captures % of oracle: 56
+- [Predictability] ERCOT_NC TL captures % of oracle: -12
+- [Predictability] ISONE_CT TL captures % of oracle: 5
+- [Predictability] MISO_INDY TL captures % of oracle: 61
+- [Predictability] SPP_KS TL captures % of oracle: 51
+- [Predictability] Overall TL capture of oracle %: 33
+- [Predictability] Overall persistence capture of oracle %: 59
+- [Predictability] BPA green half-life (min): 240
+- [Predictability] BPA job-in-green fraction: 0.79
+- [Predictability] CAISO_N green half-life (min): 240
+- [Predictability] CAISO_N job-in-green fraction: 0.80
+- [Predictability] ERCOT_NC green half-life (min): 145
+- [Predictability] ERCOT_NC job-in-green fraction: 0.69
+- [Predictability] ISONE_CT green half-life (min): 100
+- [Predictability] ISONE_CT job-in-green fraction: 0.61
+- [Predictability] MISO_INDY green half-life (min): 155
+- [Predictability] MISO_INDY job-in-green fraction: 0.70
+- [Predictability] SPP_KS green half-life (min): 240
+- [Predictability] SPP_KS job-in-green fraction: 0.84
+- [Predictability] BPA R² calendar full: 0.250
+- [Predictability] BPA R² hour alone adds: 0.087
+- [Predictability] CAISO_N R² calendar full: 0.341
+- [Predictability] CAISO_N R² hour alone adds: 0.117
+- [Predictability] ERCOT_NC R² calendar full: 0.046
+- [Predictability] ERCOT_NC R² hour alone adds: 0.032
+- [Predictability] ISONE_CT R² calendar full: 0.141
+- [Predictability] ISONE_CT R² hour alone adds: 0.070
+- [Predictability] MISO_INDY R² calendar full: 0.121
+- [Predictability] MISO_INDY R² hour alone adds: 0.095
+- [Predictability] SPP_KS R² calendar full: 0.057
+- [Predictability] SPP_KS R² hour alone adds: 0.011
+- [Predictability] BPA % high-opportunity days: 50
+- [Predictability] CAISO_N % high-opportunity days: 50
+- [Predictability] ERCOT_NC % high-opportunity days: 50
+- [Predictability] ISONE_CT % high-opportunity days: 50
+- [Predictability] MISO_INDY % high-opportunity days: 50
+- [Predictability] SPP_KS % high-opportunity days: 50
+
+## Three-tier
+- [Three-tier] BPA eGRID rate: 212
+- [Three-tier] BPA MOER mfg-hours mean: 1086
+- [Three-tier] BPA AOER mfg-hours mean: 67
+- [Three-tier] BPA eGRID error vs MOER %: -80.4
+- [Three-tier] CAISO_N eGRID rate: 369
+- [Three-tier] CAISO_N MOER mfg-hours mean: 754
+- [Three-tier] CAISO_N AOER mfg-hours mean: 364
+- [Three-tier] CAISO_N eGRID error vs MOER %: -51.0
+- [Three-tier] ERCOT_NC eGRID rate: 734
+- [Three-tier] ERCOT_NC MOER mfg-hours mean: 989
+- [Three-tier] ERCOT_NC AOER mfg-hours mean: 627
+- [Three-tier] ERCOT_NC eGRID error vs MOER %: -25.7
+- [Three-tier] ISONE_CT eGRID rate: 541
+- [Three-tier] ISONE_CT MOER mfg-hours mean: 889
+- [Three-tier] ISONE_CT AOER mfg-hours mean: 492
+- [Three-tier] ISONE_CT eGRID error vs MOER %: -39.1
+- [Three-tier] MISO_INDY eGRID rate: 982
+- [Three-tier] MISO_INDY MOER mfg-hours mean: 1374
+- [Three-tier] MISO_INDY AOER mfg-hours mean: 897
+- [Three-tier] MISO_INDY eGRID error vs MOER %: -28.5
+- [Three-tier] SPP_KS eGRID rate: 872
+- [Three-tier] SPP_KS MOER mfg-hours mean: 1050
+- [Three-tier] SPP_KS AOER mfg-hours mean: 808
+- [Three-tier] SPP_KS eGRID error vs MOER %: -17.0
+- [Three-tier] Indiana STATE eGRID error vs MOER %: 6.1
+- [Three-tier] BPA MOER-AOER agreement %: 32
+- [Three-tier] BPA wrong-signal penalty (lbs/MWh): 87.2
+- [Three-tier] CAISO_N MOER-AOER agreement %: 21
+- [Three-tier] CAISO_N wrong-signal penalty (lbs/MWh): 178.4
+- [Three-tier] ERCOT_NC MOER-AOER agreement %: 23
+- [Three-tier] ERCOT_NC wrong-signal penalty (lbs/MWh): 127.1
+- [Three-tier] ISONE_CT MOER-AOER agreement %: 43
+- [Three-tier] ISONE_CT wrong-signal penalty (lbs/MWh): 26.1
+- [Three-tier] MISO_INDY MOER-AOER agreement %: 18
+- [Three-tier] MISO_INDY wrong-signal penalty (lbs/MWh): 74.6
+- [Three-tier] SPP_KS MOER-AOER agreement %: 39
+- [Three-tier] SPP_KS wrong-signal penalty (lbs/MWh): 106.2
+
+## Thresholds
+- [Thresholds] BPA ternary vs binary improvement: 2.11
+- [Thresholds] CAISO_N ternary vs binary improvement: 48.65
+- [Thresholds] ERCOT_NC ternary vs binary improvement: 16.19
+- [Thresholds] ISONE_CT ternary vs binary improvement: 0.26
+- [Thresholds] MISO_INDY ternary vs binary improvement: 0.67
+- [Thresholds] SPP_KS ternary vs binary improvement: 6.91
+- [Thresholds] BPA seasonal improvement ppts: -0.36
+- [Thresholds] CAISO_N seasonal improvement ppts: -13.58
+- [Thresholds] ERCOT_NC seasonal improvement ppts: -2.78
+- [Thresholds] ISONE_CT seasonal improvement ppts: 0.18
+- [Thresholds] MISO_INDY seasonal improvement ppts: 0.13
+- [Thresholds] SPP_KS seasonal improvement ppts: 3.63
+- [Thresholds] BPA optimal split P10/P60: 4.13
+- [Thresholds] BPA P25/P75 penalty (ppts): 0.72
+- [Thresholds] CAISO_N optimal split P25/P55: 17.87
+- [Thresholds] CAISO_N P25/P75 penalty (ppts): 0.02
+- [Thresholds] ERCOT_NC optimal split P10/P50: 19.22
+- [Thresholds] ERCOT_NC P25/P75 penalty (ppts): 22.93
+- [Thresholds] ISONE_CT optimal split P10/P55: 0.91
+- [Thresholds] ISONE_CT P25/P75 penalty (ppts): 0.54
+- [Thresholds] MISO_INDY optimal split P10/P55: 3.03
+- [Thresholds] MISO_INDY P25/P75 penalty (ppts): 0.32
+- [Thresholds] SPP_KS optimal split P15/P50: 26.61
+- [Thresholds] SPP_KS P25/P75 penalty (ppts): 6.63
+- [Thresholds] Max penalty of universal P25/P75 (ppts): 22.93
+
+## Shelf life
+- [Shelf life] Mean retained % at 1-year lag: 66
+- [Shelf life] Worst region at 1-year lag: CAISO_N (-75%)
+- [Shelf life] Mean retained % at 2-year lag: 14
+- [Shelf life] Worst region at 2-year lag: CAISO_N (-318%)
+- [Shelf life] BPA P25 drift per year: -28
+- [Shelf life] CAISO_N P25 drift per year: -424
+- [Shelf life] ERCOT_NC P25 drift per year: 1
+- [Shelf life] ISONE_CT P25 drift per year: -8
+- [Shelf life] MISO_INDY P25 drift per year: 10
+- [Shelf life] SPP_KS P25 drift per year: 89
+- [Shelf life] Overall % conservative degradation: 50
+- [Shelf life] BPA structural breaks detected: 247
+- [Shelf life] CAISO_N structural breaks detected: 441
+- [Shelf life] ERCOT_NC structural breaks detected: 178
+- [Shelf life] ISONE_CT structural breaks detected: 0
+- [Shelf life] MISO_INDY structural breaks detected: 0
+- [Shelf life] SPP_KS structural breaks detected: 514
+- [Shelf life] Total structural breaks across all regions: 1380
+
+## Trajectory
+- [Trajectory] BPA mean MOER change: -65
+- [Trajectory] BPA IQR change %: -52.4
+- [Trajectory] BPA IQR direction: decreasing
+- [Trajectory] CAISO_N mean MOER change: -286
+- [Trajectory] CAISO_N IQR change %: +77.1
+- [Trajectory] CAISO_N IQR direction: increasing
+- [Trajectory] ERCOT_NC mean MOER change: +71
+- [Trajectory] ERCOT_NC IQR change %: +251.2
+- [Trajectory] ERCOT_NC IQR direction: increasing
+- [Trajectory] ISONE_CT mean MOER change: -40
+- [Trajectory] ISONE_CT IQR change %: -24.1
+- [Trajectory] ISONE_CT IQR direction: decreasing
+- [Trajectory] MISO_INDY mean MOER change: +57
+- [Trajectory] MISO_INDY IQR change %: +75.5
+- [Trajectory] MISO_INDY IQR direction: increasing
+- [Trajectory] SPP_KS mean MOER change: +131
+- [Trajectory] SPP_KS IQR change %: +109.5
+- [Trajectory] SPP_KS IQR direction: increasing
+- [Trajectory] CAISO 2022 duck depth: 46
+- [Trajectory] CAISO 2023 duck depth: 307
+- [Trajectory] CAISO 2024 duck depth: 402
+- [Trajectory] Regions with increasing opportunity: 4/6
+
+## Economic
+- [Economic] BPA annual tonnes avoided: 0.82
+- [Economic] BPA annual $ at $100/t: 82
+- [Economic] CAISO_N annual tonnes avoided: 2.22
+- [Economic] CAISO_N annual $ at $100/t: 222
+- [Economic] ERCOT_NC annual tonnes avoided: 1.20
+- [Economic] ERCOT_NC annual $ at $100/t: 120
+- [Economic] ISONE_CT annual tonnes avoided: 0.13
+- [Economic] ISONE_CT annual $ at $100/t: 13
+- [Economic] MISO_INDY annual tonnes avoided: 0.84
+- [Economic] MISO_INDY annual $ at $100/t: 84
+- [Economic] SPP_KS annual tonnes avoided: 4.56
+- [Economic] SPP_KS annual $ at $100/t: 456
+- [Economic] BPA abatement cost ($/tonne): ≈$0 (schedule change)
+- [Economic] CAISO_N abatement cost ($/tonne): ≈$0 (schedule change)
+- [Economic] ERCOT_NC abatement cost ($/tonne): ≈$0 (schedule change)
+- [Economic] ISONE_CT abatement cost ($/tonne): ≈$0 (schedule change)
+- [Economic] MISO_INDY abatement cost ($/tonne): ≈$0 (schedule change)
+- [Economic] SPP_KS abatement cost ($/tonne): ≈$0 (schedule change)
+- [Economic] CAISO MOER-TOU rate correlation: -0.47
+- [Economic] CAISO TOU alignment: Favorable (low MOER ≈ low rate)
+
+## Queue
+- [Queue] BPA retained at batch=40: 55
+- [Queue] CAISO_N retained at batch=40: 35
+- [Queue] ERCOT_NC retained at batch=40: 53
+- [Queue] ISONE_CT retained at batch=40: 3
+- [Queue] MISO_INDY retained at batch=40: 26
+- [Queue] SPP_KS retained at batch=40: 63
+
+## Shifts
+- [Shifts] BPA 8h→12h improvement (ppts): 0.92
+- [Shifts] BPA 12h→24h improvement (ppts): 4.18
+- [Shifts] CAISO_N 8h→12h improvement (ppts): 11.98
+- [Shifts] CAISO_N 12h→24h improvement (ppts): -8.38
+- [Shifts] ERCOT_NC 8h→12h improvement (ppts): -0.10
+- [Shifts] ERCOT_NC 12h→24h improvement (ppts): 19.84
+- [Shifts] ISONE_CT 8h→12h improvement (ppts): 0.29
+- [Shifts] ISONE_CT 12h→24h improvement (ppts): 2.87
+- [Shifts] MISO_INDY 8h→12h improvement (ppts): 0.54
+- [Shifts] MISO_INDY 12h→24h improvement (ppts): 0.23
+- [Shifts] SPP_KS 8h→12h improvement (ppts): 16.36
+- [Shifts] SPP_KS 12h→24h improvement (ppts): 31.85
+- [Shifts] BPA minimum viable window (hrs): 6
+- [Shifts] CAISO_N minimum viable window (hrs): 6
+- [Shifts] ERCOT_NC minimum viable window (hrs): 16
+- [Shifts] ISONE_CT minimum viable window (hrs): 14
+- [Shifts] MISO_INDY minimum viable window (hrs): 6
+- [Shifts] SPP_KS minimum viable window (hrs): 10

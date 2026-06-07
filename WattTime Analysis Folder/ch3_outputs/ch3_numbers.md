@@ -1,0 +1,74 @@
+# Chapter 3 — Computed Numbers
+# 2026-04-20 13:55
+
+
+## Table 3-2
+- [Table 3-2] BPA baseline MOER: 1090
+- [Table 3-2] BPA optimal MOER: 988
+- [Table 3-2] BPA optimal savings %: 9.7
+- [Table 3-2] BPA diurnal range: 80
+- [Table 3-2] CAISO_N baseline MOER: 726
+- [Table 3-2] CAISO_N optimal MOER: 557
+- [Table 3-2] CAISO_N optimal savings %: 31.6
+- [Table 3-2] CAISO_N diurnal range: 298
+- [Table 3-2] ERCOT_NC baseline MOER: 979
+- [Table 3-2] ERCOT_NC optimal MOER: 780
+- [Table 3-2] ERCOT_NC optimal savings %: 31.5
+- [Table 3-2] ERCOT_NC diurnal range: 147
+- [Table 3-2] ISONE_CT baseline MOER: 884
+- [Table 3-2] ISONE_CT optimal MOER: 829
+- [Table 3-2] ISONE_CT optimal savings %: 6.7
+- [Table 3-2] ISONE_CT diurnal range: 72
+- [Table 3-2] MISO_INDY baseline MOER: 1374
+- [Table 3-2] MISO_INDY optimal MOER: 1314
+- [Table 3-2] MISO_INDY optimal savings %: 4.4
+- [Table 3-2] MISO_INDY diurnal range: 34
+- [Table 3-2] SPP_KS baseline MOER: 1060
+- [Table 3-2] SPP_KS optimal MOER: 760
+- [Table 3-2] SPP_KS optimal savings %: 39.2
+- [Table 3-2] SPP_KS diurnal range: 178
+
+## Method-Comparison
+- [Method-Comparison] BPA TL savings %: 3.4
+- [Method-Comparison] BPA TOD Annual savings %: 3.0
+- [Method-Comparison] BPA TOD Seasonal savings %: 5.0
+- [Method-Comparison] BPA Forecast savings %: 2.8
+- [Method-Comparison] CAISO_N TL savings %: 17.9
+- [Method-Comparison] CAISO_N TOD Annual savings %: 16.9
+- [Method-Comparison] CAISO_N TOD Seasonal savings %: 17.7
+- [Method-Comparison] CAISO_N Forecast savings %: 18.1
+- [Method-Comparison] ERCOT_NC TL savings %: -3.7
+- [Method-Comparison] ERCOT_NC TOD Annual savings %: 10.0
+- [Method-Comparison] ERCOT_NC TOD Seasonal savings %: 6.0
+- [Method-Comparison] ERCOT_NC Forecast savings %: 19.6
+- [Method-Comparison] ISONE_CT TL savings %: 0.4
+- [Method-Comparison] ISONE_CT TOD Annual savings %: 1.3
+- [Method-Comparison] ISONE_CT TOD Seasonal savings %: 2.0
+- [Method-Comparison] ISONE_CT Forecast savings %: 2.8
+- [Method-Comparison] MISO_INDY TL savings %: 2.7
+- [Method-Comparison] MISO_INDY TOD Annual savings %: 0.9
+- [Method-Comparison] MISO_INDY TOD Seasonal savings %: 1.9
+- [Method-Comparison] MISO_INDY Forecast savings %: 2.4
+- [Method-Comparison] SPP_KS TL savings %: 20.0
+- [Method-Comparison] SPP_KS TOD Annual savings %: 5.7
+- [Method-Comparison] SPP_KS TOD Seasonal savings %: 5.7
+- [Method-Comparison] SPP_KS Forecast savings %: 23.8
+- [Method-Comparison] Cross-region mean Traffic Light savings %: 6.8
+- [Method-Comparison] Cross-region mean TOD Annual savings %: 6.3
+- [Method-Comparison] Cross-region mean TOD Seasonal savings %: 6.4
+- [Method-Comparison] Cross-region mean Forecast savings %: 11.6
+- [Method-Comparison] TL mean savings all regions %: 6.8
+- [Method-Comparison] TL min savings %: -3.7
+- [Method-Comparison] TL max savings %: 20.0
+- [Method-Comparison] TOD Annual mean savings all regions %: 6.3
+- [Method-Comparison] TOD Annual min savings %: 0.9
+- [Method-Comparison] TOD Annual max savings %: 16.9
+- [Method-Comparison] TOD Seasonal mean savings all regions %: 6.4
+- [Method-Comparison] TOD Seasonal min savings %: 1.9
+- [Method-Comparison] TOD Seasonal max savings %: 17.7
+- [Method-Comparison] Forecast mean savings all regions %: 11.6
+- [Method-Comparison] Forecast min savings %: 2.4
+- [Method-Comparison] Forecast max savings %: 23.8
+- [Method-Comparison] Regions where Forecast is best: 4
+- [Method-Comparison] Regions where TOD Seasonal is best: 1
+- [Method-Comparison] Regions where Traffic Light is best: 1
