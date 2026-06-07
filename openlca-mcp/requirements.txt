@@ -1,0 +1,5 @@
+olca-ipc==2.4.0
+olca-schema==2.4.0
+fastmcp==3.2.4
+requests>=2.32
+pytest>=8.0

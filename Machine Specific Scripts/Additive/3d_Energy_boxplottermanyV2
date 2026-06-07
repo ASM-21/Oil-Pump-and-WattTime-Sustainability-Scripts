@@ -1,0 +1,294 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import glob
+import os
+from datetime import datetime
+import re
+
+def analyze_multiple_part_types(part_prefixes=["DriveGear", "DriveShaft", "IdleGear", "IdleShaft"]):
+    """
+    Analyze energy consumption of multiple 3D printer part types from CSV files.
+    
+    Parameters:
+    part_prefixes (list): List of part prefixes to analyze
+    
+    Returns:
+    dict: Dictionary containing energy data for each part type
+    """
+    
+    all_part_data = {}
+    
+    # Process each part type
+    for part_prefix in part_prefixes:
+        print(f"\n=== Processing {part_prefix} ===")
+        
+        # Find all CSV files matching the pattern
+        file_pattern = f"{part_prefix}_Part*.csv"
+        csv_files = glob.glob(file_pattern)
+        
+        if not csv_files:
+            print(f"No files found matching pattern: {file_pattern}")
+            continue
+        
+        # Sort files to ensure consistent ordering
+        csv_files.sort(key=lambda x: int(re.findall(r'Part(\d+)', x)[0]) if re.findall(r'Part(\d+)', x) else 0)
+        
+        print(f"Found {len(csv_files)} files for {part_prefix}")
+        
+        part_energies = []
+        
+        # Process each file for this part type
+        for file in csv_files:
+            try:
+                # Read CSV file
+                df = pd.read_csv(file)
+                
+                # Filter for power measurements only
+                power_data = df[df['Dataname'] == 'power'].copy()
+                
+                if power_data.empty:
+                    print(f"  Warning: No power data found in {file}")
+                    continue
+                
+                # Convert timestamp to datetime with flexible format
+                power_data['Time'] = pd.to_datetime(power_data['Time'], format='mixed')
+                
+                # Sort by time to ensure proper order
+                power_data = power_data.sort_values('Time')
+                
+                # Calculate time differences in hours
+                power_data['time_diff'] = power_data['Time'].diff().dt.total_seconds() / 3600
+                
+                # Remove the first row (NaN time_diff)
+                power_data = power_data.iloc[1:].copy()
+                
+                # Calculate energy for each interval (Power * Time = Energy)
+                power_data['energy_kwh'] = power_data['Value'] * power_data['time_diff'] / 1000  # Convert W to kW
+                
+                # Calculate total energy consumed
+                total_energy_kwh = power_data['energy_kwh'].sum()
+                part_energies.append(total_energy_kwh)
+                
+                print(f"  {file}: {total_energy_kwh:.4f} kWh")
+                
+            except Exception as e:
+                print(f"  Error processing {file}: {str(e)}")
+                continue
+        
+        if part_energies:
+            all_part_data[part_prefix] = part_energies
+            print(f"  Total parts for {part_prefix}: {len(part_energies)}")
+            print(f"  Mean energy: {np.mean(part_energies):.4f} kWh")
+    
+    if not all_part_data:
+        print("No valid data found for any part types.")
+        return None
+    
+    # Create figure for comparing part types
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    
+    # Prepare data for box plots
+    part_types = list(all_part_data.keys())
+    energy_data = [all_part_data[part_type] for part_type in part_types]
+    
+    # Create box plots
+    box_plots = ax.boxplot(energy_data, labels=part_types, patch_artist=True)
+    
+    # Color the boxes with different colors
+    colors = plt.cm.Set2(np.linspace(0, 1, len(part_types)))
+    for patch, color in zip(box_plots['boxes'], colors):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.7)
+    
+    ax.set_title('3D Printer Parts - Energy Consumption Comparison', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Part Type')
+    ax.set_ylabel('Total Energy (kWh)')
+    ax.grid(True, alpha=0.3)
+    
+    # Set y-axis to start from zero and extend a bit higher
+    all_energies = [energy for energies in energy_data for energy in energies]
+    max_energy = max(all_energies)
+    ax.set_ylim(bottom=0, top=max_energy * 1.1)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Print summary for each part type
+    print(f"\n=== Part Type Comparison Summary ===")
+    print(f"{'Part Type':<12} {'Count':<6} {'Mean (kWh)':<12} {'Std (kWh)':<12} {'Min (kWh)':<12} {'Max (kWh)':<12}")
+    print("-" * 80)
+    
+    for part_type, energies in all_part_data.items():
+        print(f"{part_type:<12} {len(energies):<6} {np.mean(energies):<12.4f} "
+              f"{np.std(energies):<12.4f} {np.min(energies):<12.4f} {np.max(energies):<12.4f}")
+    
+    return all_part_data
+
+def analyze_3d_printer_energy(part_prefix="IdleGear"):
+    """
+    Analyze energy consumption of 3D printer parts from CSV files.
+    
+    Parameters:
+    part_prefix (str): The prefix of the CSV files (e.g., "IdleGear", "IdleShaft")
+    
+    Returns:
+    dict: Dictionary containing energy data and statistics for each part
+    """
+    
+    # Find all CSV files matching the pattern
+    file_pattern = f"{part_prefix}_Part*.csv"
+    csv_files = glob.glob(file_pattern)
+    
+    if not csv_files:
+        print(f"No files found matching pattern: {file_pattern}")
+        return None
+    
+    # Sort files to ensure consistent ordering
+    csv_files.sort(key=lambda x: int(re.findall(r'Part(\d+)', x)[0]) if re.findall(r'Part(\d+)', x) else 0)
+    
+    print(f"Found {len(csv_files)} files:")
+    for file in csv_files:
+        print(f"  - {file}")
+    
+    energy_data = {}
+    power_distributions = {}
+    
+    # Process each file
+    for file in csv_files:
+        # Extract part number from filename
+        part_match = re.search(r'Part(\d+)', file)
+        part_num = part_match.group(1) if part_match else "Unknown"
+        part_name = f"Part {part_num}"
+        
+        print(f"\nProcessing {file}...")
+        
+        try:
+            # Read CSV file
+            df = pd.read_csv(file)
+            
+            # Filter for power measurements only
+            power_data = df[df['Dataname'] == 'power'].copy()
+            
+            if power_data.empty:
+                print(f"  Warning: No power data found in {file}")
+                continue
+            
+            # Convert timestamp to datetime with flexible format
+            power_data['Time'] = pd.to_datetime(power_data['Time'], format='mixed')
+            
+            # Sort by time to ensure proper order
+            power_data = power_data.sort_values('Time')
+            
+            # Calculate time differences in hours
+            power_data['time_diff'] = power_data['Time'].diff().dt.total_seconds() / 3600
+            
+            # Remove the first row (NaN time_diff)
+            power_data = power_data.iloc[1:].copy()
+            
+            # Calculate energy for each interval (Power * Time = Energy)
+            power_data['energy_kwh'] = power_data['Value'] * power_data['time_diff'] / 1000  # Convert W to kW
+            
+            # Calculate total energy consumed
+            total_energy_kwh = power_data['energy_kwh'].sum()
+            
+            # Store results
+            energy_data[part_name] = {
+                'total_energy_kwh': total_energy_kwh,
+                'duration_hours': (power_data['Time'].max() - power_data['Time'].min()).total_seconds() / 3600,
+                'avg_power_w': power_data['Value'].mean(),
+                'max_power_w': power_data['Value'].max(),
+                'min_power_w': power_data['Value'].min(),
+                'std_power_w': power_data['Value'].std()
+            }
+            
+            # Store power values for box plot
+            power_distributions[part_name] = power_data['Value'].values
+            
+            print(f"  Total Energy: {total_energy_kwh:.4f} kWh")
+            print(f"  Duration: {energy_data[part_name]['duration_hours']:.2f} hours")
+            print(f"  Average Power: {energy_data[part_name]['avg_power_w']:.2f} W")
+            
+        except Exception as e:
+            print(f"  Error processing {file}: {str(e)}")
+            continue
+    
+    if not energy_data:
+        print("No valid data found in any files.")
+        return None
+    
+    # Create figure for individual part energy consumption box plots
+    part_names = list(energy_data.keys())
+    total_energies = [energy_data[part]['total_energy_kwh'] for part in part_names]
+    
+    # Create individual energy lists for each part (single value per part becomes a list)
+    individual_energies = [[energy] for energy in total_energies]
+    
+    fig, ax = plt.subplots(1, 1, figsize=(12, 6))
+    
+    # Box plot with individual parts
+    energy_box_plot = ax.boxplot(individual_energies, labels=part_names, patch_artist=True)
+    
+    # Color the boxes with different colors
+    colors = plt.cm.Set3(np.linspace(0, 1, len(part_names)))
+    for patch, color in zip(energy_box_plot['boxes'], colors):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.7)
+    
+    ax.set_title(f'{part_prefix} Parts - Individual Energy Consumption', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Part Number')
+    ax.set_ylabel('Total Energy (kWh)')
+    ax.grid(True, alpha=0.3)
+    ax.tick_params(axis='x', rotation=45)
+    
+    # Set y-axis to start from zero and extend a bit higher
+    max_energy = max(total_energies)
+    ax.set_ylim(bottom=0, top=max_energy * 1.1)  # Add 10% padding above the maximum
+    
+    # Add statistics text for overall energy consumption
+    energy_stats_text = (f'Overall Statistics:\n'
+                        f'Mean: {np.mean(total_energies):.4f} kWh\n'
+                        f'Median: {np.median(total_energies):.4f} kWh\n'
+                        f'Std: {np.std(total_energies):.4f} kWh\n'
+                        f'Min: {np.min(total_energies):.4f} kWh\n'
+                        f'Max: {np.max(total_energies):.4f} kWh\n'
+                        f'Total Parts: {len(total_energies)}')
+    
+    ax.text(0.02, 0.98, energy_stats_text, transform=ax.transAxes, fontsize=10,
+            verticalalignment='top', bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
+    
+    # Add individual data points as scatter plot overlay
+    x_pos = np.ones(len(total_energies))
+    ax.scatter(x_pos, total_energies, alpha=0.6, color='red', s=50, zorder=3)
+    
+    # Label each point with part name
+    for i, (energy, part) in enumerate(zip(total_energies, part_names)):
+        ax.annotate(part.replace('Part ', 'P'), (x_pos[i], energy), 
+                   xytext=(5, 0), textcoords='offset points', 
+                   fontsize=8, ha='left', va='center')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Print summary statistics
+    print(f"\n=== {part_prefix} Parts Energy Analysis Summary ===")
+    print(f"{'Part':<10} {'Energy (kWh)':<12} {'Duration (h)':<12} {'Avg Power (W)':<15} {'Std Power (W)':<15}")
+    print("-" * 75)
+    
+    for part, data in energy_data.items():
+        print(f"{part:<10} {data['total_energy_kwh']:<12.4f} {data['duration_hours']:<12.2f} "
+              f"{data['avg_power_w']:<15.2f} {data['std_power_w']:<15.2f}")
+    
+    total_energy_all = sum(data['total_energy_kwh'] for data in energy_data.values())
+    print(f"\nTotal energy for all {part_prefix} parts: {total_energy_all:.4f} kWh")
+    
+    return energy_data
+
+# Example usage:
+if __name__ == "__main__":
+    # Analyze multiple part types for comparison
+    multiple_parts_data = analyze_multiple_part_types(["DriveGear", "DriveShaft", "IdleGear", "IdleShaft"])
+    
+    # To analyze a single part type (original functionality):
+    # idle_gear_data = analyze_3d_printer_energy("IdleGear")
