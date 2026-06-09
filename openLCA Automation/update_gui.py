@@ -13,6 +13,7 @@ To use:
   2. Run: python update_gui.py
 """
 
+import os
 import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
@@ -25,10 +26,10 @@ import olca_schema as o
 # CONFIGURATION
 # ============================================================================
 
-SERVER_URL        = "http://10.165.42.40:8080"
-PROCESS_ID        = "5cff7493-7b74-4ea2-945b-8eed0441111e"
-PRODUCT_SYSTEM_ID = "PLACEHOLDER"
-LCIA_METHOD_ID    = "PLACEHOLDER"
+SERVER_URL        = os.getenv("OPENLCA_SERVER_URL", "http://localhost:8080")
+PROCESS_ID        = os.getenv("OPENLCA_PROCESS_ID", "PLACEHOLDER")
+PRODUCT_SYSTEM_ID = os.getenv("OPENLCA_PRODUCT_SYSTEM_ID", "PLACEHOLDER")
+LCIA_METHOD_ID    = os.getenv("OPENLCA_LCIA_METHOD_ID", "PLACEHOLDER")
 
 # Default energy values (mean_kWh, std_kWh)
 # Edit these to change what populates the "New Value" column on startup

@@ -1,7 +1,20 @@
 import requests
+import os
 
-USERNAME = "ASM21_purdue"
-PASSWORD = "Mango21!"
+
+def get_watttime_credentials():
+    """Read WattTime credentials from environment variables."""
+    username = os.getenv("WATTTIME_USERNAME")
+    password = os.getenv("WATTTIME_PASSWORD")
+    if not username or not password:
+        raise SystemExit(
+            "Set WATTTIME_USERNAME and WATTTIME_PASSWORD before running this script. "
+            "See .env.example and docs/SECURITY_AND_SHARING_CHECKLIST.md."
+        )
+    return username, password
+
+
+USERNAME, PASSWORD = get_watttime_credentials()
 
 # Login
 resp = requests.get(

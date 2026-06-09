@@ -113,7 +113,7 @@ def _atomic_write_text(path: Path, text: str) -> None:
 def load_settings() -> dict:
     """Load persisted settings (host, port, last product). Safe if missing."""
     defaults = {
-        "host":           "10.165.42.40",
+        "host":           os.getenv("OPENLCA_HOST", "localhost"),
         "port":           8080,
         "last_product":   "Oil Pump Assembly",
     }
@@ -184,7 +184,7 @@ class Product:
 # Edit in-app via Manage Products, or directly in ~/.openlca_tester/products.json.
 _OIL_PUMP = Product(
     name       = "Oil Pump Assembly",
-    process_id = "5cff7493-7b74-4ea2-945b-8eed0441111e",
+    process_id = os.getenv("OPENLCA_PROCESS_ID", "PLACEHOLDER"),
     product_system_id = "",
     notes      = "Hybrid CNC/AM oil pump. UUID-based 1 Hz power metering.",
     exchanges  = [
@@ -743,6 +743,7 @@ def append_history(event: dict) -> None:
 # ============================================================================
 
 
+import os
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 
@@ -2516,4 +2517,4 @@ class App(tk.Tk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
- 
+

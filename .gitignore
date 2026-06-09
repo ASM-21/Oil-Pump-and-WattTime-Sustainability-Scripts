@@ -1,0 +1,47 @@
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*token*.txt
+*Token*.txt
+*credentials*.json
+*secret*.json
+
+# Logs and local runtime output
+*.log
+agent.log
+logs/
+runs/
+outputs/
+output/
+
+# Research data caches and large local data exports
+watttime_library/
+data/raw/
+data/processed/
+*.parquet
+*.feather
+*.h5
+*.hdf5
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -413,12 +413,12 @@ These are not duplicates — the core files work — but they have structural is
 ### `config.py` Issues
 
 **1. Hardcoded credentials (security)**
-The username and password are in plain text at line 16–17:
+Credentials now come from environment variables in `config.py`; older commits contained plain-text credentials, so rotate any exposed WattTime password before sharing:
 ```python
-WATTTIME_USERNAME = "ASM21_purdue"
-WATTTIME_PASSWORD = "Mango21!"
+WATTTIME_USERNAME = os.getenv("WATTTIME_USERNAME", "")
+WATTTIME_PASSWORD = os.getenv("WATTTIME_PASSWORD", "")
 ```
-Anyone who receives this codebase can see your credentials. For a handoff, these should be moved to a `.env` file (ignored by git) and loaded with `python-dotenv`, or at minimum replaced with placeholder strings and documented. The `.env` approach is one extra line to add.
+For a handoff, copy `.env.example` to `.env`, keep `.env` ignored by git, and set `WATTTIME_USERNAME` / `WATTTIME_PASSWORD` locally. Do not commit generated token files.
 
 **2. The REGIONS dict is enormous and mostly unused**
 `config.py` catalogs 60+ WattTime subregions (MISO, PJM, CAISO, ERCOT, ISONE, NYISO, SPP, BPA, etc.) across ~400 lines, but the actual GridMixStudy analysis only ever uses 6:
