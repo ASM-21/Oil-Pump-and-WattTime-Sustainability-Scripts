@@ -4,13 +4,26 @@ Prints all available data to explore what you can access.
 """
 
 import requests
+import os
+
+
+def get_watttime_credentials():
+    """Read WattTime credentials from environment variables."""
+    username = os.getenv("WATTTIME_USERNAME")
+    password = os.getenv("WATTTIME_PASSWORD")
+    if not username or not password:
+        raise SystemExit(
+            "Set WATTTIME_USERNAME and WATTTIME_PASSWORD before running this script. "
+            "See .env.example and docs/SECURITY_AND_SHARING_CHECKLIST.md."
+        )
+    return username, password
+
 from datetime import datetime, timedelta, timezone
 
 # =============================================================================
 # Config
 # =============================================================================
-USERNAME = "ASM21_purdue"
-PASSWORD = "Mango21!"
+USERNAME, PASSWORD = get_watttime_credentials()
 REGION = "MISO_LAFAYETTE"  # West Lafayette / Purdue
 
 # =============================================================================
@@ -110,12 +123,12 @@ if hist_data:
     hist_values = [p.get("value") for p in hist_data if p.get("value")]
     hist_min = min(hist_data, key=lambda x: x.get("value", float("inf")))
     hist_max = max(hist_data, key=lambda x: x.get("value", float("-inf")))
-    
+
     print(f"\nLast 24h Statistics:")
     print(f"  Min:  {min(hist_values):.2f} at {hist_min.get('point_time')}")
     print(f"  Max:  {max(hist_values):.2f} at {hist_max.get('point_time')}")
     print(f"  Mean: {sum(hist_values)/len(hist_values):.2f}")
-    
+
     # Show hourly samples
     print("\nHourly samples (last 24h):")
     print(f"{'Time':<25} {'MOER (lbs/MWh)':<15}")
@@ -211,10 +224,10 @@ if resp.status_code == 200:
     health = resp.json()
     health_meta = health.get("meta", {})
     health_data = health.get("data", [])
-    
+
     print(f"Signal: {health_meta.get('signal_type')}")
     print(f"Units: {health_meta.get('units')}")
-    
+
     if health_data:
         print(f"Current: {health_data[0].get('value')}")
 else:
@@ -236,7 +249,7 @@ Current Grid Status:
 Forecast ({len(data) * 5 / 60:.0f}h horizon):
   Best time to manufacture: {min_point.get('point_time')}
   Best MOER: {min(values):.2f} lbs CO2/MWh
-  
+
   Worst time: {max_point.get('point_time')}
   Worst MOER: {max(values):.2f} lbs CO2/MWh
 

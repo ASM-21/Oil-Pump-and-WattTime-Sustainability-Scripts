@@ -5,11 +5,24 @@ Output: CSV with all regions and signal type availability
 """
 
 import requests
+import os
+
+
+def get_watttime_credentials():
+    """Read WattTime credentials from environment variables."""
+    username = os.getenv("WATTTIME_USERNAME")
+    password = os.getenv("WATTTIME_PASSWORD")
+    if not username or not password:
+        raise SystemExit(
+            "Set WATTTIME_USERNAME and WATTTIME_PASSWORD before running this script. "
+            "See .env.example and docs/SECURITY_AND_SHARING_CHECKLIST.md."
+        )
+    return username, password
+
 import csv
 from collections import defaultdict
 
-USERNAME = "ASM21_purdue"
-PASSWORD = "Mango21!"
+USERNAME, PASSWORD = get_watttime_credentials()
 
 # Authenticate
 print("Authenticating...")
@@ -40,10 +53,10 @@ for signal_group in access.get("signal_types", []):
     signal_type = signal_group.get("signal_type")
     if signal_type not in target_signals:
         continue
-    
+
     regions = signal_group.get("regions", [])
     print(f"  {signal_type}: {len(regions)} regions")
-    
+
     for r in regions:
         code = r.get("region", "")
         regions_data[code]["region_full_name"] = r.get("region_full_name", "")
@@ -55,14 +68,14 @@ output_file = "watttime_regions.csv"
 with open(output_file, "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow([
-        "region_code", 
-        "region_full_name", 
+        "region_code",
+        "region_full_name",
         "parent",
-        "co2_moer", 
-        "co2_aoer", 
+        "co2_moer",
+        "co2_aoer",
         "health_damage"
     ])
-    
+
     for code in sorted(regions_data.keys()):
         data = regions_data[code]
         writer.writerow([

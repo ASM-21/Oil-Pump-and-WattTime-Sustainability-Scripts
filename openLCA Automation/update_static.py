@@ -18,10 +18,10 @@ import olca_schema as o
 # CONFIGURATION — edit these values freely
 # ============================================================================
 
-SERVER_URL        = "http://10.165.42.40:8080"
-PROCESS_ID        = "5cff7493-7b74-4ea2-945b-8eed0441111e"
-PRODUCT_SYSTEM_ID = "PLACEHOLDER"   # paste UUID from OpenLCA product system
-LCIA_METHOD_ID    = "PLACEHOLDER"   # paste UUID from OpenLCA LCIA method
+SERVER_URL        = os.getenv("OPENLCA_SERVER_URL", "http://localhost:8080")
+PROCESS_ID        = os.getenv("OPENLCA_PROCESS_ID", "PLACEHOLDER")
+PRODUCT_SYSTEM_ID = os.getenv("OPENLCA_PRODUCT_SYSTEM_ID", "PLACEHOLDER")
+LCIA_METHOD_ID    = os.getenv("OPENLCA_LCIA_METHOD_ID", "PLACEHOLDER")
 
 # Energy values (mean_kWh, std_kWh)
 # Description keys must match exactly what is in the OpenLCA process

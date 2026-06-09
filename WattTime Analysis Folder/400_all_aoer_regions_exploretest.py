@@ -4,11 +4,24 @@ Attempts a tiny 1-day historical pull for each.
 """
 
 import requests
+import os
+
+
+def get_watttime_credentials():
+    """Read WattTime credentials from environment variables."""
+    username = os.getenv("WATTTIME_USERNAME")
+    password = os.getenv("WATTTIME_PASSWORD")
+    if not username or not password:
+        raise SystemExit(
+            "Set WATTTIME_USERNAME and WATTTIME_PASSWORD before running this script. "
+            "See .env.example and docs/SECURITY_AND_SHARING_CHECKLIST.md."
+        )
+    return username, password
+
 from datetime import datetime
 
 # ── Config ──────────────────────────────────────────────
-USERNAME = "ASM21_purdue"
-PASSWORD = "Mango21!"
+USERNAME, PASSWORD = get_watttime_credentials()
 BASE_URL = "https://api.watttime.org"
 
 REGIONS = ["MISO", "BPA", "CAISO", "SPP", "ERCOT", "ISONE"]

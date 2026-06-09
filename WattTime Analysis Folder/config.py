@@ -4,6 +4,8 @@ WattTime Analysis - Configuration
 Central configuration for credentials, signal metadata, region definitions,
 and path management for the library/runs architecture.
 """
+import os
+
 import matplotlib.pyplot as plt
 from datetime import datetime
 from pathlib import Path
@@ -13,8 +15,8 @@ import json
 # =============================================================================
 # CREDENTIALS
 # =============================================================================
-WATTTIME_USERNAME = "ASM21_purdue"
-WATTTIME_PASSWORD = "Mango21!"
+WATTTIME_USERNAME = os.getenv("WATTTIME_USERNAME", "")
+WATTTIME_PASSWORD = os.getenv("WATTTIME_PASSWORD", "")
 
 # =============================================================================
 # API SETTINGS
@@ -165,7 +167,7 @@ REGIONS = {
         "description": "MISO subregion covering Michigan Upper Peninsula",
         "coordinates": (46.5436, -87.3954),  # Marquette, MI
     },
-    
+
     # -------------------------------------------------------------------------
     # PJM Subregions
     # -------------------------------------------------------------------------
@@ -217,7 +219,7 @@ REGIONS = {
         "description": "PJM subregion covering Roanoke VA area",
         "coordinates": (37.2710, -79.9414),  # Roanoke, VA
     },
-    
+
     # -------------------------------------------------------------------------
     # CAISO Subregions (California ISO)
     # -------------------------------------------------------------------------
@@ -263,7 +265,7 @@ REGIONS = {
         "description": "CAISO subregion covering Redding area",
         "coordinates": (40.5865, -122.3917),  # Redding, CA
     },
-    
+
     # -------------------------------------------------------------------------
     # ERCOT Subregions (Texas)
     # -------------------------------------------------------------------------
@@ -327,7 +329,7 @@ REGIONS = {
         "description": "ERCOT subregion covering Texas Panhandle",
         "coordinates": (35.2220, -101.8313),  # Amarillo, TX
     },
-    
+
     # -------------------------------------------------------------------------
     # ISONE Subregions (New England)
     # -------------------------------------------------------------------------
@@ -379,7 +381,7 @@ REGIONS = {
         "description": "ISONE subregion covering Vermont",
         "coordinates": (44.4759, -73.2121),  # Burlington, VT
     },
-    
+
     # -------------------------------------------------------------------------
     # NYISO Subregions (New York)
     # -------------------------------------------------------------------------
@@ -431,7 +433,7 @@ REGIONS = {
         "description": "NYISO subregion covering Western New York",
         "coordinates": (42.8864, -78.8784),  # Buffalo, NY
     },
-    
+
     # -------------------------------------------------------------------------
     # SPP Subregions (Southwest Power Pool)
     # -------------------------------------------------------------------------
@@ -501,7 +503,7 @@ REGIONS = {
         "description": "SPP subregion covering Fort Peck area",
         "coordinates": (48.0086, -106.4210),  # Wolf Point, MT
     },
-    
+
     # -------------------------------------------------------------------------
     # Major Standalone Utilities (all have MOER + AOER)
     # -------------------------------------------------------------------------
@@ -879,7 +881,7 @@ REGION_GROUPS = {
         "ISONE_CT",
         "ERCOT_NORTHCENTRAL",
     ],
-    
+
     # By ISO (all MOER only for subregions)
     "MISO_ALL": [
         "MISO_INDIANAPOLIS", "MISO_DETROIT", "MISO_GRAND_RAPIDS",
@@ -938,7 +940,7 @@ REGION_GROUPS = {
         "SPP_MEMPHIS", "SPP_SPRINGFIELD", "SPP_SIOUX", "SPP_ND",
         "SPP_WESTNE", "SPP_FORTPECK",
     ],
-    
+
     "ALL": [
         "NYISO_NYC", "NYISO_LONG", "NYISO_HUDSON", "NYISO_CAPITAL",
         "CAISO_NORTH", "CAISO_LONGBEACH", "CAISO_SANDIEGO",
@@ -964,17 +966,17 @@ REGION_GROUPS = {
     "AOER_6RegionSummary": [
         "MISO","BPA", "CAISO","SPP","ERCOT","ISONE",
     ],
-    
+
     # Regions with AOER data (for MOER vs AOER comparison)
     "AOER_REGIONS": [
         "TVA", "SOCO", "DUK", "CPLE", "CPLW", "FPL", "FPC", "TEC",
         "PSCO", "PNM", "SRP", "AZPS", "NEVP", "LDWP", "PGE", "PSEI",
         "BPA", "AECI", "LGEE", "AESO", "BCHYDRO", "HQ",
     ],
-    
+
     # Only region with health_damage data
     "HEALTH_REGIONS": ["CAISO_NORTH"],
-    
+
     # Convenience groups
     "INDY_ONLY": ["MISO_INDIANAPOLIS"],
     "EAST_COAST": ["PJM_NJ", "ISONE_NEMA", "NYISO_NYC"],
