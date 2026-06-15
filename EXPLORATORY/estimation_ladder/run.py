@@ -205,6 +205,28 @@ def compute(df: pd.DataFrame) -> dict:
     result["norm_df"] = norm_df
     result["n_normal"] = n_normal
     result["n_tested"] = n_tested
+
+    # ------------------------------------------------------------------
+    # E3: Program-level uncertainty intervals from repeated runs
+    # ------------------------------------------------------------------
+    prog_var = (
+        program_runs.groupby(["part", "program"])
+        .agg(
+            mean_wh=("L4_energy_wh", "mean"),
+            std_wh=("L4_energy_wh", "std"),
+            n_runs=("L4_energy_wh", "count"),
+        )
+        .reset_index()
+    )
+    prog_var = prog_var[prog_var["n_runs"] >= 3].copy()
+    prog_var["cv_pct"] = (prog_var["std_wh"] / prog_var["mean_wh"] * 100).round(1)
+    # 95% CI on the mean: 1.96 * (std / sqrt(n))
+    prog_var["ci_95_wh"] = (
+        1.96 * prog_var["std_wh"] / np.sqrt(prog_var["n_runs"])
+    ).round(3)
+    prog_var["ci_95_pct"] = (prog_var["ci_95_wh"] / prog_var["mean_wh"] * 100).round(1)
+    result["prog_var"] = prog_var
+
     result["df"] = df
     return result
 
@@ -293,6 +315,8 @@ def write_findings(r: dict) -> None:
     op.to_csv(OUT / "operation_cv_replication.csv", index=False)
     if "norm_df" in r and not r["norm_df"].empty:
         r["norm_df"].to_csv(OUT / "normality_shapiro_wilk.csv", index=False)
+    if "prog_var" in r and not r["prog_var"].empty:
+        r["prog_var"].to_csv(OUT / "uncertainty_intervals.csv", index=False)
 
     # Summary by part and level
     summary_rows = []
@@ -331,6 +355,28 @@ def write_findings(r: dict) -> None:
     n_runs = len(pr)
     body_g = MASS_REMOVED_G["body"]
     lid_g = MASS_REMOVED_G["lid"]
+
+    # Build E3 uncertainty table outside f-string
+    pv = r.get("prog_var")
+    if pv is not None and not pv.empty:
+        pv_lines = ["| Part | Program | n_runs | Mean (Wh) | CV (%) | 95% CI (Wh) | 95% CI (%) |",
+                    "|---|---|---|---|---|---|---|"]
+        for _, row in pv.iterrows():
+            pv_lines.append(
+                f"| {row['part']} | {row['program']} | {int(row['n_runs'])} | "
+                f"{row['mean_wh']:.1f} | {row['cv_pct']:.1f} | "
+                f"{row['ci_95_wh']:.1f} | {row['ci_95_pct']:.1f} |"
+            )
+        e3_section = (
+            "### E3 Program-level uncertainty (95% CI on the mean from repeated runs)\n"
+            + "\n".join(pv_lines)
+            + "\n- Full table: outputs/uncertainty_intervals.csv\n\n"
+        )
+    else:
+        e3_section = (
+            "### E3 Program-level uncertainty\n"
+            "- Skipped: fewer than 3 runs per program after filtering.\n\n"
+        )
 
     findings_text = (
         "# estimation_ladder: findings\n\n"
@@ -373,6 +419,7 @@ def write_findings(r: dict) -> None:
         f"- Operations tested (>= 4 runs): {r['n_tested']}\n"
         f"- Near-normal: {r['n_normal']} of {r['n_tested']} (paper quotes 40 of 45)\n"
         "- Full per-operation results: outputs/normality_shapiro_wilk.csv\n\n"
+        f"{e3_section}"
         "## How to extend\n"
         "- Wire FDM data (AM_DATA_DIR) for a proper CNC vs FDM comparison figure.\n"
         "- Replace spindle rating with total connected load if the electrical plate is photographed.\n"

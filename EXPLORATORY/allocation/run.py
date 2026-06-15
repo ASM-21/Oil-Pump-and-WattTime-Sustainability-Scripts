@@ -243,6 +243,34 @@ def compute(df: pd.DataFrame) -> dict:
 
     result["sweep_df"] = pd.DataFrame(sweep_rows)
     result["total_measured_wh"] = total_measured
+
+    # ------------------------------------------------------------------
+    # C1: Specific energy per part (kWh per kg of material removed)
+    # ------------------------------------------------------------------
+    # Target values from paper context: body ~0.36, lid ~0.78 kWh/kg
+    # Only computable when mass data is available (mass_available == True).
+    if mass_available:
+        sec_rows = []
+        for p in parts:
+            m_kg = mass_g[p] / 1000.0
+            e_kwh = measured[p] / 1000.0
+            sec = e_kwh / m_kg
+            sec_rows.append({
+                "part": p,
+                "mass_removed_g": mass_g[p],
+                "mean_energy_wh": measured[p],
+                "sec_kwh_per_kg": round(sec, 3),
+            })
+        result["sec_df"] = pd.DataFrame(sec_rows)
+
+        # Cross-check: lid SEC should exceed body SEC (lid is energy-intensive per kg)
+        body_sec = next(r["sec_kwh_per_kg"] for r in sec_rows if r["part"] == "body")
+        lid_sec  = next(r["sec_kwh_per_kg"] for r in sec_rows if r["part"] == "lid")
+        log.check_against_expected("body SEC (kWh/kg removed)", body_sec, 0.36, rel_tol=0.30,
+                                   note="context doc target; 30% tol because mass values unverified")
+        log.check_against_expected("lid SEC (kWh/kg removed)", lid_sec, 0.78, rel_tol=0.30,
+                                   note="context doc target; 30% tol because mass values unverified")
+
     result["df"] = df
     return result
 
@@ -321,6 +349,8 @@ def write_findings(r: dict) -> None:
     pm.to_csv(OUT / "part_mean_energy.csv", index=False)
     if not r["sweep_df"].empty:
         r["sweep_df"].to_csv(OUT / "mix_sweep.csv", index=False)
+    if "sec_df" in r:
+        r["sec_df"].to_csv(OUT / "specific_energy_per_part.csv", index=False)
 
     lid_ratio_line = (f"- Lid / body energy ratio: {r['lid_body_ratio']:.3f} "
                       f"(expected ~0.677)\n") if "lid_body_ratio" in r else ""
@@ -361,6 +391,28 @@ def write_findings(r: dict) -> None:
     homing_share = r["homing_share"]
     idle_share = r["idle_share"]
 
+    # Build C1 specific energy table outside f-string
+    if "sec_df" in r and not r["sec_df"].empty:
+        sec_lines = ["| Part | Mass removed (g) | Mean energy (Wh) | SEC (kWh/kg) |",
+                     "|---|---|---|---|"]
+        for _, row in r["sec_df"].iterrows():
+            sec_lines.append(
+                f"| {row['part']} | {row['mass_removed_g']:.0f} | "
+                f"{row['mean_energy_wh']:.1f} | {row['sec_kwh_per_kg']:.3f} |"
+            )
+        c1_section = (
+            "### C1 Specific energy per part (kWh / kg removed)\n"
+            + "\n".join(sec_lines)
+            + "\n- Full table: outputs/specific_energy_per_part.csv\n"
+            + "- Context doc targets: body ~0.36, lid ~0.78 kWh/kg\n\n"
+        )
+    else:
+        c1_section = (
+            "### C1 Specific energy per part\n"
+            "- Skipped: mass data not available (mass_available=False). "
+            "Fill in bom.csv to enable.\n\n"
+        )
+
     # Headline body error (safe access)
     body_err_str = "N/A"
     if "body" in rd["part"].values:
@@ -385,6 +437,7 @@ def write_findings(r: dict) -> None:
         f"{lid_ratio_line}"
         f"- Homing share of total CNC energy: {homing_share*100:.1f}% (expected ~11.7%)\n"
         f"- Idle share: {idle_share*100:.1f}%\n\n"
+        f"{c1_section}"
         "## Verification\n\n"
         f"{log.to_markdown()}\n"
         "## Caveats\n"
@@ -393,18 +446,17 @@ def write_findings(r: dict) -> None:
         "  same cost per kg for body and lid). A different-material product would differ.\n"
         "- Only two parts (body, lid). The mix sweep generalizes qualitatively but cannot\n"
         "  validate across a broader product range.\n"
-        "- Specific energy (Wh per gram removed) is not computed because mass_removed\n"
-        "  values are not yet verified. When confirmed, compute kWh/kg per part to\n"
-        "  demonstrate the aggregation-masking argument (target: ~0.36 vs ~0.78 kWh/kg).\n\n"
+        "- C1 specific energy values use context doc mass estimates until bom.csv is filled\n"
+        "  in with verified stock/finished masses.\n\n"
         "## Feeds the journal paper?\n"
         "Yes -- Tier A, second priority. Supplies:\n"
         "- Allocation rule error table (new Results section or Discussion exhibit)\n"
         "- Mix sweep figure showing worst-case error vs production scenario\n"
         "- Homing share number (paper quotes ~11.7%)\n"
+        "- C1 specific energy (kWh/kg) per part: shows aggregation-masking within product\n"
         "- Framing: most allocation debate is theoretical; here we have measured ground truth\n\n"
         "## How to extend\n"
-        "- Verify mass_removed values; compute Wh/kg_removed per part for the within-product\n"
-        "  specific energy exhibit (Tier C1 in SCOPE_tier_A_B_C.md).\n"
+        "- Verify mass_removed values against measured stock/finished masses; update bom.csv.\n"
         "- Add economic rule with a real cost proxy once BOM costs are confirmed.\n"
         "- Extend to a multi-part sweep if more parts are measured later.\n"
     )
