@@ -166,6 +166,78 @@ def _import_energy_analyzer():
 
 
 # ---------------------------------------------------------------------------
+# Local path config -- lets "press run" work without setting env vars each time
+# ---------------------------------------------------------------------------
+
+_DATA_CONFIG = _REPO_ROOT / "EXPLORATORY" / ".data_paths.txt"
+
+
+def _read_config() -> dict[str, str]:
+    """Read saved paths from .data_paths.txt (one KEY=value per line)."""
+    if not _DATA_CONFIG.exists():
+        return {}
+    result = {}
+    for line in _DATA_CONFIG.read_text().splitlines():
+        line = line.strip()
+        if "=" in line and not line.startswith("#"):
+            k, _, v = line.partition("=")
+            result[k.strip()] = v.strip()
+    return result
+
+
+def _save_config(key: str, value: str) -> None:
+    """Persist a single key=value to .data_paths.txt."""
+    existing = _read_config()
+    existing[key] = value
+    lines = [f"{k}={v}" for k, v in existing.items()]
+    _DATA_CONFIG.write_text("\n".join(lines) + "\n")
+
+
+def _resolve_data_dir(env_var: str, description: str) -> str:
+    """
+    Resolve a data directory in this order:
+      1. Environment variable (good for CI/scripting)
+      2. Saved path in EXPLORATORY/.data_paths.txt (set on previous run)
+      3. Interactive prompt (for press-to-run in an IDE)
+
+    The chosen path is saved to .data_paths.txt so you only have to type it once.
+    .data_paths.txt is gitignored (local machine paths don't belong in version control).
+    """
+    # 1. Environment variable
+    val = os.environ.get(env_var, "").strip()
+    if val and Path(val).exists():
+        return val
+
+    # 2. Saved config file
+    saved = _read_config().get(env_var, "").strip()
+    if saved and Path(saved).exists():
+        print(f"[adapter] Using saved {env_var} = {saved}")
+        return saved
+
+    # 3. Interactive prompt -- works when you press Run in VS Code / PyCharm
+    print()
+    print(f"  {description}")
+    print(f"  No path found for {env_var}.")
+    print(f"  (You can also set it with:  export {env_var}=/your/path)")
+    print()
+    val = input("  Enter folder path: ").strip().strip('"').strip("'")
+    if not val:
+        raise DataNotInRepo(
+            f"{env_var} not configured and no path entered. "
+            "Re-run and enter a valid path when prompted."
+        )
+    val = str(Path(val).expanduser().resolve())
+    if not Path(val).exists():
+        raise DataNotInRepo(
+            f"Path {val!r} does not exist. Check the folder name and try again."
+        )
+    _save_config(env_var, val)
+    print(f"  Saved to EXPLORATORY/.data_paths.txt -- won't ask again on this machine.")
+    print()
+    return val
+
+
+# ---------------------------------------------------------------------------
 # Public adapter functions
 # ---------------------------------------------------------------------------
 
@@ -173,41 +245,31 @@ def load_operation_energy() -> pd.DataFrame:
     """
     Return the per-run, per-operation energy table for CNC machining.
 
-    Reads from CNC_DATA_DIR (environment variable). Raises DataNotInRepo
-    with setup instructions if the variable is not set or the directory is
-    missing/empty.
+    First run: prompts you to enter the folder containing your Al6061_*.csv files
+    and saves the path for next time. Subsequent runs use the saved path automatically.
+
+    You can also skip the prompt by setting the environment variable:
+      export CNC_DATA_DIR=/path/to/your/csv/folder   (Mac/Linux)
+      set    CNC_DATA_DIR=C:\\path\\to\\your\\csv\\folder  (Windows)
 
     Returns a DataFrame with the column contract in this module's docstring.
     Columns 'start', 'end', and 'peak_power_w' are NaT/NaN because the
     existing EnergyForFeatureLib loader does not expose per-operation timestamps
-    or peak power. They are available by re-parsing the raw 1 Hz stream via
+    or peak power. Available by re-parsing the raw 1 Hz stream via
     load_power_stream() if needed.
     """
-    data_dir = os.environ.get("CNC_DATA_DIR", "").strip()
-    if not data_dir:
-        raise DataNotInRepo(
-            "\n"
-            "CNC_DATA_DIR is not set. Before running any project, do:\n"
-            "\n"
-            "  Linux/Mac:  export CNC_DATA_DIR=/path/to/your/csv/folder\n"
-            "  Windows:    set CNC_DATA_DIR=C:\\path\\to\\your\\csv\\folder\n"
-            "\n"
-            "The folder must contain your Al6061_body*.csv and Al6061_lid*.csv\n"
-            "measurement files from the IN-MaC CNC runs.\n"
-        )
+    data_dir = _resolve_data_dir(
+        "CNC_DATA_DIR",
+        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
+    )
 
     data_path = Path(data_dir)
-    if not data_path.exists():
-        raise DataNotInRepo(
-            f"CNC_DATA_DIR={data_dir!r} does not exist on this machine.\n"
-            "Update the environment variable to point at your local data folder."
-        )
-
     csv_files = list(data_path.glob("Al6061_*.csv"))
     if not csv_files:
         raise DataNotInRepo(
-            f"No Al6061_*.csv files found in CNC_DATA_DIR={data_dir!r}.\n"
-            "Check that you pointed at the right folder."
+            f"No Al6061_*.csv files found in {data_dir!r}.\n"
+            "Check that you pointed at the right folder.\n"
+            "To re-enter the path, delete EXPLORATORY/.data_paths.txt and re-run."
         )
 
     EnergyAnalyzer, clean_data = _import_energy_analyzer()

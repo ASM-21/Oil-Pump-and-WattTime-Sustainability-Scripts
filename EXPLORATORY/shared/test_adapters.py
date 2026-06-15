@@ -140,6 +140,7 @@ def test_load_power_stream() -> None:
 def main() -> None:
     print("=" * 60)
     print("ADAPTER GATE TEST")
+    print("Confirms your CNC data loads correctly before running projects.")
     print("=" * 60)
     print()
 
