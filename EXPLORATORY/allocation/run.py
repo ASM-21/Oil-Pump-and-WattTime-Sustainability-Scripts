@@ -335,58 +335,79 @@ def write_findings(r: dict) -> None:
         f"lid {MASS_REMOVED_G.get('lid')} g)."
     )
 
-    findings_text = f"""# allocation: findings
+    # Build markdown tables manually (avoids requiring tabulate)
+    pm_cols = ["part", "mean_energy_wh", "std_energy_wh", "n_runs"]
+    pm_lines = ["| " + " | ".join(pm_cols) + " |",
+                "|" + "|".join(["---"] * len(pm_cols)) + "|"]
+    for _, row in pm[pm_cols].iterrows():
+        pm_lines.append(
+            f"| {row['part']} | {row['mean_energy_wh']:.3f} | "
+            f"{row['std_energy_wh']:.3f} | {int(row['n_runs'])} |"
+        )
+    pm_table = "\n".join(pm_lines)
 
-**Status:** explored
-**Date:** {pd.Timestamp.today().date()}
+    err_cols = ["part", "measured_wh", "time_error_pct"]
+    if r["mass_available"]:
+        err_cols.append("mass_error_pct")
+    err_lines = ["| " + " | ".join(err_cols) + " |",
+                 "|" + "|".join(["---"] * len(err_cols)) + "|"]
+    for _, row in rd[err_cols].iterrows():
+        cells = [str(row["part"]), f"{row['measured_wh']:.3f}", f"{row['time_error_pct']:.1f}%"]
+        if r["mass_available"]:
+            cells.append(f"{row['mass_error_pct']:.1f}%")
+        err_lines.append("| " + " | ".join(cells) + " |")
+    err_table = "\n".join(err_lines)
 
-## Headline
-Allocation rules assign energy to body vs lid with measurable systematic error
-because the two parts differ in energy-per-unit-mass (lid is lighter but
-energy-intensive). Time-based allocation error (body): {rd.loc[rd['part']=='body','time_error_pct'].values[0] if 'body' in rd['part'].values else 'N/A':.1f}%.
-Homing (non-productive repositioning) accounts for {r['homing_share']*100:.1f}% of
-total CNC energy; each allocation rule assigns it differently.
+    homing_share = r["homing_share"]
+    idle_share = r["idle_share"]
 
-## Numbers
+    # Headline body error (safe access)
+    body_err_str = "N/A"
+    if "body" in rd["part"].values:
+        body_err_val = rd.loc[rd["part"] == "body", "time_error_pct"].values[0]
+        body_err_str = f"{body_err_val:.1f}%"
 
-### Measured energy per part (mean across runs)
-{pm.to_markdown(index=False)}
-
-### Allocation rule errors
-{rd[['part','measured_wh','time_error_pct'] + (['mass_error_pct'] if r['mass_available'] else [])].to_markdown(index=False)}
-
-{lid_ratio_line}
-- Homing share of total CNC energy: {r['homing_share']*100:.1f}% (expected ~11.7%)
-- Idle share: {r['idle_share']*100:.1f}%
-
-## Verification
-
-{log.to_markdown()}
-
-## Caveats
-- {mass_note}
-- Economic allocation collapses to mass allocation for this product (same material,
-  same cost per kg for body and lid). This is noted explicitly in the findings;
-  a different-material product would show a different result.
-- Only two parts (body, lid). The mix sweep generalizes the conclusion qualitatively
-  but cannot validate across a broader product range.
-- Specific energy (Wh per gram removed) is not computed here because mass_removed
-  values are not verified. When verified, compute kWh/kg for body and lid separately
-  to demonstrate the aggregation-masking argument (target: ~0.36 vs ~0.78 kWh/kg).
-
-## Feeds the journal paper?
-Yes -- Tier A, second priority. Supplies:
-- Allocation rule error table (new Results section or Discussion exhibit)
-- Mix sweep figure showing worst-case error vs production scenario
-- Homing share number (targeted by paper as ~11.7%)
-- Framing: "most allocation debate is theoretical; we have measured ground truth"
-
-## How to extend
-- Verify mass_removed values; compute Wh/kg_removed per part for the within-product
-  specific energy exhibit (Tier C1 in SCOPE_tier_A_B_C.md).
-- Add economic rule with a real cost proxy once BOM costs are confirmed.
-- Extend to a multi-part sweep if more parts are measured later.
-"""
+    findings_text = (
+        "# allocation: findings\n\n"
+        "**Status:** explored\n"
+        f"**Date:** {pd.Timestamp.today().date()}\n\n"
+        "## Headline\n"
+        "Allocation rules assign energy to body vs lid with measurable systematic error\n"
+        "because the two parts differ in energy-per-unit-mass (lid is lighter but\n"
+        f"energy-intensive). Time-based allocation error (body): {body_err_str}.\n"
+        f"Homing (non-productive repositioning) accounts for {homing_share*100:.1f}% of\n"
+        "total CNC energy; each allocation rule assigns it differently.\n\n"
+        "## Numbers\n\n"
+        "### Measured energy per part (mean across runs)\n"
+        f"{pm_table}\n\n"
+        "### Allocation rule errors\n"
+        f"{err_table}\n\n"
+        f"{lid_ratio_line}"
+        f"- Homing share of total CNC energy: {homing_share*100:.1f}% (expected ~11.7%)\n"
+        f"- Idle share: {idle_share*100:.1f}%\n\n"
+        "## Verification\n\n"
+        f"{log.to_markdown()}\n"
+        "## Caveats\n"
+        f"- {mass_note}\n"
+        "- Economic allocation collapses to mass allocation for this product (same material,\n"
+        "  same cost per kg for body and lid). A different-material product would differ.\n"
+        "- Only two parts (body, lid). The mix sweep generalizes qualitatively but cannot\n"
+        "  validate across a broader product range.\n"
+        "- Specific energy (Wh per gram removed) is not computed because mass_removed\n"
+        "  values are not yet verified. When confirmed, compute kWh/kg per part to\n"
+        "  demonstrate the aggregation-masking argument (target: ~0.36 vs ~0.78 kWh/kg).\n\n"
+        "## Feeds the journal paper?\n"
+        "Yes -- Tier A, second priority. Supplies:\n"
+        "- Allocation rule error table (new Results section or Discussion exhibit)\n"
+        "- Mix sweep figure showing worst-case error vs production scenario\n"
+        "- Homing share number (paper quotes ~11.7%)\n"
+        "- Framing: most allocation debate is theoretical; here we have measured ground truth\n\n"
+        "## How to extend\n"
+        "- Verify mass_removed values; compute Wh/kg_removed per part for the within-product\n"
+        "  specific energy exhibit (Tier C1 in SCOPE_tier_A_B_C.md).\n"
+        "- Add economic rule with a real cost proxy once BOM costs are confirmed.\n"
+        "- Extend to a multi-part sweep if more parts are measured later.\n"
+    )
     (Path(__file__).parent / "FINDINGS.md").write_text(findings_text)
     print(f"FINDINGS.md written to {Path(__file__).parent / 'FINDINGS.md'}")
 

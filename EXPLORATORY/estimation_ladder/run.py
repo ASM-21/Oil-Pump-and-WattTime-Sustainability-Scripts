@@ -180,6 +180,31 @@ def compute(df: pd.DataFrame) -> dict:
         op_stats[label] = np.ceil((1.96 * op_stats["cv_pct"] / 100.0 / r) ** 2).astype(int)
 
     result["op_stats"] = op_stats
+
+    # ------------------------------------------------------------------
+    # Normality check (Shapiro-Wilk) -- verifies the "40 of 45" quoted number
+    # ------------------------------------------------------------------
+    from scipy import stats as scipy_stats  # noqa: PLC0415
+    norm_rows = []
+    for (part, op_id), grp in df.groupby(["part", "operation_id"]):
+        n = len(grp)
+        if n < 4:  # Shapiro-Wilk needs at least 4 samples
+            continue
+        stat, p = scipy_stats.shapiro(grp["energy_wh"].values)
+        norm_rows.append({"part": part, "operation_id": op_id,
+                          "n_runs": n, "sw_stat": round(stat, 4),
+                          "p_value": round(p, 4), "near_normal": p > 0.05})
+    norm_df = pd.DataFrame(norm_rows)
+    n_normal = int(norm_df["near_normal"].sum()) if not norm_df.empty else 0
+    n_tested = len(norm_df)
+    log.check_against_expected(
+        "operations near-normal (SW p>0.05)",
+        float(n_normal), 40.0, rel_tol=0.15,
+        note="quoted '40 of 45' in paper; computed here on (part, operation_id) groups"
+    )
+    result["norm_df"] = norm_df
+    result["n_normal"] = n_normal
+    result["n_tested"] = n_tested
     result["df"] = df
     return result
 
@@ -207,6 +232,8 @@ def smoke_test(r: dict) -> None:
         f"FDM utilization factor {r['u_fdm']:.3f} is outside the expected range 0.70-1.10. "
         "Check FDM_RATED_POWER_W and FDM_MEASURED_POWER_W."
     )
+    require(r["n_tested"] > 0,
+            "Shapiro-Wilk test produced no results -- need at least 4 runs per operation")
     require(not log.any_disagreements(),
             "a cross-check DISAGREED -- investigate before reporting results")
 
@@ -264,6 +291,8 @@ def write_findings(r: dict) -> None:
     # Save tables
     pr.to_csv(OUT / "program_run_errors.csv", index=False)
     op.to_csv(OUT / "operation_cv_replication.csv", index=False)
+    if "norm_df" in r and not r["norm_df"].empty:
+        r["norm_df"].to_csv(OUT / "normality_shapiro_wilk.csv", index=False)
 
     # Summary by part and level
     summary_rows = []
@@ -340,6 +369,10 @@ def write_findings(r: dict) -> None:
         "- u_cnc and u_fdm for the utilization factor paragraph (Discussion)\n"
         "- Replication table n=(1.96*CV/r)^2 per operation category (Results 4.2)\n"
         f"- Regression slope (L1 basis) = {avg_w:.0f} W, verified two ways\n\n"
+        "### Normality (Shapiro-Wilk, p > 0.05 = near-normal)\n"
+        f"- Operations tested (>= 4 runs): {r['n_tested']}\n"
+        f"- Near-normal: {r['n_normal']} of {r['n_tested']} (paper quotes 40 of 45)\n"
+        "- Full per-operation results: outputs/normality_shapiro_wilk.csv\n\n"
         "## How to extend\n"
         "- Wire FDM data (AM_DATA_DIR) for a proper CNC vs FDM comparison figure.\n"
         "- Replace spindle rating with total connected load if the electrical plate is photographed.\n"
