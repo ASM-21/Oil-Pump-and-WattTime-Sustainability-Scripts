@@ -45,3 +45,6 @@ data/processed/
 Thumbs.db
 .vscode/
 .idea/
+
+# EXPLORATORY local path config (machine-specific, not for version control)
+EXPLORATORY/.data_paths.txt
