@@ -79,33 +79,76 @@ class EnergyAnalyzer:
             'NONE': 'NONE'
         }
     
-    def calculate_energy(self, times, powers, max_gap_sec=3.0):
+    @staticmethod
+    def _parse_time(series):
+        """Parse the Time column regardless of which format the logger used.
+
+        Two formats appear in the data:
+          - Elapsed: 'MM:SS.s' or 'HH:MM:SS.s' (MM can exceed 23, so
+            pd.to_datetime rejects it). Parsed to Timedelta.
+          - Wall-clock: '2025-07-10 11:22:33' (standard datetime). Parsed
+            with pd.to_datetime and returned as-is.
+
+        All downstream code only uses .diff() and subtraction, which work
+        identically on both Timedelta and Timestamp series.
+        """
+        non_null = series.dropna()
+        if non_null.empty:
+            return series
+
+        first = str(non_null.iloc[0]).strip()
+        # Detect wall-clock datetimes by YYYY-MM-DD prefix
+        if len(first) >= 10 and first[4] == '-' and first[7] == '-':
+            return pd.to_datetime(series)
+
+        # Elapsed time: MM:SS.s or HH:MM:SS.s
+        def _elapsed(s):
+            parts = str(s).strip().split(':')
+            try:
+                if len(parts) == 2:
+                    return pd.Timedelta(minutes=int(parts[0]), seconds=float(parts[1]))
+                if len(parts) == 3:
+                    return pd.Timedelta(hours=int(parts[0]), minutes=int(parts[1]),
+                                        seconds=float(parts[2]))
+            except (ValueError, TypeError):
+                pass
+            return pd.NaT
+        return series.map(_elapsed)
+
+    def calculate_from_register(self, times, register_kwh, max_gap_sec=3.0):
+        """Energy from a cumulative kWh register.
+
+        Register-based calculation is exact: energy = end - start, with no
+        integration error. Gaps in readings are fine — the register captures
+        energy consumed during them. Duration is the full elapsed span.
+        n_gaps is reported for data-quality info only.
+        """
         if len(times) < 2:
             return 0.0, 0.0, 0, 0
-        
-        total_energy = 0.0
-        total_duration = 0.0
-        n_segments = 0
-        n_gaps = 0
-        in_segment = False
-        
-        for i in range(len(times) - 1):
-            dt = times[i + 1] - times[i]
-            
-            if dt <= max_gap_sec:
-                dt_hrs = dt / 3600.0
-                avg_power = (powers[i] + powers[i + 1]) / 2.0
-                total_energy += avg_power * dt_hrs
-                total_duration += dt
-                if not in_segment:
-                    n_segments += 1
-                    in_segment = True
-            else:
-                n_gaps += 1
-                in_segment = False
-        
-        return total_energy, total_duration, n_segments, n_gaps
-    
+
+        energy_wh = (register_kwh[-1] - register_kwh[0]) * 1000.0
+        if energy_wh < 0:
+            energy_wh = 0.0  # guard against register rollover within a segment
+
+        duration_s = times[-1] - times[0]
+        diffs = np.diff(times)
+        n_gaps = int((diffs > max_gap_sec).sum())
+
+        return energy_wh, duration_s, 1, n_gaps
+
+    def calculate_from_active_power(self, times, power_w):
+        """Energy from active power integration using trapezoid rule.
+
+        Negative values clipped to zero (meter noise / reactive power artifact).
+        Returns (energy_wh, duration_s). Returns (0.0, 0.0) for fewer than 2 samples.
+        """
+        if len(times) < 2:
+            return 0.0, 0.0
+        power_clipped = np.clip(power_w, 0.0, None)
+        duration_s = float(times[-1] - times[0])
+        energy_wh = float(np.trapz(power_clipped, times) / 3600.0)
+        return energy_wh, duration_s
+
     def parse_filename(self, filename):
         match = re.search(r'Al6061_(lid|body)(\d+)_p(\d+)', filename, re.IGNORECASE)
         if match:
@@ -134,29 +177,28 @@ class EnergyAnalyzer:
     
     def check_data_quality(self, df, filename, parsed_info):
         issues = []
-        
-        power_data = df[df['Dataname'] == 'active power']['Value'].astype(float)
-        
-        if len(power_data) > 10:
-            mean_p = power_data.mean()
-            std_p = power_data.std()
-            outliers = ((power_data > mean_p + 4*std_p) | (power_data < 0)).sum()
-            if outliers > 0:
-                issues.append(f"Power outliers: {outliers}")
-        
-        times = pd.to_datetime(df[df['Dataname'] == 'active power']['Time'])
-        if len(times) > 1:
+
+        reg_rows = df[df['Dataname'] == 'forward kWh']
+        reg_vals = reg_rows['Value'].astype(float)
+
+        if len(reg_vals) > 1:
+            # Register must be non-decreasing; negative deltas = bad data
+            neg_deltas = (reg_vals.diff().dropna() < 0).sum()
+            if neg_deltas > 0:
+                issues.append(f"Register decreased {neg_deltas}x (rollover or bad data)")
+
+            times = self._parse_time(reg_rows['Time'])
             diffs = times.diff().dt.total_seconds().dropna()
             large_gaps = (diffs > 5).sum()
             if large_gaps > 0:
                 issues.append(f"Large gaps: {large_gaps}")
-        
+
         self.data_quality.append({
             'File': filename,
             'Part_Type': parsed_info['part_type'],
             'Part_Num': parsed_info['part_num'],
             'Program_Num': parsed_info['program_num'],
-            'Data_Points': len(power_data),
+            'Data_Points': len(reg_vals),
             'Issues': '; '.join(issues) if issues else 'OK'
         })
     
@@ -170,25 +212,41 @@ class EnergyAnalyzer:
             
             process_data = df[df['Dataname'] == 'processKindId'].copy()
             part_data = df[df['Dataname'] == 'partKindId'].copy()
-            power_data = df[df['Dataname'] == 'active power'].copy()
-            
-            if process_data.empty or part_data.empty or power_data.empty:
+            energy_data = df[df['Dataname'] == 'forward kWh'].copy()
+            active_data = df[df['Dataname'] == 'active power'].copy()
+
+            if process_data.empty or part_data.empty or energy_data.empty:
                 return
-            
-            for d in [process_data, part_data, power_data]:
-                d['Time'] = pd.to_datetime(d['Time'])
-            
+
+            for d in [process_data, part_data, energy_data]:
+                d['Time'] = self._parse_time(d['Time'])
+
             merged = process_data[['Time', 'Value']].merge(
                 part_data[['Time', 'Value']], on='Time', suffixes=('_proc', '_part')
             ).merge(
-                power_data[['Time', 'Value']], on='Time'
+                energy_data[['Time', 'Value']], on='Time'
             )
-            merged.columns = ['Time', 'ProcessUUID', 'PartKindId', 'Power']
-            
-            merged['Power'] = pd.to_numeric(merged['Power'], errors='coerce').clip(lower=0)
+            merged.columns = ['Time', 'ProcessUUID', 'PartKindId', 'Register_kWh']
+
+            merged['Register_kWh'] = pd.to_numeric(merged['Register_kWh'], errors='coerce')
             merged = merged.sort_values('Time').reset_index(drop=True)
             merged['Time_Sec'] = (merged['Time'] - merged['Time'].iloc[0]).dt.total_seconds()
-            
+
+            # Prepare active power stream aligned to the same time anchor
+            time_anchor = merged['Time'].iloc[0]
+            has_active = not active_data.empty
+            if has_active:
+                active_data = active_data.copy()
+                active_data['Time'] = self._parse_time(active_data['Time'])
+                active_data['Value'] = pd.to_numeric(active_data['Value'], errors='coerce')
+                active_data = active_data.dropna(subset=['Time', 'Value']).sort_values('Time')
+                active_data['Time_Sec'] = (active_data['Time'] - time_anchor).dt.total_seconds()
+                ap_times_all = active_data['Time_Sec'].values
+                ap_power_all = active_data['Value'].values
+            else:
+                ap_times_all = np.array([])
+                ap_power_all = np.array([])
+
             merged['Operation'] = merged['ProcessUUID'].str.strip().str.upper().map(
                 lambda x: self.uuid_to_operation.get(x, f'UNKNOWN_{x[:8]}' if pd.notna(x) and len(str(x)) >= 8 else 'UNKNOWN')
             )
@@ -209,42 +267,64 @@ class EnergyAnalyzer:
                 prog_data = merged[merged['Program'] == program].copy()
                 
                 prog_times = prog_data['Time_Sec'].values
-                prog_powers = prog_data['Power'].values
-                prog_energy, prog_duration, _, _ = self.calculate_energy(prog_times, prog_powers)
-                
+                prog_register = prog_data['Register_kWh'].values
+                prog_energy, prog_duration, _, _ = self.calculate_from_register(prog_times, prog_register)
+
+                # Active power total for the full program span
+                if has_active and len(prog_times) >= 2:
+                    ap_prog_mask = (ap_times_all >= prog_times[0]) & (ap_times_all <= prog_times[-1])
+                    prog_energy_active, _ = self.calculate_from_active_power(
+                        ap_times_all[ap_prog_mask], ap_power_all[ap_prog_mask])
+                else:
+                    prog_energy_active = float('nan')
+
                 op_energy_sum = 0.0
+                op_energy_sum_active = 0.0
                 none_energy = 0.0
+                none_energy_active = 0.0
                 
                 for operation in prog_data['Operation'].unique():
                     op_data = prog_data[prog_data['Operation'] == operation].sort_values('Time_Sec')
                     op_times = op_data['Time_Sec'].values
-                    op_powers = op_data['Power'].values
-                    
-                    energy, duration, n_seg, n_gaps = self.calculate_energy(op_times, op_powers)
-                    
+                    op_register = op_data['Register_kWh'].values
+
+                    energy, duration, n_seg, n_gaps = self.calculate_from_register(op_times, op_register)
+
+                    # Active power for this operation's time window
+                    if has_active and len(op_times) >= 2:
+                        ap_op_mask = (ap_times_all >= op_times[0]) & (ap_times_all <= op_times[-1])
+                        energy_active, _ = self.calculate_from_active_power(
+                            ap_times_all[ap_op_mask], ap_power_all[ap_op_mask])
+                    else:
+                        energy_active = 0.0
+
                     if operation == 'NONE':
                         none_energy = energy
+                        none_energy_active = energy_active
                         self.results.append({
                             'Part_Type': parsed['part_type'],
                             'Part_Num': parsed['part_num'],
                             'Program': program,
                             'Operation': 'NONE_IDLE',
                             'Energy_Wh': round(energy, 3),
+                            'Energy_Wh_Active': round(energy_active, 3),
                             'Duration_Sec': round(duration, 1),
                             'Avg_Power_W': round(energy / (duration/3600), 1) if duration > 0 else 0,
                             'Data_Points': len(op_times),
                             'Segments': n_seg,
                         })
                         continue
-                    
+
                     op_energy_sum += energy
-                    
+                    op_energy_sum_active += energy_active
+
                     self.results.append({
                         'Part_Type': parsed['part_type'],
                         'Part_Num': parsed['part_num'],
                         'Program': program,
                         'Operation': operation,
                         'Energy_Wh': round(energy, 3),
+                        'Energy_Wh_Active': round(energy_active, 3),
                         'Duration_Sec': round(duration, 1),
                         'Avg_Power_W': round(energy / (duration/3600), 1) if duration > 0 else 0,
                         'Data_Points': len(op_times),
@@ -252,7 +332,13 @@ class EnergyAnalyzer:
                     })
                 
                 transition_energy = prog_energy - op_energy_sum - none_energy
-                
+
+                if not np.isnan(prog_energy_active):
+                    transition_energy_active = max(
+                        prog_energy_active - op_energy_sum_active - none_energy_active, 0.0)
+                else:
+                    transition_energy_active = 0.0
+
                 if transition_energy > 0.01:
                     self.results.append({
                         'Part_Type': parsed['part_type'],
@@ -260,6 +346,7 @@ class EnergyAnalyzer:
                         'Program': program,
                         'Operation': 'TRANSITION_OVERHEAD',
                         'Energy_Wh': round(transition_energy, 3),
+                        'Energy_Wh_Active': round(transition_energy_active, 3),
                         'Duration_Sec': 0,
                         'Avg_Power_W': 0,
                         'Data_Points': 0,
@@ -412,6 +499,8 @@ def create_feature_library(df, include_overhead=False):
         Energy_Min=('Energy_Wh', 'min'),
         Energy_Max=('Energy_Wh', 'max'),
         N_Runs=('Energy_Wh', 'count'),
+        Energy_Wh_Active=('Energy_Wh_Active', 'mean'),
+        Energy_Wh_Active_Std=('Energy_Wh_Active', 'std'),
         Duration_Sec=('Duration_Sec', 'mean'),
         Duration_Std=('Duration_Sec', 'std'),
         Avg_Power_W=('Avg_Power_W', 'mean'),

@@ -1,0 +1,2281 @@
+Dataname,Value,Time
+featureId,UNAVAILABLE,51:01.0
+partKindId,NONE,51:01.0
+processKindId,NONE,51:01.0
+A_Axis_Load,106,51:01.0
+A_Position,-89.9995632,51:01.0
+C_Axis_Load,21,51:01.0
+C_Position,-59.9995,51:01.0
+Machine_Time,2647050.354,51:01.0
+Spindle_Time,709602.711,51:01.0
+Feed_Override,100,51:01.0
+Feed_Rate,0,51:01.0
+Program_Runtime_Seconds,40,51:01.0
+Rapid_Override,100,51:01.0
+Rapid_Speed,0,51:01.0
+S_Axis_Load,0,51:01.0
+Spindle_Override,100,51:01.0
+Spindle_Speed,0,51:01.0
+X_Axis_Load,4,51:01.0
+X_Position,379.846806,51:01.0
+Y_Axis_Load,6,51:01.0
+Y_Position,496.9534,51:01.0
+Z_Axis_Load,40,51:01.0
+Z_Position,-4.302603378,51:01.0
+COR_Status,1,51:01.0
+Controller_Mode,AUTO,51:01.0
+EStop_State,ARMED,51:01.0
+Machine_Mode,4,51:01.0
+Block_Number,66,51:01.0
+Current_Tool,72,51:01.0
+Part_Count,9,51:01.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:01.0
+voltage,133.5333333,51:01.0
+current,3.676666667,51:01.0
+active power,405.3333333,51:01.0
+forward kWh,27.20133333,51:01.0
+reverse kWh,0.725666667,51:01.0
+frequency,60.02,51:01.0
+power factor,0.783333333,51:01.0
+featureId,UNAVAILABLE,51:02.0
+partKindId,NONE,51:02.0
+processKindId,NONE,51:02.0
+A_Axis_Load,106,51:02.0
+A_Position,-89.9995632,51:02.0
+C_Axis_Load,21,51:02.0
+C_Position,-59.9995,51:02.0
+Machine_Time,2647050.354,51:02.0
+Spindle_Time,709602.711,51:02.0
+Feed_Override,100,51:02.0
+Feed_Rate,0,51:02.0
+Program_Runtime_Seconds,40,51:02.0
+Rapid_Override,100,51:02.0
+Rapid_Speed,0,51:02.0
+S_Axis_Load,0,51:02.0
+Spindle_Override,100,51:02.0
+Spindle_Speed,0,51:02.0
+X_Axis_Load,4,51:02.0
+X_Position,379.8467945,51:02.0
+Y_Axis_Load,6,51:02.0
+Y_Position,496.9534,51:02.0
+Z_Axis_Load,40,51:02.0
+Z_Position,-4.302603378,51:02.0
+COR_Status,1,51:02.0
+Controller_Mode,MANUAL,51:02.0
+EStop_State,ARMED,51:02.0
+Machine_Mode,2,51:02.0
+Block_Number,66,51:02.0
+Current_Tool,72,51:02.0
+Part_Count,9,51:02.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:02.0
+voltage,133.5666667,51:02.0
+current,3.666666667,51:02.0
+active power,404.3333333,51:02.0
+forward kWh,27.20133333,51:02.0
+reverse kWh,0.725666667,51:02.0
+frequency,60.02,51:02.0
+power factor,0.78,51:02.0
+featureId,UNAVAILABLE,51:03.0
+partKindId,NONE,51:03.0
+processKindId,NONE,51:03.0
+A_Axis_Load,106,51:03.0
+A_Position,-89.9995632,51:03.0
+C_Axis_Load,21,51:03.0
+C_Position,-59.9995,51:03.0
+Machine_Time,2647050.354,51:03.0
+Spindle_Time,709602.711,51:03.0
+Feed_Override,100,51:03.0
+Feed_Rate,0,51:03.0
+Program_Runtime_Seconds,40,51:03.0
+Rapid_Override,100,51:03.0
+Rapid_Speed,0,51:03.0
+S_Axis_Load,0,51:03.0
+Spindle_Override,100,51:03.0
+Spindle_Speed,0,51:03.0
+X_Axis_Load,4,51:03.0
+X_Position,379.8467945,51:03.0
+Y_Axis_Load,6,51:03.0
+Y_Position,496.9534,51:03.0
+Z_Axis_Load,40,51:03.0
+Z_Position,-4.302603378,51:03.0
+COR_Status,1,51:03.0
+Controller_Mode,MANUAL,51:03.0
+EStop_State,ARMED,51:03.0
+Machine_Mode,2,51:03.0
+Block_Number,66,51:03.0
+Current_Tool,72,51:03.0
+Part_Count,9,51:03.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:03.0
+voltage,133.6,51:03.0
+current,3.68,51:03.0
+active power,406.3333333,51:03.0
+forward kWh,27.20166667,51:03.0
+reverse kWh,0.725666667,51:03.0
+frequency,60.02,51:03.0
+power factor,0.786666667,51:03.0
+featureId,UNAVAILABLE,51:04.0
+partKindId,NONE,51:04.0
+processKindId,NONE,51:04.0
+A_Axis_Load,106,51:04.0
+A_Position,-89.9995632,51:04.0
+C_Axis_Load,21,51:04.0
+C_Position,-59.9995,51:04.0
+Machine_Time,2647050.354,51:04.0
+Spindle_Time,709602.711,51:04.0
+Feed_Override,100,51:04.0
+Feed_Rate,0,51:04.0
+Program_Runtime_Seconds,40,51:04.0
+Rapid_Override,100,51:04.0
+Rapid_Speed,0,51:04.0
+S_Axis_Load,0,51:04.0
+Spindle_Override,100,51:04.0
+Spindle_Speed,0,51:04.0
+X_Axis_Load,4,51:04.0
+X_Position,379.8467945,51:04.0
+Y_Axis_Load,6,51:04.0
+Y_Position,496.9534,51:04.0
+Z_Axis_Load,40,51:04.0
+Z_Position,-4.302603378,51:04.0
+COR_Status,1,51:04.0
+Controller_Mode,MANUAL,51:04.0
+EStop_State,ARMED,51:04.0
+Machine_Mode,2,51:04.0
+Block_Number,66,51:04.0
+Current_Tool,72,51:04.0
+Part_Count,9,51:04.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:04.0
+voltage,133.5333333,51:04.0
+current,3.656666667,51:04.0
+active power,402.3333333,51:04.0
+forward kWh,27.20166667,51:04.0
+reverse kWh,0.725666667,51:04.0
+frequency,60.02,51:04.0
+power factor,0.783333333,51:04.0
+featureId,UNAVAILABLE,51:05.0
+partKindId,NONE,51:05.0
+processKindId,NONE,51:05.0
+A_Axis_Load,106,51:05.0
+A_Position,-89.9995632,51:05.0
+C_Axis_Load,21,51:05.0
+C_Position,-60.0005,51:05.0
+Machine_Time,2647050.354,51:05.0
+Spindle_Time,709602.711,51:05.0
+Feed_Override,100,51:05.0
+Feed_Rate,0,51:05.0
+Program_Runtime_Seconds,40,51:05.0
+Rapid_Override,100,51:05.0
+Rapid_Speed,0,51:05.0
+S_Axis_Load,0,51:05.0
+Spindle_Override,100,51:05.0
+Spindle_Speed,0,51:05.0
+X_Axis_Load,4,51:05.0
+X_Position,379.8467945,51:05.0
+Y_Axis_Load,6,51:05.0
+Y_Position,496.9534,51:05.0
+Z_Axis_Load,40,51:05.0
+Z_Position,-4.302603378,51:05.0
+COR_Status,1,51:05.0
+Controller_Mode,MANUAL,51:05.0
+EStop_State,ARMED,51:05.0
+Machine_Mode,2,51:05.0
+Block_Number,66,51:05.0
+Current_Tool,72,51:05.0
+Part_Count,9,51:05.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:05.0
+voltage,133.5333333,51:05.0
+current,3.683333333,51:05.0
+active power,406.3333333,51:05.0
+forward kWh,27.20166667,51:05.0
+reverse kWh,0.725666667,51:05.0
+frequency,60.02,51:05.0
+power factor,0.79,51:05.0
+featureId,UNAVAILABLE,51:06.0
+partKindId,NONE,51:06.0
+processKindId,NONE,51:06.0
+A_Axis_Load,106,51:06.0
+A_Position,-89.9995632,51:06.0
+C_Axis_Load,75,51:06.0
+C_Position,-69.431,51:06.0
+Machine_Time,2647410.622,51:06.0
+Spindle_Time,709602.711,51:06.0
+Feed_Override,100,51:06.0
+Feed_Rate,395.55,51:06.0
+Program_Runtime_Seconds,40,51:06.0
+Rapid_Override,100,51:06.0
+Rapid_Speed,0,51:06.0
+S_Axis_Load,0,51:06.0
+Spindle_Override,100,51:06.0
+Spindle_Speed,0,51:06.0
+X_Axis_Load,4,51:06.0
+X_Position,379.846806,51:06.0
+Y_Axis_Load,6,51:06.0
+Y_Position,496.9534,51:06.0
+Z_Axis_Load,40,51:06.0
+Z_Position,-4.302591935,51:06.0
+COR_Status,1,51:06.0
+Controller_Mode,MANUAL,51:06.0
+EStop_State,ARMED,51:06.0
+Machine_Mode,2,51:06.0
+Block_Number,66,51:06.0
+Current_Tool,72,51:06.0
+Part_Count,9,51:06.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:06.0
+voltage,133.5333333,51:06.0
+current,3.67,51:06.0
+active power,405,51:06.0
+forward kWh,27.20166667,51:06.0
+reverse kWh,0.725666667,51:06.0
+frequency,60.02,51:06.0
+power factor,0.786666667,51:06.0
+featureId,UNAVAILABLE,51:07.0
+partKindId,NONE,51:07.0
+processKindId,NONE,51:07.0
+A_Axis_Load,106,51:07.0
+A_Position,-89.9995632,51:07.0
+C_Axis_Load,67,51:07.0
+C_Position,-118.3905,51:07.0
+Machine_Time,2647410.622,51:07.0
+Spindle_Time,709602.711,51:07.0
+Feed_Override,100,51:07.0
+Feed_Rate,512.1667,51:07.0
+Program_Runtime_Seconds,40,51:07.0
+Rapid_Override,100,51:07.0
+Rapid_Speed,0,51:07.0
+S_Axis_Load,0,51:07.0
+Spindle_Override,100,51:07.0
+Spindle_Speed,0,51:07.0
+X_Axis_Load,4,51:07.0
+X_Position,379.846806,51:07.0
+Y_Axis_Load,6,51:07.0
+Y_Position,496.9534,51:07.0
+Z_Axis_Load,40,51:07.0
+Z_Position,-4.302603378,51:07.0
+COR_Status,1,51:07.0
+Controller_Mode,MANUAL,51:07.0
+EStop_State,ARMED,51:07.0
+Machine_Mode,2,51:07.0
+Block_Number,66,51:07.0
+Current_Tool,72,51:07.0
+Part_Count,9,51:07.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:07.0
+voltage,133.5,51:07.0
+current,4.216666667,51:07.0
+active power,463.6666667,51:07.0
+forward kWh,27.20166667,51:07.0
+reverse kWh,0.725666667,51:07.0
+frequency,60.02,51:07.0
+power factor,0.873333333,51:07.0
+featureId,UNAVAILABLE,51:08.0
+partKindId,NONE,51:08.0
+processKindId,NONE,51:08.0
+A_Axis_Load,106,51:08.0
+A_Position,-89.9995632,51:08.0
+C_Axis_Load,65,51:08.0
+C_Position,-132.009,51:08.0
+Machine_Time,2647410.622,51:08.0
+Spindle_Time,709602.711,51:08.0
+Feed_Override,100,51:08.0
+Feed_Rate,508.2667,51:08.0
+Program_Runtime_Seconds,40,51:08.0
+Rapid_Override,100,51:08.0
+Rapid_Speed,0,51:08.0
+S_Axis_Load,0,51:08.0
+Spindle_Override,100,51:08.0
+Spindle_Speed,0,51:08.0
+X_Axis_Load,4,51:08.0
+X_Position,379.8467945,51:08.0
+Y_Axis_Load,6,51:08.0
+Y_Position,496.9534,51:08.0
+Z_Axis_Load,40,51:08.0
+Z_Position,-4.302603378,51:08.0
+COR_Status,1,51:08.0
+Controller_Mode,MANUAL,51:08.0
+EStop_State,ARMED,51:08.0
+Machine_Mode,2,51:08.0
+Block_Number,66,51:08.0
+Current_Tool,72,51:08.0
+Part_Count,9,51:08.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:08.0
+voltage,133.5333333,51:08.0
+current,4.446666667,51:08.0
+active power,490.6666667,51:08.0
+forward kWh,27.202,51:08.0
+reverse kWh,0.725666667,51:08.0
+frequency,60.02,51:08.0
+power factor,0.796666667,51:08.0
+featureId,UNAVAILABLE,51:09.0
+partKindId,NONE,51:09.0
+processKindId,NONE,51:09.0
+A_Axis_Load,106,51:09.0
+A_Position,-89.9995632,51:09.0
+C_Axis_Load,67,51:09.0
+C_Position,-81.449,51:09.0
+Machine_Time,2647410.622,51:09.0
+Spindle_Time,709602.711,51:09.0
+Feed_Override,100,51:09.0
+Feed_Rate,515.5167,51:09.0
+Program_Runtime_Seconds,40,51:09.0
+Rapid_Override,100,51:09.0
+Rapid_Speed,0,51:09.0
+S_Axis_Load,0,51:09.0
+Spindle_Override,100,51:09.0
+Spindle_Speed,0,51:09.0
+X_Axis_Load,4,51:09.0
+X_Position,379.8467945,51:09.0
+Y_Axis_Load,6,51:09.0
+Y_Position,496.9534,51:09.0
+Z_Axis_Load,40,51:09.0
+Z_Position,-4.302591935,51:09.0
+COR_Status,1,51:09.0
+Controller_Mode,MANUAL,51:09.0
+EStop_State,ARMED,51:09.0
+Machine_Mode,2,51:09.0
+Block_Number,66,51:09.0
+Current_Tool,72,51:09.0
+Part_Count,9,51:09.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:09.0
+voltage,133.5333333,51:09.0
+current,4.333333333,51:09.0
+active power,477.3333333,51:09.0
+forward kWh,27.202,51:09.0
+reverse kWh,0.725666667,51:09.0
+frequency,60.02,51:09.0
+power factor,0.843333333,51:09.0
+featureId,UNAVAILABLE,51:10.0
+partKindId,NONE,51:10.0
+processKindId,NONE,51:10.0
+A_Axis_Load,106,51:10.0
+A_Position,-89.9995632,51:10.0
+C_Axis_Load,58,51:10.0
+C_Position,-21.9955,51:10.0
+Machine_Time,2647410.622,51:10.0
+Spindle_Time,709602.711,51:10.0
+Feed_Override,100,51:10.0
+Feed_Rate,522.55,51:10.0
+Program_Runtime_Seconds,40,51:10.0
+Rapid_Override,100,51:10.0
+Rapid_Speed,0,51:10.0
+S_Axis_Load,0,51:10.0
+Spindle_Override,100,51:10.0
+Spindle_Speed,0,51:10.0
+X_Axis_Load,4,51:10.0
+X_Position,379.8467945,51:10.0
+Y_Axis_Load,6,51:10.0
+Y_Position,496.9534,51:10.0
+Z_Axis_Load,40,51:10.0
+Z_Position,-4.302603378,51:10.0
+COR_Status,1,51:10.0
+Controller_Mode,MANUAL,51:10.0
+EStop_State,ARMED,51:10.0
+Machine_Mode,2,51:10.0
+Block_Number,66,51:10.0
+Current_Tool,72,51:10.0
+Part_Count,9,51:10.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:10.0
+voltage,133.5333333,51:10.0
+current,4.43,51:10.0
+active power,490,51:10.0
+forward kWh,27.202,51:10.0
+reverse kWh,0.725666667,51:10.0
+frequency,60.02,51:10.0
+power factor,0.806666667,51:10.0
+featureId,UNAVAILABLE,51:11.0
+partKindId,NONE,51:11.0
+processKindId,NONE,51:11.0
+A_Axis_Load,106,51:11.0
+A_Position,-89.9995632,51:11.0
+C_Axis_Load,13,51:11.0
+C_Position,-0.4395,51:11.0
+Machine_Time,2647410.622,51:11.0
+Spindle_Time,709602.711,51:11.0
+Feed_Override,100,51:11.0
+Feed_Rate,0,51:11.0
+Program_Runtime_Seconds,40,51:11.0
+Rapid_Override,100,51:11.0
+Rapid_Speed,0,51:11.0
+S_Axis_Load,0,51:11.0
+Spindle_Override,100,51:11.0
+Spindle_Speed,0,51:11.0
+X_Axis_Load,4,51:11.0
+X_Position,379.846806,51:11.0
+Y_Axis_Load,6,51:11.0
+Y_Position,496.9534,51:11.0
+Z_Axis_Load,40,51:11.0
+Z_Position,-4.302591935,51:11.0
+COR_Status,1,51:11.0
+Controller_Mode,MANUAL,51:11.0
+EStop_State,ARMED,51:11.0
+Machine_Mode,2,51:11.0
+Block_Number,66,51:11.0
+Current_Tool,72,51:11.0
+Part_Count,9,51:11.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:11.0
+voltage,133.5333333,51:11.0
+current,4.423333333,51:11.0
+active power,477.6666667,51:11.0
+forward kWh,27.202,51:11.0
+reverse kWh,0.725666667,51:11.0
+frequency,60.02,51:11.0
+power factor,0.78,51:11.0
+featureId,UNAVAILABLE,51:12.0
+partKindId,NONE,51:12.0
+processKindId,NONE,51:12.0
+A_Axis_Load,106,51:12.0
+A_Position,-89.9995632,51:12.0
+C_Axis_Load,54,51:12.0
+C_Position,38.218,51:12.0
+Machine_Time,2647410.622,51:12.0
+Spindle_Time,709602.711,51:12.0
+Feed_Override,100,51:12.0
+Feed_Rate,398.5333,51:12.0
+Program_Runtime_Seconds,40,51:12.0
+Rapid_Override,100,51:12.0
+Rapid_Speed,0,51:12.0
+S_Axis_Load,0,51:12.0
+Spindle_Override,100,51:12.0
+Spindle_Speed,0,51:12.0
+X_Axis_Load,4,51:12.0
+X_Position,379.8467945,51:12.0
+Y_Axis_Load,6,51:12.0
+Y_Position,496.9534,51:12.0
+Z_Axis_Load,40,51:12.0
+Z_Position,-4.302591935,51:12.0
+COR_Status,1,51:12.0
+Controller_Mode,MANUAL,51:12.0
+EStop_State,ARMED,51:12.0
+Machine_Mode,2,51:12.0
+Block_Number,66,51:12.0
+Current_Tool,72,51:12.0
+Part_Count,9,51:12.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:12.0
+voltage,133.5,51:12.0
+current,4.23,51:12.0
+active power,421.3333333,51:12.0
+forward kWh,27.20233333,51:12.0
+reverse kWh,0.725666667,51:12.0
+frequency,60.02,51:12.0
+power factor,0.703333333,51:12.0
+featureId,UNAVAILABLE,51:13.0
+partKindId,NONE,51:13.0
+processKindId,NONE,51:13.0
+A_Axis_Load,106,51:13.0
+A_Position,-89.9995632,51:13.0
+C_Axis_Load,49,51:13.0
+C_Position,85.0205,51:13.0
+Machine_Time,2647410.622,51:13.0
+Spindle_Time,709602.711,51:13.0
+Feed_Override,100,51:13.0
+Feed_Rate,376.8167,51:13.0
+Program_Runtime_Seconds,40,51:13.0
+Rapid_Override,100,51:13.0
+Rapid_Speed,0,51:13.0
+S_Axis_Load,0,51:13.0
+Spindle_Override,100,51:13.0
+Spindle_Speed,0,51:13.0
+X_Axis_Load,4,51:13.0
+X_Position,379.8467945,51:13.0
+Y_Axis_Load,6,51:13.0
+Y_Position,496.9534,51:13.0
+Z_Axis_Load,40,51:13.0
+Z_Position,-4.302591935,51:13.0
+COR_Status,1,51:13.0
+Controller_Mode,MANUAL,51:13.0
+EStop_State,ARMED,51:13.0
+Machine_Mode,2,51:13.0
+Block_Number,66,51:13.0
+Current_Tool,72,51:13.0
+Part_Count,9,51:13.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:13.0
+voltage,133.5333333,51:13.0
+current,4.143333333,51:13.0
+active power,456.6666667,51:13.0
+forward kWh,27.20233333,51:13.0
+reverse kWh,0.725666667,51:13.0
+frequency,60.02,51:13.0
+power factor,0.81,51:13.0
+featureId,UNAVAILABLE,51:14.0
+partKindId,NONE,51:14.0
+processKindId,NONE,51:14.0
+A_Axis_Load,106,51:14.0
+A_Position,-89.9995632,51:14.0
+C_Axis_Load,63,51:14.0
+C_Position,110.8055,51:14.0
+Machine_Time,2647410.622,51:14.0
+Spindle_Time,709602.711,51:14.0
+Feed_Override,100,51:14.0
+Feed_Rate,389.0833,51:14.0
+Program_Runtime_Seconds,40,51:14.0
+Rapid_Override,100,51:14.0
+Rapid_Speed,0,51:14.0
+S_Axis_Load,0,51:14.0
+Spindle_Override,100,51:14.0
+Spindle_Speed,0,51:14.0
+X_Axis_Load,4,51:14.0
+X_Position,379.8467945,51:14.0
+Y_Axis_Load,6,51:14.0
+Y_Position,496.9534,51:14.0
+Z_Axis_Load,40,51:14.0
+Z_Position,-4.302591935,51:14.0
+COR_Status,1,51:14.0
+Controller_Mode,MANUAL,51:14.0
+EStop_State,ARMED,51:14.0
+Machine_Mode,2,51:14.0
+Block_Number,66,51:14.0
+Current_Tool,72,51:14.0
+Part_Count,9,51:14.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:14.0
+voltage,133.5333333,51:14.0
+current,4.313333333,51:14.0
+active power,476,51:14.0
+forward kWh,27.20233333,51:14.0
+reverse kWh,0.725666667,51:14.0
+frequency,60.02,51:14.0
+power factor,0.78,51:14.0
+featureId,UNAVAILABLE,51:15.0
+partKindId,NONE,51:15.0
+processKindId,NONE,51:15.0
+A_Axis_Load,106,51:15.0
+A_Position,-89.9995632,51:15.0
+C_Axis_Load,44,51:15.0
+C_Position,121.6005,51:15.0
+Machine_Time,2647410.622,51:15.0
+Spindle_Time,709602.711,51:15.0
+Feed_Override,100,51:15.0
+Feed_Rate,0,51:15.0
+Program_Runtime_Seconds,40,51:15.0
+Rapid_Override,100,51:15.0
+Rapid_Speed,0,51:15.0
+S_Axis_Load,0,51:15.0
+Spindle_Override,100,51:15.0
+Spindle_Speed,0,51:15.0
+X_Axis_Load,4,51:15.0
+X_Position,379.8467945,51:15.0
+Y_Axis_Load,6,51:15.0
+Y_Position,496.9534,51:15.0
+Z_Axis_Load,40,51:15.0
+Z_Position,-4.302603378,51:15.0
+COR_Status,1,51:15.0
+Controller_Mode,MANUAL,51:15.0
+EStop_State,ARMED,51:15.0
+Machine_Mode,2,51:15.0
+Block_Number,66,51:15.0
+Current_Tool,72,51:15.0
+Part_Count,9,51:15.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:15.0
+voltage,133.5333333,51:15.0
+current,4.223333333,51:15.0
+active power,465,51:15.0
+forward kWh,27.203,51:15.0
+reverse kWh,0.725666667,51:15.0
+frequency,60.02,51:15.0
+power factor,0.836666667,51:15.0
+featureId,UNAVAILABLE,51:16.0
+partKindId,NONE,51:16.0
+processKindId,NONE,51:16.0
+A_Axis_Load,106,51:16.0
+A_Position,-89.9995632,51:16.0
+C_Axis_Load,16,51:16.0
+C_Position,120.9985,51:16.0
+Machine_Time,2647410.622,51:16.0
+Spindle_Time,709602.711,51:16.0
+Feed_Override,100,51:16.0
+Feed_Rate,0,51:16.0
+Program_Runtime_Seconds,40,51:16.0
+Rapid_Override,100,51:16.0
+Rapid_Speed,0,51:16.0
+S_Axis_Load,0,51:16.0
+Spindle_Override,100,51:16.0
+Spindle_Speed,0,51:16.0
+X_Axis_Load,4,51:16.0
+X_Position,379.8467945,51:16.0
+Y_Axis_Load,6,51:16.0
+Y_Position,496.9534,51:16.0
+Z_Axis_Load,40,51:16.0
+Z_Position,-4.302603378,51:16.0
+COR_Status,1,51:16.0
+Controller_Mode,MANUAL,51:16.0
+EStop_State,ARMED,51:16.0
+Machine_Mode,2,51:16.0
+Block_Number,66,51:16.0
+Current_Tool,72,51:16.0
+Part_Count,9,51:16.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:16.0
+voltage,133.5666667,51:16.0
+current,3.876666667,51:16.0
+active power,428.6666667,51:16.0
+forward kWh,27.203,51:16.0
+reverse kWh,0.725666667,51:16.0
+frequency,60.02,51:16.0
+power factor,0.783333333,51:16.0
+featureId,UNAVAILABLE,51:17.0
+partKindId,NONE,51:17.0
+processKindId,NONE,51:17.0
+A_Axis_Load,106,51:17.0
+A_Position,-89.9995632,51:17.0
+C_Axis_Load,20,51:17.0
+C_Position,120.3985,51:17.0
+Machine_Time,2647410.622,51:17.0
+Spindle_Time,709602.711,51:17.0
+Feed_Override,100,51:17.0
+Feed_Rate,0,51:17.0
+Program_Runtime_Seconds,40,51:17.0
+Rapid_Override,100,51:17.0
+Rapid_Speed,0,51:17.0
+S_Axis_Load,0,51:17.0
+Spindle_Override,100,51:17.0
+Spindle_Speed,0,51:17.0
+X_Axis_Load,4,51:17.0
+X_Position,379.8467945,51:17.0
+Y_Axis_Load,6,51:17.0
+Y_Position,496.9534,51:17.0
+Z_Axis_Load,40,51:17.0
+Z_Position,-4.302591935,51:17.0
+COR_Status,1,51:17.0
+Controller_Mode,MANUAL,51:17.0
+EStop_State,ARMED,51:17.0
+Machine_Mode,2,51:17.0
+Block_Number,66,51:17.0
+Current_Tool,72,51:17.0
+Part_Count,9,51:17.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:17.0
+voltage,133.5666667,51:17.0
+current,3.756666667,51:17.0
+active power,414.6666667,51:17.0
+forward kWh,27.203,51:17.0
+reverse kWh,0.725666667,51:17.0
+frequency,60.02,51:17.0
+power factor,0.786666667,51:17.0
+featureId,UNAVAILABLE,51:18.0
+partKindId,NONE,51:18.0
+processKindId,NONE,51:18.0
+A_Axis_Load,106,51:18.0
+A_Position,-89.9995632,51:18.0
+C_Axis_Load,32,51:18.0
+C_Position,120.198,51:18.0
+Machine_Time,2647410.622,51:18.0
+Spindle_Time,709602.711,51:18.0
+Feed_Override,100,51:18.0
+Feed_Rate,2.483333,51:18.0
+Program_Runtime_Seconds,40,51:18.0
+Rapid_Override,100,51:18.0
+Rapid_Speed,0,51:18.0
+S_Axis_Load,0,51:18.0
+Spindle_Override,100,51:18.0
+Spindle_Speed,0,51:18.0
+X_Axis_Load,4,51:18.0
+X_Position,379.846806,51:18.0
+Y_Axis_Load,6,51:18.0
+Y_Position,496.9534,51:18.0
+Z_Axis_Load,40,51:18.0
+Z_Position,-4.302603378,51:18.0
+COR_Status,1,51:18.0
+Controller_Mode,MANUAL,51:18.0
+EStop_State,ARMED,51:18.0
+Machine_Mode,2,51:18.0
+Block_Number,66,51:18.0
+Current_Tool,72,51:18.0
+Part_Count,9,51:18.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:18.0
+voltage,133.5666667,51:18.0
+current,3.73,51:18.0
+active power,411.6666667,51:18.0
+forward kWh,27.203,51:18.0
+reverse kWh,0.725666667,51:18.0
+frequency,60.02,51:18.0
+power factor,0.79,51:18.0
+featureId,UNAVAILABLE,51:19.0
+partKindId,NONE,51:19.0
+processKindId,NONE,51:19.0
+A_Axis_Load,106,51:19.0
+A_Position,-89.9995632,51:19.0
+C_Axis_Load,43,51:19.0
+C_Position,120.0985,51:19.0
+Machine_Time,2647410.622,51:19.0
+Spindle_Time,709602.711,51:19.0
+Feed_Override,100,51:19.0
+Feed_Rate,0,51:19.0
+Program_Runtime_Seconds,40,51:19.0
+Rapid_Override,100,51:19.0
+Rapid_Speed,0,51:19.0
+S_Axis_Load,0,51:19.0
+Spindle_Override,100,51:19.0
+Spindle_Speed,0,51:19.0
+X_Axis_Load,4,51:19.0
+X_Position,379.8467945,51:19.0
+Y_Axis_Load,6,51:19.0
+Y_Position,496.9534,51:19.0
+Z_Axis_Load,40,51:19.0
+Z_Position,-4.302603378,51:19.0
+COR_Status,1,51:19.0
+Controller_Mode,MANUAL,51:19.0
+EStop_State,ARMED,51:19.0
+Machine_Mode,2,51:19.0
+Block_Number,66,51:19.0
+Current_Tool,72,51:19.0
+Part_Count,9,51:19.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:19.0
+voltage,133.6,51:19.0
+current,3.753333333,51:19.0
+active power,414.3333333,51:19.0
+forward kWh,27.203,51:19.0
+reverse kWh,0.725666667,51:19.0
+frequency,60.02,51:19.0
+power factor,0.79,51:19.0
+featureId,UNAVAILABLE,51:20.0
+partKindId,NONE,51:20.0
+processKindId,NONE,51:20.0
+A_Axis_Load,106,51:20.0
+A_Position,-89.9995632,51:20.0
+C_Axis_Load,19,51:20.0
+C_Position,120.0005,51:20.0
+Machine_Time,2647410.622,51:20.0
+Spindle_Time,709602.711,51:20.0
+Feed_Override,100,51:20.0
+Feed_Rate,0,51:20.0
+Program_Runtime_Seconds,40,51:20.0
+Rapid_Override,100,51:20.0
+Rapid_Speed,0,51:20.0
+S_Axis_Load,0,51:20.0
+Spindle_Override,100,51:20.0
+Spindle_Speed,0,51:20.0
+X_Axis_Load,4,51:20.0
+X_Position,379.8467945,51:20.0
+Y_Axis_Load,6,51:20.0
+Y_Position,496.9534115,51:20.0
+Z_Axis_Load,40,51:20.0
+Z_Position,-4.302603378,51:20.0
+COR_Status,1,51:20.0
+Controller_Mode,MANUAL,51:20.0
+EStop_State,ARMED,51:20.0
+Machine_Mode,2,51:20.0
+Block_Number,66,51:20.0
+Current_Tool,72,51:20.0
+Part_Count,9,51:20.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:20.0
+voltage,133.5666667,51:20.0
+current,3.716666667,51:20.0
+active power,411.3333333,51:20.0
+forward kWh,27.203,51:20.0
+reverse kWh,0.725666667,51:20.0
+frequency,60.02,51:20.0
+power factor,0.79,51:20.0
+featureId,UNAVAILABLE,51:21.0
+partKindId,NONE,51:21.0
+processKindId,NONE,51:21.0
+A_Axis_Load,106,51:21.0
+A_Position,-89.9995632,51:21.0
+C_Axis_Load,27,51:21.0
+C_Position,120,51:21.0
+Machine_Time,2647410.622,51:21.0
+Spindle_Time,709602.711,51:21.0
+Feed_Override,100,51:21.0
+Feed_Rate,0,51:21.0
+Program_Runtime_Seconds,40,51:21.0
+Rapid_Override,100,51:21.0
+Rapid_Speed,0,51:21.0
+S_Axis_Load,0,51:21.0
+Spindle_Override,100,51:21.0
+Spindle_Speed,0,51:21.0
+X_Axis_Load,4,51:21.0
+X_Position,379.8467945,51:21.0
+Y_Axis_Load,6,51:21.0
+Y_Position,496.9534,51:21.0
+Z_Axis_Load,40,51:21.0
+Z_Position,-4.302591935,51:21.0
+COR_Status,1,51:21.0
+Controller_Mode,MANUAL,51:21.0
+EStop_State,ARMED,51:21.0
+Machine_Mode,2,51:21.0
+Block_Number,66,51:21.0
+Current_Tool,72,51:21.0
+Part_Count,9,51:21.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:21.0
+voltage,133.6,51:21.0
+current,3.743333333,51:21.0
+active power,408,51:21.0
+forward kWh,27.203,51:21.0
+reverse kWh,0.725666667,51:21.0
+frequency,60.02,51:21.0
+power factor,0.776666667,51:21.0
+featureId,UNAVAILABLE,51:22.0
+partKindId,NONE,51:22.0
+processKindId,NONE,51:22.0
+A_Axis_Load,106,51:22.0
+A_Position,-89.9995632,51:22.0
+C_Axis_Load,17,51:22.0
+C_Position,119.9995,51:22.0
+Machine_Time,2647410.622,51:22.0
+Spindle_Time,709602.711,51:22.0
+Feed_Override,100,51:22.0
+Feed_Rate,0,51:22.0
+Program_Runtime_Seconds,40,51:22.0
+Rapid_Override,100,51:22.0
+Rapid_Speed,0,51:22.0
+S_Axis_Load,0,51:22.0
+Spindle_Override,100,51:22.0
+Spindle_Speed,0,51:22.0
+X_Axis_Load,4,51:22.0
+X_Position,379.8467945,51:22.0
+Y_Axis_Load,6,51:22.0
+Y_Position,496.9534115,51:22.0
+Z_Axis_Load,40,51:22.0
+Z_Position,-4.302591935,51:22.0
+COR_Status,1,51:22.0
+Controller_Mode,MANUAL,51:22.0
+EStop_State,ARMED,51:22.0
+Machine_Mode,2,51:22.0
+Block_Number,66,51:22.0
+Current_Tool,72,51:22.0
+Part_Count,9,51:22.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:22.0
+voltage,133.6,51:22.0
+current,3.706666667,51:22.0
+active power,410.3333333,51:22.0
+forward kWh,27.20366667,51:22.0
+reverse kWh,0.725666667,51:22.0
+frequency,60.02,51:22.0
+power factor,0.79,51:22.0
+featureId,UNAVAILABLE,51:23.0
+partKindId,NONE,51:23.0
+processKindId,NONE,51:23.0
+A_Axis_Load,106,51:23.0
+A_Position,-89.9995632,51:23.0
+C_Axis_Load,4,51:23.0
+C_Position,119.9995,51:23.0
+Machine_Time,2647410.622,51:23.0
+Spindle_Time,709602.711,51:23.0
+Feed_Override,100,51:23.0
+Feed_Rate,0,51:23.0
+Program_Runtime_Seconds,40,51:23.0
+Rapid_Override,100,51:23.0
+Rapid_Speed,0,51:23.0
+S_Axis_Load,0,51:23.0
+Spindle_Override,100,51:23.0
+Spindle_Speed,0,51:23.0
+X_Axis_Load,4,51:23.0
+X_Position,379.8467945,51:23.0
+Y_Axis_Load,6,51:23.0
+Y_Position,496.9534,51:23.0
+Z_Axis_Load,40,51:23.0
+Z_Position,-4.302591935,51:23.0
+COR_Status,1,51:23.0
+Controller_Mode,MANUAL,51:23.0
+EStop_State,ARMED,51:23.0
+Machine_Mode,2,51:23.0
+Block_Number,66,51:23.0
+Current_Tool,72,51:23.0
+Part_Count,9,51:23.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:23.0
+voltage,133.6,51:23.0
+current,3.723333333,51:23.0
+active power,409,51:23.0
+forward kWh,27.20433333,51:23.0
+reverse kWh,0.725666667,51:23.0
+frequency,60.02,51:23.0
+power factor,0.78,51:23.0
+featureId,UNAVAILABLE,51:24.0
+partKindId,NONE,51:24.0
+processKindId,NONE,51:24.0
+A_Axis_Load,106,51:24.0
+A_Position,-89.9995632,51:24.0
+C_Axis_Load,25,51:24.0
+C_Position,119.9995,51:24.0
+Machine_Time,2647410.622,51:24.0
+Spindle_Time,709602.711,51:24.0
+Feed_Override,100,51:24.0
+Feed_Rate,0,51:24.0
+Program_Runtime_Seconds,40,51:24.0
+Rapid_Override,100,51:24.0
+Rapid_Speed,0,51:24.0
+S_Axis_Load,0,51:24.0
+Spindle_Override,100,51:24.0
+Spindle_Speed,0,51:24.0
+X_Axis_Load,4,51:24.0
+X_Position,379.8467945,51:24.0
+Y_Axis_Load,6,51:24.0
+Y_Position,496.9534,51:24.0
+Z_Axis_Load,40,51:24.0
+Z_Position,-4.302591935,51:24.0
+COR_Status,1,51:24.0
+Controller_Mode,MANUAL,51:24.0
+EStop_State,ARMED,51:24.0
+Machine_Mode,2,51:24.0
+Block_Number,66,51:24.0
+Current_Tool,72,51:24.0
+Part_Count,9,51:24.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:24.0
+voltage,133.6,51:24.0
+current,3.696666667,51:24.0
+active power,407.3333333,51:24.0
+forward kWh,27.20433333,51:24.0
+reverse kWh,0.725666667,51:24.0
+frequency,60.02,51:24.0
+power factor,0.783333333,51:24.0
+featureId,UNAVAILABLE,51:25.0
+partKindId,NONE,51:25.0
+processKindId,NONE,51:25.0
+A_Axis_Load,106,51:25.0
+A_Position,-89.9995632,51:25.0
+C_Axis_Load,25,51:25.0
+C_Position,120,51:25.0
+Machine_Time,2647410.622,51:25.0
+Spindle_Time,709602.711,51:25.0
+Feed_Override,100,51:25.0
+Feed_Rate,0,51:25.0
+Program_Runtime_Seconds,40,51:25.0
+Rapid_Override,100,51:25.0
+Rapid_Speed,0,51:25.0
+S_Axis_Load,0,51:25.0
+Spindle_Override,100,51:25.0
+Spindle_Speed,0,51:25.0
+X_Axis_Load,4,51:25.0
+X_Position,379.8467945,51:25.0
+Y_Axis_Load,6,51:25.0
+Y_Position,496.9534,51:25.0
+Z_Axis_Load,40,51:25.0
+Z_Position,-4.302603378,51:25.0
+COR_Status,1,51:25.0
+Controller_Mode,MANUAL,51:25.0
+EStop_State,ARMED,51:25.0
+Machine_Mode,2,51:25.0
+Block_Number,66,51:25.0
+Current_Tool,72,51:25.0
+Part_Count,9,51:25.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:25.0
+voltage,133.5666667,51:25.0
+current,3.73,51:25.0
+active power,411,51:25.0
+forward kWh,27.20433333,51:25.0
+reverse kWh,0.725666667,51:25.0
+frequency,60.02,51:25.0
+power factor,0.786666667,51:25.0
+featureId,UNAVAILABLE,51:26.0
+partKindId,NONE,51:26.0
+processKindId,NONE,51:26.0
+A_Axis_Load,106,51:26.0
+A_Position,-89.9995632,51:26.0
+C_Axis_Load,10,51:26.0
+C_Position,120,51:26.0
+Machine_Time,2647410.622,51:26.0
+Spindle_Time,709602.711,51:26.0
+Feed_Override,100,51:26.0
+Feed_Rate,0,51:26.0
+Program_Runtime_Seconds,40,51:26.0
+Rapid_Override,100,51:26.0
+Rapid_Speed,0,51:26.0
+S_Axis_Load,0,51:26.0
+Spindle_Override,100,51:26.0
+Spindle_Speed,0,51:26.0
+X_Axis_Load,4,51:26.0
+X_Position,379.846806,51:26.0
+Y_Axis_Load,6,51:26.0
+Y_Position,496.9534,51:26.0
+Z_Axis_Load,40,51:26.0
+Z_Position,-4.302591935,51:26.0
+COR_Status,1,51:26.0
+Controller_Mode,MANUAL,51:26.0
+EStop_State,ARMED,51:26.0
+Machine_Mode,2,51:26.0
+Block_Number,66,51:26.0
+Current_Tool,72,51:26.0
+Part_Count,9,51:26.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:26.0
+voltage,133.6,51:26.0
+current,3.706666667,51:26.0
+active power,409.3333333,51:26.0
+forward kWh,27.20433333,51:26.0
+reverse kWh,0.725666667,51:26.0
+frequency,60.02,51:26.0
+power factor,0.783333333,51:26.0
+featureId,UNAVAILABLE,51:27.0
+partKindId,NONE,51:27.0
+processKindId,NONE,51:27.0
+A_Axis_Load,106,51:27.0
+A_Position,-89.9995632,51:27.0
+C_Axis_Load,4,51:27.0
+C_Position,120,51:27.0
+Machine_Time,2647410.622,51:27.0
+Spindle_Time,709602.711,51:27.0
+Feed_Override,100,51:27.0
+Feed_Rate,0,51:27.0
+Program_Runtime_Seconds,40,51:27.0
+Rapid_Override,100,51:27.0
+Rapid_Speed,0,51:27.0
+S_Axis_Load,0,51:27.0
+Spindle_Override,100,51:27.0
+Spindle_Speed,0,51:27.0
+X_Axis_Load,4,51:27.0
+X_Position,379.846806,51:27.0
+Y_Axis_Load,6,51:27.0
+Y_Position,496.9534,51:27.0
+Z_Axis_Load,40,51:27.0
+Z_Position,-4.302591935,51:27.0
+COR_Status,1,51:27.0
+Controller_Mode,MANUAL,51:27.0
+EStop_State,ARMED,51:27.0
+Machine_Mode,2,51:27.0
+Block_Number,66,51:27.0
+Current_Tool,72,51:27.0
+Part_Count,9,51:27.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:27.0
+voltage,133.6,51:27.0
+current,3.713333333,51:27.0
+active power,409.3333333,51:27.0
+forward kWh,27.20433333,51:27.0
+reverse kWh,0.725666667,51:27.0
+frequency,60.02,51:27.0
+power factor,0.78,51:27.0
+featureId,UNAVAILABLE,51:28.0
+partKindId,NONE,51:28.0
+processKindId,NONE,51:28.0
+A_Axis_Load,106,51:28.0
+A_Position,-89.9995632,51:28.0
+C_Axis_Load,17,51:28.0
+C_Position,120,51:28.0
+Machine_Time,2647410.622,51:28.0
+Spindle_Time,709602.711,51:28.0
+Feed_Override,100,51:28.0
+Feed_Rate,0,51:28.0
+Program_Runtime_Seconds,40,51:28.0
+Rapid_Override,100,51:28.0
+Rapid_Speed,0,51:28.0
+S_Axis_Load,0,51:28.0
+Spindle_Override,100,51:28.0
+Spindle_Speed,0,51:28.0
+X_Axis_Load,4,51:28.0
+X_Position,379.8467945,51:28.0
+Y_Axis_Load,6,51:28.0
+Y_Position,496.9534,51:28.0
+Z_Axis_Load,40,51:28.0
+Z_Position,-4.302603378,51:28.0
+COR_Status,1,51:28.0
+Controller_Mode,MANUAL,51:28.0
+EStop_State,ARMED,51:28.0
+Machine_Mode,2,51:28.0
+Block_Number,66,51:28.0
+Current_Tool,72,51:28.0
+Part_Count,9,51:28.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:28.0
+voltage,133.5333333,51:28.0
+current,3.69,51:28.0
+active power,407,51:28.0
+forward kWh,27.20433333,51:28.0
+reverse kWh,0.725666667,51:28.0
+frequency,60.02,51:28.0
+power factor,0.796666667,51:28.0
+featureId,UNAVAILABLE,51:29.0
+partKindId,NONE,51:29.0
+processKindId,NONE,51:29.0
+A_Axis_Load,106,51:29.0
+A_Position,-89.9995632,51:29.0
+C_Axis_Load,32,51:29.0
+C_Position,119.9995,51:29.0
+Machine_Time,2647410.622,51:29.0
+Spindle_Time,709602.711,51:29.0
+Feed_Override,100,51:29.0
+Feed_Rate,0,51:29.0
+Program_Runtime_Seconds,40,51:29.0
+Rapid_Override,100,51:29.0
+Rapid_Speed,0,51:29.0
+S_Axis_Load,0,51:29.0
+Spindle_Override,100,51:29.0
+Spindle_Speed,0,51:29.0
+X_Axis_Load,4,51:29.0
+X_Position,379.8467945,51:29.0
+Y_Axis_Load,6,51:29.0
+Y_Position,496.9534,51:29.0
+Z_Axis_Load,40,51:29.0
+Z_Position,-4.302591935,51:29.0
+COR_Status,1,51:29.0
+Controller_Mode,MANUAL,51:29.0
+EStop_State,ARMED,51:29.0
+Machine_Mode,2,51:29.0
+Block_Number,66,51:29.0
+Current_Tool,72,51:29.0
+Part_Count,9,51:29.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:29.0
+voltage,133.5666667,51:29.0
+current,3.693333333,51:29.0
+active power,408,51:29.0
+forward kWh,27.20433333,51:29.0
+reverse kWh,0.725666667,51:29.0
+frequency,60.02,51:29.0
+power factor,0.783333333,51:29.0
+featureId,UNAVAILABLE,51:30.0
+partKindId,NONE,51:30.0
+processKindId,NONE,51:30.0
+A_Axis_Load,106,51:30.0
+A_Position,-89.9995632,51:30.0
+C_Axis_Load,14,51:30.0
+C_Position,119.9995,51:30.0
+Machine_Time,2647410.622,51:30.0
+Spindle_Time,709602.711,51:30.0
+Feed_Override,100,51:30.0
+Feed_Rate,0,51:30.0
+Program_Runtime_Seconds,40,51:30.0
+Rapid_Override,100,51:30.0
+Rapid_Speed,0,51:30.0
+S_Axis_Load,0,51:30.0
+Spindle_Override,100,51:30.0
+Spindle_Speed,0,51:30.0
+X_Axis_Load,4,51:30.0
+X_Position,379.8467945,51:30.0
+Y_Axis_Load,6,51:30.0
+Y_Position,496.9534,51:30.0
+Z_Axis_Load,40,51:30.0
+Z_Position,-4.302603378,51:30.0
+COR_Status,1,51:30.0
+Controller_Mode,MANUAL,51:30.0
+EStop_State,ARMED,51:30.0
+Machine_Mode,2,51:30.0
+Block_Number,66,51:30.0
+Current_Tool,72,51:30.0
+Part_Count,9,51:30.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:30.0
+voltage,133.6,51:30.0
+current,3.723333333,51:30.0
+active power,411,51:30.0
+forward kWh,27.20433333,51:30.0
+reverse kWh,0.725666667,51:30.0
+frequency,60.02,51:30.0
+power factor,0.79,51:30.0
+featureId,UNAVAILABLE,51:31.0
+partKindId,NONE,51:31.0
+processKindId,NONE,51:31.0
+A_Axis_Load,106,51:31.0
+A_Position,-89.9995632,51:31.0
+C_Axis_Load,7,51:31.0
+C_Position,119.9995,51:31.0
+Machine_Time,2647410.622,51:31.0
+Spindle_Time,709602.711,51:31.0
+Feed_Override,100,51:31.0
+Feed_Rate,0,51:31.0
+Program_Runtime_Seconds,40,51:31.0
+Rapid_Override,100,51:31.0
+Rapid_Speed,0,51:31.0
+S_Axis_Load,0,51:31.0
+Spindle_Override,100,51:31.0
+Spindle_Speed,0,51:31.0
+X_Axis_Load,4,51:31.0
+X_Position,379.846806,51:31.0
+Y_Axis_Load,6,51:31.0
+Y_Position,496.9534,51:31.0
+Z_Axis_Load,40,51:31.0
+Z_Position,-4.302603378,51:31.0
+COR_Status,1,51:31.0
+Controller_Mode,MANUAL,51:31.0
+EStop_State,ARMED,51:31.0
+Machine_Mode,2,51:31.0
+Block_Number,66,51:31.0
+Current_Tool,72,51:31.0
+Part_Count,9,51:31.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:31.0
+voltage,133.6333333,51:31.0
+current,3.68,51:31.0
+active power,406,51:31.0
+forward kWh,27.205,51:31.0
+reverse kWh,0.725666667,51:31.0
+frequency,60.02,51:31.0
+power factor,0.783333333,51:31.0
+featureId,UNAVAILABLE,51:32.0
+partKindId,NONE,51:32.0
+processKindId,NONE,51:32.0
+A_Axis_Load,106,51:32.0
+A_Position,-89.9995632,51:32.0
+C_Axis_Load,24,51:32.0
+C_Position,119.9995,51:32.0
+Machine_Time,2647410.622,51:32.0
+Spindle_Time,709602.711,51:32.0
+Feed_Override,100,51:32.0
+Feed_Rate,0,51:32.0
+Program_Runtime_Seconds,40,51:32.0
+Rapid_Override,100,51:32.0
+Rapid_Speed,0,51:32.0
+S_Axis_Load,0,51:32.0
+Spindle_Override,100,51:32.0
+Spindle_Speed,0,51:32.0
+X_Axis_Load,4,51:32.0
+X_Position,379.8467945,51:32.0
+Y_Axis_Load,5,51:32.0
+Y_Position,496.9534,51:32.0
+Z_Axis_Load,40,51:32.0
+Z_Position,-4.302603378,51:32.0
+COR_Status,1,51:32.0
+Controller_Mode,MANUAL,51:32.0
+EStop_State,ARMED,51:32.0
+Machine_Mode,2,51:32.0
+Block_Number,66,51:32.0
+Current_Tool,72,51:32.0
+Part_Count,9,51:32.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:32.0
+voltage,133.6,51:32.0
+current,3.696666667,51:32.0
+active power,407.6666667,51:32.0
+forward kWh,27.205,51:32.0
+reverse kWh,0.725666667,51:32.0
+frequency,60.02,51:32.0
+power factor,0.79,51:32.0
+featureId,UNAVAILABLE,51:33.0
+partKindId,NONE,51:33.0
+processKindId,NONE,51:33.0
+A_Axis_Load,106,51:33.0
+A_Position,-89.9995632,51:33.0
+C_Axis_Load,15,51:33.0
+C_Position,120.0005,51:33.0
+Machine_Time,2647410.622,51:33.0
+Spindle_Time,709602.711,51:33.0
+Feed_Override,100,51:33.0
+Feed_Rate,0,51:33.0
+Program_Runtime_Seconds,40,51:33.0
+Rapid_Override,100,51:33.0
+Rapid_Speed,0,51:33.0
+S_Axis_Load,0,51:33.0
+Spindle_Override,100,51:33.0
+Spindle_Speed,0,51:33.0
+X_Axis_Load,4,51:33.0
+X_Position,379.8467945,51:33.0
+Y_Axis_Load,5,51:33.0
+Y_Position,496.9534,51:33.0
+Z_Axis_Load,40,51:33.0
+Z_Position,-4.302603378,51:33.0
+COR_Status,1,51:33.0
+Controller_Mode,AUTO,51:33.0
+EStop_State,ARMED,51:33.0
+Machine_Mode,4,51:33.0
+Block_Number,66,51:33.0
+Current_Tool,72,51:33.0
+Part_Count,9,51:33.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:33.0
+voltage,133.6333333,51:33.0
+current,3.7,51:33.0
+active power,409,51:33.0
+forward kWh,27.205,51:33.0
+reverse kWh,0.725666667,51:33.0
+frequency,60.02,51:33.0
+power factor,0.796666667,51:33.0
+featureId,UNAVAILABLE,51:34.0
+partKindId,NONE,51:34.0
+processKindId,NONE,51:34.0
+A_Axis_Load,106,51:34.0
+A_Position,-89.9995632,51:34.0
+C_Axis_Load,5,51:34.0
+C_Position,120.0005,51:34.0
+Machine_Time,2647410.622,51:34.0
+Spindle_Time,709602.711,51:34.0
+Feed_Override,100,51:34.0
+Feed_Rate,0,51:34.0
+Program_Runtime_Seconds,40,51:34.0
+Rapid_Override,100,51:34.0
+Rapid_Speed,0,51:34.0
+S_Axis_Load,0,51:34.0
+Spindle_Override,100,51:34.0
+Spindle_Speed,0,51:34.0
+X_Axis_Load,4,51:34.0
+X_Position,379.8467945,51:34.0
+Y_Axis_Load,5,51:34.0
+Y_Position,496.9534,51:34.0
+Z_Axis_Load,40,51:34.0
+Z_Position,-4.302603378,51:34.0
+COR_Status,1,51:34.0
+Controller_Mode,AUTO,51:34.0
+EStop_State,ARMED,51:34.0
+Machine_Mode,4,51:34.0
+Block_Number,0,51:34.0
+Current_Tool,72,51:34.0
+Part_Count,9,51:34.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:34.0
+voltage,133.6,51:34.0
+current,3.686666667,51:34.0
+active power,406.6666667,51:34.0
+forward kWh,27.205,51:34.0
+reverse kWh,0.725666667,51:34.0
+frequency,60.02,51:34.0
+power factor,0.783333333,51:34.0
+featureId,UNAVAILABLE,51:35.0
+partKindId,NONE,51:35.0
+processKindId,NONE,51:35.0
+A_Axis_Load,106,51:35.0
+A_Position,-89.9995632,51:35.0
+C_Axis_Load,5,51:35.0
+C_Position,120.0005,51:35.0
+Machine_Time,2647410.622,51:35.0
+Spindle_Time,709602.711,51:35.0
+Feed_Override,100,51:35.0
+Feed_Rate,0,51:35.0
+Program_Runtime_Seconds,40,51:35.0
+Rapid_Override,100,51:35.0
+Rapid_Speed,0,51:35.0
+S_Axis_Load,0,51:35.0
+Spindle_Override,100,51:35.0
+Spindle_Speed,0,51:35.0
+X_Axis_Load,4,51:35.0
+X_Position,379.8467945,51:35.0
+Y_Axis_Load,5,51:35.0
+Y_Position,496.9534,51:35.0
+Z_Axis_Load,40,51:35.0
+Z_Position,-4.302591935,51:35.0
+COR_Status,1,51:35.0
+Controller_Mode,AUTO,51:35.0
+EStop_State,ARMED,51:35.0
+Machine_Mode,4,51:35.0
+Block_Number,0,51:35.0
+Current_Tool,72,51:35.0
+Part_Count,9,51:35.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:35.0
+voltage,133.5666667,51:35.0
+current,3.68,51:35.0
+active power,405.3333333,51:35.0
+forward kWh,27.205,51:35.0
+reverse kWh,0.725666667,51:35.0
+frequency,60.02,51:35.0
+power factor,0.783333333,51:35.0
+featureId,UNAVAILABLE,51:36.0
+partKindId,NONE,51:36.0
+processKindId,NONE,51:36.0
+A_Axis_Load,106,51:36.0
+A_Position,-89.9995632,51:36.0
+C_Axis_Load,5,51:36.0
+C_Position,120.0005,51:36.0
+Machine_Time,2647410.622,51:36.0
+Spindle_Time,709602.711,51:36.0
+Feed_Override,100,51:36.0
+Feed_Rate,0,51:36.0
+Program_Runtime_Seconds,40,51:36.0
+Rapid_Override,100,51:36.0
+Rapid_Speed,0,51:36.0
+S_Axis_Load,0,51:36.0
+Spindle_Override,100,51:36.0
+Spindle_Speed,0,51:36.0
+X_Axis_Load,4,51:36.0
+X_Position,379.8467945,51:36.0
+Y_Axis_Load,5,51:36.0
+Y_Position,496.9534,51:36.0
+Z_Axis_Load,40,51:36.0
+Z_Position,-4.302591935,51:36.0
+COR_Status,1,51:36.0
+Controller_Mode,AUTO,51:36.0
+EStop_State,ARMED,51:36.0
+Machine_Mode,4,51:36.0
+Block_Number,0,51:36.0
+Current_Tool,72,51:36.0
+Part_Count,9,51:36.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:36.0
+voltage,133.5666667,51:36.0
+current,3.646666667,51:36.0
+active power,402.3333333,51:36.0
+forward kWh,27.205,51:36.0
+reverse kWh,0.725666667,51:36.0
+frequency,60.02,51:36.0
+power factor,0.783333333,51:36.0
+featureId,UNAVAILABLE,51:37.0
+partKindId,NONE,51:37.0
+processKindId,NONE,51:37.0
+A_Axis_Load,106,51:37.0
+A_Position,-89.9995632,51:37.0
+C_Axis_Load,5,51:37.0
+C_Position,120.0005,51:37.0
+Machine_Time,2647410.622,51:37.0
+Spindle_Time,709602.711,51:37.0
+Feed_Override,100,51:37.0
+Feed_Rate,0,51:37.0
+Program_Runtime_Seconds,40,51:37.0
+Rapid_Override,100,51:37.0
+Rapid_Speed,0,51:37.0
+S_Axis_Load,0,51:37.0
+Spindle_Override,100,51:37.0
+Spindle_Speed,0,51:37.0
+X_Axis_Load,4,51:37.0
+X_Position,379.846806,51:37.0
+Y_Axis_Load,5,51:37.0
+Y_Position,496.9534,51:37.0
+Z_Axis_Load,40,51:37.0
+Z_Position,-4.302591935,51:37.0
+COR_Status,1,51:37.0
+Controller_Mode,AUTO,51:37.0
+EStop_State,ARMED,51:37.0
+Machine_Mode,4,51:37.0
+Block_Number,0,51:37.0
+Current_Tool,72,51:37.0
+Part_Count,8,51:37.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:37.0
+voltage,133.5666667,51:37.0
+current,3.673333333,51:37.0
+active power,404.6666667,51:37.0
+forward kWh,27.205,51:37.0
+reverse kWh,0.725666667,51:37.0
+frequency,60.02,51:37.0
+power factor,0.78,51:37.0
+featureId,UNAVAILABLE,51:38.0
+partKindId,NONE,51:38.0
+processKindId,NONE,51:38.0
+A_Axis_Load,106,51:38.0
+A_Position,-89.9995632,51:38.0
+C_Axis_Load,5,51:38.0
+C_Position,120.0005,51:38.0
+Machine_Time,2647410.622,51:38.0
+Spindle_Time,709602.711,51:38.0
+Feed_Override,100,51:38.0
+Feed_Rate,0,51:38.0
+Program_Runtime_Seconds,40,51:38.0
+Rapid_Override,100,51:38.0
+Rapid_Speed,0,51:38.0
+S_Axis_Load,0,51:38.0
+Spindle_Override,100,51:38.0
+Spindle_Speed,0,51:38.0
+X_Axis_Load,4,51:38.0
+X_Position,379.846806,51:38.0
+Y_Axis_Load,5,51:38.0
+Y_Position,496.9534,51:38.0
+Z_Axis_Load,40,51:38.0
+Z_Position,-4.302591935,51:38.0
+COR_Status,1,51:38.0
+Controller_Mode,AUTO,51:38.0
+EStop_State,ARMED,51:38.0
+Machine_Mode,4,51:38.0
+Block_Number,0,51:38.0
+Current_Tool,72,51:38.0
+Part_Count,8,51:38.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:38.0
+voltage,133.5333333,51:38.0
+current,3.65,51:38.0
+active power,402,51:38.0
+forward kWh,27.20533333,51:38.0
+reverse kWh,0.725666667,51:38.0
+frequency,60.02,51:38.0
+power factor,0.783333333,51:38.0
+featureId,UNAVAILABLE,51:39.0
+partKindId,NONE,51:39.0
+processKindId,NONE,51:39.0
+A_Axis_Load,106,51:39.0
+A_Position,-89.9995632,51:39.0
+C_Axis_Load,5,51:39.0
+C_Position,120.0005,51:39.0
+Machine_Time,2647410.622,51:39.0
+Spindle_Time,709602.711,51:39.0
+Feed_Override,100,51:39.0
+Feed_Rate,0,51:39.0
+Program_Runtime_Seconds,40,51:39.0
+Rapid_Override,100,51:39.0
+Rapid_Speed,0,51:39.0
+S_Axis_Load,0,51:39.0
+Spindle_Override,100,51:39.0
+Spindle_Speed,0,51:39.0
+X_Axis_Load,4,51:39.0
+X_Position,379.8467945,51:39.0
+Y_Axis_Load,5,51:39.0
+Y_Position,496.9534,51:39.0
+Z_Axis_Load,40,51:39.0
+Z_Position,-4.302591935,51:39.0
+COR_Status,1,51:39.0
+Controller_Mode,AUTO,51:39.0
+EStop_State,ARMED,51:39.0
+Machine_Mode,4,51:39.0
+Block_Number,0,51:39.0
+Current_Tool,72,51:39.0
+Part_Count,8,51:39.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:39.0
+voltage,133.5666667,51:39.0
+current,3.673333333,51:39.0
+active power,405,51:39.0
+forward kWh,27.20533333,51:39.0
+reverse kWh,0.725666667,51:39.0
+frequency,60.02,51:39.0
+power factor,0.78,51:39.0
+featureId,UNAVAILABLE,51:40.0
+partKindId,NONE,51:40.0
+processKindId,NONE,51:40.0
+A_Axis_Load,106,51:40.0
+A_Position,-89.9995632,51:40.0
+C_Axis_Load,5,51:40.0
+C_Position,120.0005,51:40.0
+Machine_Time,2647410.622,51:40.0
+Spindle_Time,709602.711,51:40.0
+Feed_Override,100,51:40.0
+Feed_Rate,0,51:40.0
+Program_Runtime_Seconds,0,51:40.0
+Rapid_Override,100,51:40.0
+Rapid_Speed,0,51:40.0
+S_Axis_Load,0,51:40.0
+Spindle_Override,100,51:40.0
+Spindle_Speed,0,51:40.0
+X_Axis_Load,4,51:40.0
+X_Position,379.846806,51:40.0
+Y_Axis_Load,5,51:40.0
+Y_Position,496.9534,51:40.0
+Z_Axis_Load,40,51:40.0
+Z_Position,-4.302591935,51:40.0
+COR_Status,1,51:40.0
+Controller_Mode,AUTO,51:40.0
+EStop_State,ARMED,51:40.0
+Machine_Mode,5,51:40.0
+Block_Number,0,51:40.0
+Current_Tool,72,51:40.0
+Part_Count,8,51:40.0
+Program_Name_Running,000454_D_A_PROGRAM_3.NC,51:40.0
+voltage,133.6,51:40.0
+current,3.656666667,51:40.0
+active power,401.3333333,51:40.0
+forward kWh,27.20566667,51:40.0
+reverse kWh,0.725666667,51:40.0
+frequency,60.02,51:40.0
+power factor,0.78,51:40.0
+featureId,UNAVAILABLE,51:41.0
+partKindId,NONE,51:41.0
+processKindId,NONE,51:41.0
+A_Axis_Load,106,51:41.0
+A_Position,-89.9995632,51:41.0
+C_Axis_Load,5,51:41.0
+C_Position,120.0005,51:41.0
+Machine_Time,2647410.622,51:41.0
+Spindle_Time,709602.711,51:41.0
+Feed_Override,100,51:41.0
+Feed_Rate,623.7,51:41.0
+Program_Runtime_Seconds,1,51:41.0
+Rapid_Override,100,51:41.0
+Rapid_Speed,0,51:41.0
+S_Axis_Load,0,51:41.0
+Spindle_Override,100,51:41.0
+Spindle_Speed,0,51:41.0
+X_Axis_Load,14,51:41.0
+X_Position,53.4741709,51:41.0
+Y_Axis_Load,5,51:41.0
+Y_Position,496.9534344,51:41.0
+Z_Axis_Load,40,51:41.0
+Z_Position,-4.302603378,51:41.0
+COR_Status,1,51:41.0
+Controller_Mode,AUTO,51:41.0
+EStop_State,ARMED,51:41.0
+Machine_Mode,5,51:41.0
+Block_Number,10,51:41.0
+Current_Tool,72,51:41.0
+Part_Count,8,51:41.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:41.0
+voltage,133.6,51:41.0
+current,3.923333333,51:41.0
+active power,422,51:41.0
+forward kWh,27.20566667,51:41.0
+reverse kWh,0.725666667,51:41.0
+frequency,60.02,51:41.0
+power factor,0.82,51:41.0
+featureId,UNAVAILABLE,51:42.0
+partKindId,NONE,51:42.0
+processKindId,NONE,51:42.0
+A_Axis_Load,106,51:42.0
+A_Position,-89.9995632,51:42.0
+C_Axis_Load,5,51:42.0
+C_Position,120.0005,51:42.0
+Machine_Time,2647410.622,51:42.0
+Spindle_Time,709602.711,51:42.0
+Feed_Override,100,51:42.0
+Feed_Rate,0,51:42.0
+Program_Runtime_Seconds,2,51:42.0
+Rapid_Override,100,51:42.0
+Rapid_Speed,0,51:42.0
+S_Axis_Load,0,51:42.0
+Spindle_Override,100,51:42.0
+Spindle_Speed,5.80E-26,51:42.0
+X_Axis_Load,6,51:42.0
+X_Position,1.386796219,51:42.0
+Y_Axis_Load,5,51:42.0
+Y_Position,496.9534,51:42.0
+Z_Axis_Load,30,51:42.0
+Z_Position,-99.86703553,51:42.0
+COR_Status,1,51:42.0
+Controller_Mode,AUTO,51:42.0
+EStop_State,ARMED,51:42.0
+Machine_Mode,5,51:42.0
+Block_Number,11,51:42.0
+Current_Tool,72,51:42.0
+Part_Count,8,51:42.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:42.0
+voltage,133.1,51:42.0
+current,10.44,51:42.0
+active power,1075,51:42.0
+forward kWh,27.20566667,51:42.0
+reverse kWh,0.725666667,51:42.0
+frequency,60.02,51:42.0
+power factor,0.533333333,51:42.0
+featureId,UNAVAILABLE,51:43.0
+partKindId,NONE,51:43.0
+processKindId,NONE,51:43.0
+A_Axis_Load,106,51:43.0
+A_Position,-89.9995632,51:43.0
+C_Axis_Load,5,51:43.0
+C_Position,120.0005,51:43.0
+Machine_Time,2647410.622,51:43.0
+Spindle_Time,709602.711,51:43.0
+Feed_Override,100,51:43.0
+Feed_Rate,0,51:43.0
+Program_Runtime_Seconds,3,51:43.0
+Rapid_Override,100,51:43.0
+Rapid_Speed,0,51:43.0
+S_Axis_Load,0,51:43.0
+Spindle_Override,100,51:43.0
+Spindle_Speed,0,51:43.0
+X_Axis_Load,6,51:43.0
+X_Position,1.386796219,51:43.0
+Y_Axis_Load,5,51:43.0
+Y_Position,496.9534115,51:43.0
+Z_Axis_Load,30,51:43.0
+Z_Position,-99.86701265,51:43.0
+COR_Status,1,51:43.0
+Controller_Mode,AUTO,51:43.0
+EStop_State,ARMED,51:43.0
+Machine_Mode,5,51:43.0
+Block_Number,11,51:43.0
+Current_Tool,72,51:43.0
+Part_Count,8,51:43.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:43.0
+voltage,133.2,51:43.0
+current,6.43,51:43.0
+active power,680.6666667,51:43.0
+forward kWh,27.20566667,51:43.0
+reverse kWh,0.725666667,51:43.0
+frequency,60.02,51:43.0
+power factor,0.546666667,51:43.0
+featureId,UNAVAILABLE,51:44.0
+partKindId,NONE,51:44.0
+processKindId,NONE,51:44.0
+A_Axis_Load,106,51:44.0
+A_Position,-89.9995632,51:44.0
+C_Axis_Load,5,51:44.0
+C_Position,120.0005,51:44.0
+Machine_Time,2647410.622,51:44.0
+Spindle_Time,709602.711,51:44.0
+Feed_Override,100,51:44.0
+Feed_Rate,0,51:44.0
+Program_Runtime_Seconds,4,51:44.0
+Rapid_Override,100,51:44.0
+Rapid_Speed,0,51:44.0
+S_Axis_Load,0,51:44.0
+Spindle_Override,100,51:44.0
+Spindle_Speed,0,51:44.0
+X_Axis_Load,5,51:44.0
+X_Position,1.386796219,51:44.0
+Y_Axis_Load,5,51:44.0
+Y_Position,496.9534,51:44.0
+Z_Axis_Load,30,51:44.0
+Z_Position,-99.8670012,51:44.0
+COR_Status,1,51:44.0
+Controller_Mode,AUTO,51:44.0
+EStop_State,ARMED,51:44.0
+Machine_Mode,5,51:44.0
+Block_Number,11,51:44.0
+Current_Tool,72,51:44.0
+Part_Count,8,51:44.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:44.0
+voltage,133.2,51:44.0
+current,6.156666667,51:44.0
+active power,665,51:44.0
+forward kWh,27.20666667,51:44.0
+reverse kWh,0.725666667,51:44.0
+frequency,60.02,51:44.0
+power factor,0.833333333,51:44.0
+featureId,UNAVAILABLE,51:45.0
+partKindId,NONE,51:45.0
+processKindId,NONE,51:45.0
+A_Axis_Load,106,51:45.0
+A_Position,-89.9995632,51:45.0
+C_Axis_Load,5,51:45.0
+C_Position,120.0005,51:45.0
+Machine_Time,2647410.622,51:45.0
+Spindle_Time,709602.711,51:45.0
+Feed_Override,100,51:45.0
+Feed_Rate,0,51:45.0
+Program_Runtime_Seconds,5,51:45.0
+Rapid_Override,100,51:45.0
+Rapid_Speed,0,51:45.0
+S_Axis_Load,0,51:45.0
+Spindle_Override,100,51:45.0
+Spindle_Speed,0,51:45.0
+X_Axis_Load,5,51:45.0
+X_Position,1.386807664,51:45.0
+Y_Axis_Load,5,51:45.0
+Y_Position,496.9534,51:45.0
+Z_Axis_Load,31,51:45.0
+Z_Position,-99.86698976,51:45.0
+COR_Status,1,51:45.0
+Controller_Mode,AUTO,51:45.0
+EStop_State,ARMED,51:45.0
+Machine_Mode,5,51:45.0
+Block_Number,11,51:45.0
+Current_Tool,72,51:45.0
+Part_Count,8,51:45.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:45.0
+voltage,133.4666667,51:45.0
+current,4.636666667,51:45.0
+active power,541.6666667,51:45.0
+forward kWh,27.20666667,51:45.0
+reverse kWh,0.725666667,51:45.0
+frequency,60.02,51:45.0
+power factor,0.94,51:45.0
+featureId,UNAVAILABLE,51:46.0
+partKindId,NONE,51:46.0
+processKindId,NONE,51:46.0
+A_Axis_Load,106,51:46.0
+A_Position,-89.9995632,51:46.0
+C_Axis_Load,5,51:46.0
+C_Position,120.0005,51:46.0
+Machine_Time,2647410.622,51:46.0
+Spindle_Time,709602.711,51:46.0
+Feed_Override,100,51:46.0
+Feed_Rate,0,51:46.0
+Program_Runtime_Seconds,6,51:46.0
+Rapid_Override,100,51:46.0
+Rapid_Speed,0,51:46.0
+S_Axis_Load,0,51:46.0
+Spindle_Override,100,51:46.0
+Spindle_Speed,0,51:46.0
+X_Axis_Load,5,51:46.0
+X_Position,1.386784774,51:46.0
+Y_Axis_Load,4,51:46.0
+Y_Position,496.9533886,51:46.0
+Z_Axis_Load,30,51:46.0
+Z_Position,-99.86693254,51:46.0
+COR_Status,1,51:46.0
+Controller_Mode,AUTO,51:46.0
+EStop_State,ARMED,51:46.0
+Machine_Mode,5,51:46.0
+Block_Number,11,51:46.0
+Current_Tool,4,51:46.0
+Part_Count,8,51:46.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:46.0
+voltage,133.4,51:46.0
+current,5.393333333,51:46.0
+active power,586,51:46.0
+forward kWh,27.207,51:46.0
+reverse kWh,0.725666667,51:46.0
+frequency,60.02,51:46.0
+power factor,0.82,51:46.0
+featureId,UNAVAILABLE,51:47.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:47.0
+processKindId,NONE,51:47.0
+A_Axis_Load,106,51:47.0
+A_Position,-89.9995632,51:47.0
+C_Axis_Load,5,51:47.0
+C_Position,120.0005,51:47.0
+Machine_Time,2647410.622,51:47.0
+Spindle_Time,709602.711,51:47.0
+Feed_Override,100,51:47.0
+Feed_Rate,0,51:47.0
+Program_Runtime_Seconds,7,51:47.0
+Rapid_Override,100,51:47.0
+Rapid_Speed,0,51:47.0
+S_Axis_Load,0,51:47.0
+Spindle_Override,100,51:47.0
+Spindle_Speed,0,51:47.0
+X_Axis_Load,5,51:47.0
+X_Position,1.386796219,51:47.0
+Y_Axis_Load,4,51:47.0
+Y_Position,496.9534,51:47.0
+Z_Axis_Load,31,51:47.0
+Z_Position,-99.8670012,51:47.0
+COR_Status,1,51:47.0
+Controller_Mode,AUTO,51:47.0
+EStop_State,ARMED,51:47.0
+Machine_Mode,5,51:47.0
+Block_Number,11,51:47.0
+Current_Tool,4,51:47.0
+Part_Count,8,51:47.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:47.0
+voltage,133.4,51:47.0
+current,5.356666667,51:47.0
+active power,620.3333333,51:47.0
+forward kWh,27.207,51:47.0
+reverse kWh,0.725666667,51:47.0
+frequency,60.02,51:47.0
+power factor,0.77,51:47.0
+featureId,UNAVAILABLE,51:48.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:48.0
+processKindId,CF0FEA34-836B-413B-B472-DF89D832DA95,51:48.0
+A_Axis_Load,106,51:48.0
+A_Position,-89.9995632,51:48.0
+C_Axis_Load,5,51:48.0
+C_Position,120.0005,51:48.0
+Machine_Time,2647410.622,51:48.0
+Spindle_Time,709602.711,51:48.0
+Feed_Override,100,51:48.0
+Feed_Rate,406.0167,51:48.0
+Program_Runtime_Seconds,8,51:48.0
+Rapid_Override,100,51:48.0
+Rapid_Speed,0,51:48.0
+S_Axis_Load,12,51:48.0
+Spindle_Override,100,51:48.0
+Spindle_Speed,1007.953481,51:48.0
+X_Axis_Load,30,51:48.0
+X_Position,122.4431996,51:48.0
+Y_Axis_Load,20,51:48.0
+Y_Position,369.9695949,51:48.0
+Z_Axis_Load,31,51:48.0
+Z_Position,-99.86698976,51:48.0
+COR_Status,1,51:48.0
+Controller_Mode,AUTO,51:48.0
+EStop_State,ARMED,51:48.0
+Machine_Mode,5,51:48.0
+Block_Number,14,51:48.0
+Current_Tool,4,51:48.0
+Part_Count,8,51:48.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:48.0
+voltage,133.4666667,51:48.0
+current,4.82,51:48.0
+active power,547.6666667,51:48.0
+forward kWh,27.207,51:48.0
+reverse kWh,0.725666667,51:48.0
+frequency,60.02,51:48.0
+power factor,0.74,51:48.0
+featureId,UNAVAILABLE,51:49.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:49.0
+processKindId,CF0FEA34-836B-413B-B472-DF89D832DA95,51:49.0
+A_Axis_Load,106,51:49.0
+A_Position,-89.9995632,51:49.0
+C_Axis_Load,5,51:49.0
+C_Position,120.0005,51:49.0
+Machine_Time,2647410.622,51:49.0
+Spindle_Time,709602.711,51:49.0
+Feed_Override,100,51:49.0
+Feed_Rate,46.78333,51:49.0
+Program_Runtime_Seconds,9,51:49.0
+Rapid_Override,100,51:49.0
+Rapid_Speed,0,51:49.0
+S_Axis_Load,18,51:49.0
+Spindle_Override,100,51:49.0
+Spindle_Speed,4443.978884,51:49.0
+X_Axis_Load,6,51:49.0
+X_Position,379.8468518,51:49.0
+Y_Axis_Load,7,51:49.0
+Y_Position,99.95378729,51:49.0
+Z_Axis_Load,37,51:49.0
+Z_Position,-147.4306425,51:49.0
+COR_Status,1,51:49.0
+Controller_Mode,AUTO,51:49.0
+EStop_State,ARMED,51:49.0
+Machine_Mode,5,51:49.0
+Block_Number,15,51:49.0
+Current_Tool,4,51:49.0
+Part_Count,8,51:49.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:49.0
+voltage,132.3333333,51:49.0
+current,24.85333333,51:49.0
+active power,2746.666667,51:49.0
+forward kWh,27.20733333,51:49.0
+reverse kWh,0.725666667,51:49.0
+frequency,60.01,51:49.0
+power factor,1,51:49.0
+featureId,UNAVAILABLE,51:50.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:50.0
+processKindId,CF0FEA34-836B-413B-B472-DF89D832DA95,51:50.0
+A_Axis_Load,106,51:50.0
+A_Position,-89.9995632,51:50.0
+C_Axis_Load,5,51:50.0
+C_Position,120.0005,51:50.0
+Machine_Time,2647410.622,51:50.0
+Spindle_Time,709602.711,51:50.0
+Feed_Override,100,51:50.0
+Feed_Rate,25.61667,51:50.0
+Program_Runtime_Seconds,10,51:50.0
+Rapid_Override,100,51:50.0
+Rapid_Speed,0,51:50.0
+S_Axis_Load,1,51:50.0
+Spindle_Override,100,51:50.0
+Spindle_Speed,6420,51:50.0
+X_Axis_Load,6,51:50.0
+X_Position,379.846806,51:50.0
+Y_Axis_Load,5,51:50.0
+Y_Position,99.95390173,51:50.0
+Z_Axis_Load,70,51:50.0
+Z_Position,-452.0501651,51:50.0
+COR_Status,1,51:50.0
+Controller_Mode,AUTO,51:50.0
+EStop_State,ARMED,51:50.0
+Machine_Mode,5,51:50.0
+Block_Number,16,51:50.0
+Current_Tool,4,51:50.0
+Part_Count,8,51:50.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:50.0
+voltage,130.3666667,51:50.0
+current,51.75333333,51:50.0
+active power,6245,51:50.0
+forward kWh,27.209,51:50.0
+reverse kWh,0.725666667,51:50.0
+frequency,60.02,51:50.0
+power factor,0.953333333,51:50.0
+featureId,UNAVAILABLE,51:51.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:51.0
+processKindId,CF0FEA34-836B-413B-B472-DF89D832DA95,51:51.0
+A_Axis_Load,106,51:51.0
+A_Position,-89.9995632,51:51.0
+C_Axis_Load,5,51:51.0
+C_Position,120.0005,51:51.0
+Machine_Time,2647410.622,51:51.0
+Spindle_Time,709602.711,51:51.0
+Feed_Override,100,51:51.0
+Feed_Rate,0,51:51.0
+Program_Runtime_Seconds,11,51:51.0
+Rapid_Override,100,51:51.0
+Rapid_Speed,0,51:51.0
+S_Axis_Load,2,51:51.0
+Spindle_Override,100,51:51.0
+Spindle_Speed,6420,51:51.0
+X_Axis_Load,5,51:51.0
+X_Position,379.846806,51:51.0
+Y_Axis_Load,5,51:51.0
+Y_Position,99.95390173,51:51.0
+Z_Axis_Load,38,51:51.0
+Z_Position,-442.1022002,51:51.0
+COR_Status,1,51:51.0
+Controller_Mode,AUTO,51:51.0
+EStop_State,ARMED,51:51.0
+Machine_Mode,5,51:51.0
+Block_Number,19,51:51.0
+Current_Tool,4,51:51.0
+Part_Count,8,51:51.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:51.0
+voltage,130.4666667,51:51.0
+current,49.28,51:51.0
+active power,5966.666667,51:51.0
+forward kWh,27.21,51:51.0
+reverse kWh,0.725666667,51:51.0
+frequency,60.02,51:51.0
+power factor,0.893333333,51:51.0
+featureId,UNAVAILABLE,51:52.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:52.0
+processKindId,NONE,51:52.0
+A_Axis_Load,106,51:52.0
+A_Position,-89.9995632,51:52.0
+C_Axis_Load,5,51:52.0
+C_Position,120.0005,51:52.0
+Machine_Time,2647410.622,51:52.0
+Spindle_Time,709602.711,51:52.0
+Feed_Override,100,51:52.0
+Feed_Rate,533.1,51:52.0
+Program_Runtime_Seconds,12,51:52.0
+Rapid_Override,100,51:52.0
+Rapid_Speed,0,51:52.0
+S_Axis_Load,14,51:52.0
+Spindle_Override,100,51:52.0
+Spindle_Speed,5472.779812,51:52.0
+X_Axis_Load,5,51:52.0
+X_Position,379.8467945,51:52.0
+Y_Axis_Load,5,51:52.0
+Y_Position,99.95389029,51:52.0
+Z_Axis_Load,55,51:52.0
+Z_Position,-253.4773908,51:52.0
+COR_Status,1,51:52.0
+Controller_Mode,AUTO,51:52.0
+EStop_State,ARMED,51:52.0
+Machine_Mode,5,51:52.0
+Block_Number,24,51:52.0
+Current_Tool,4,51:52.0
+Part_Count,8,51:52.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:52.0
+voltage,133.1333333,51:52.0
+current,8.87,51:52.0
+active power,1005.666667,51:52.0
+forward kWh,27.21066667,51:52.0
+reverse kWh,0.725666667,51:52.0
+frequency,60.01,51:52.0
+power factor,0.893333333,51:52.0
+featureId,UNAVAILABLE,51:53.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:53.0
+processKindId,NONE,51:53.0
+A_Axis_Load,106,51:53.0
+A_Position,-89.9995632,51:53.0
+C_Axis_Load,5,51:53.0
+C_Position,120.0005,51:53.0
+Machine_Time,2647410.622,51:53.0
+Spindle_Time,709602.711,51:53.0
+Feed_Override,100,51:53.0
+Feed_Rate,440.8,51:53.0
+Program_Runtime_Seconds,13,51:53.0
+Rapid_Override,100,51:53.0
+Rapid_Speed,0,51:53.0
+S_Axis_Load,28,51:53.0
+Spindle_Override,100,51:53.0
+Spindle_Speed,2225.542204,51:53.0
+X_Axis_Load,79,51:53.0
+X_Position,276.7083724,51:53.0
+Y_Axis_Load,57,51:53.0
+Y_Position,208.1436546,51:53.0
+Z_Axis_Load,40,51:53.0
+Z_Position,-12.840586,51:53.0
+COR_Status,1,51:53.0
+Controller_Mode,AUTO,51:53.0
+EStop_State,ARMED,51:53.0
+Machine_Mode,5,51:53.0
+Block_Number,25,51:53.0
+Current_Tool,4,51:53.0
+Part_Count,8,51:53.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:53.0
+voltage,133.6,51:53.0
+current,12.67666667,51:53.0
+active power,19.66666667,51:53.0
+forward kWh,27.21066667,51:53.0
+reverse kWh,0.725666667,51:53.0
+frequency,60.02,51:53.0
+power factor,0.75,51:53.0
+featureId,UNAVAILABLE,51:54.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:54.0
+processKindId,NONE,51:54.0
+A_Axis_Load,106,51:54.0
+A_Position,-89.9995632,51:54.0
+C_Axis_Load,5,51:54.0
+C_Position,120.0005,51:54.0
+Machine_Time,2647410.622,51:54.0
+Spindle_Time,709602.711,51:54.0
+Feed_Override,100,51:54.0
+Feed_Rate,29.63333,51:54.0
+Program_Runtime_Seconds,14,51:54.0
+Rapid_Override,100,51:54.0
+Rapid_Speed,0,51:54.0
+S_Axis_Load,0,51:54.0
+Spindle_Override,100,51:54.0
+Spindle_Speed,248.8,51:54.0
+X_Axis_Load,7,51:54.0
+X_Position,1.386704661,51:54.0
+Y_Axis_Load,7,51:54.0
+Y_Position,496.9535374,51:54.0
+Z_Axis_Load,19,51:54.0
+Z_Position,-17.5004794,51:54.0
+COR_Status,1,51:54.0
+Controller_Mode,AUTO,51:54.0
+EStop_State,ARMED,51:54.0
+Machine_Mode,5,51:54.0
+Block_Number,30,51:54.0
+Current_Tool,4,51:54.0
+Part_Count,8,51:54.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:54.0
+voltage,135.1666667,51:54.0
+current,25.77,51:54.0
+active power,-3042.666667,51:54.0
+forward kWh,27.21066667,51:54.0
+reverse kWh,0.725666667,51:54.0
+frequency,60.01,51:54.0
+power factor,0.66,51:54.0
+featureId,UNAVAILABLE,51:55.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:55.0
+processKindId,NONE,51:55.0
+A_Axis_Load,106,51:55.0
+A_Position,-89.9995632,51:55.0
+C_Axis_Load,5,51:55.0
+C_Position,120.0005,51:55.0
+Machine_Time,2647410.622,51:55.0
+Spindle_Time,709602.711,51:55.0
+Feed_Override,100,51:55.0
+Feed_Rate,0,51:55.0
+Program_Runtime_Seconds,15,51:55.0
+Rapid_Override,100,51:55.0
+Rapid_Speed,0,51:55.0
+S_Axis_Load,1,51:55.0
+Spindle_Override,100,51:55.0
+Spindle_Speed,0,51:55.0
+X_Axis_Load,5,51:55.0
+X_Position,1.386796219,51:55.0
+Y_Axis_Load,6,51:55.0
+Y_Position,496.9534,51:55.0
+Z_Axis_Load,30,51:55.0
+Z_Position,-99.86701265,51:55.0
+COR_Status,1,51:55.0
+Controller_Mode,AUTO,51:55.0
+EStop_State,ARMED,51:55.0
+Machine_Mode,5,51:55.0
+Block_Number,30,51:55.0
+Current_Tool,4,51:55.0
+Part_Count,8,51:55.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:55.0
+voltage,133.2,51:55.0
+current,9.086666667,51:55.0
+active power,835,51:55.0
+forward kWh,27.21066667,51:55.0
+reverse kWh,0.725666667,51:55.0
+frequency,60.01,51:55.0
+power factor,0.95,51:55.0
+featureId,UNAVAILABLE,51:56.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:56.0
+processKindId,NONE,51:56.0
+A_Axis_Load,106,51:56.0
+A_Position,-89.9995632,51:56.0
+C_Axis_Load,5,51:56.0
+C_Position,120.0005,51:56.0
+Machine_Time,2647410.622,51:56.0
+Spindle_Time,709602.711,51:56.0
+Feed_Override,100,51:56.0
+Feed_Rate,0,51:56.0
+Program_Runtime_Seconds,16,51:56.0
+Rapid_Override,100,51:56.0
+Rapid_Speed,0,51:56.0
+S_Axis_Load,1,51:56.0
+Spindle_Override,100,51:56.0
+Spindle_Speed,0,51:56.0
+X_Axis_Load,5,51:56.0
+X_Position,1.386796219,51:56.0
+Y_Axis_Load,5,51:56.0
+Y_Position,496.9534,51:56.0
+Z_Axis_Load,37,51:56.0
+Z_Position,-99.86681811,51:56.0
+COR_Status,1,51:56.0
+Controller_Mode,AUTO,51:56.0
+EStop_State,ARMED,51:56.0
+Machine_Mode,5,51:56.0
+Block_Number,30,51:56.0
+Current_Tool,4,51:56.0
+Part_Count,8,51:56.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:56.0
+voltage,133.4666667,51:56.0
+current,4.556666667,51:56.0
+active power,526.6666667,51:56.0
+forward kWh,27.21066667,51:56.0
+reverse kWh,0.725666667,51:56.0
+frequency,60.01,51:56.0
+power factor,0.833333333,51:56.0
+featureId,UNAVAILABLE,51:57.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:57.0
+processKindId,NONE,51:57.0
+A_Axis_Load,106,51:57.0
+A_Position,-89.9995632,51:57.0
+C_Axis_Load,5,51:57.0
+C_Position,120.0005,51:57.0
+Machine_Time,2647410.622,51:57.0
+Spindle_Time,709602.711,51:57.0
+Feed_Override,100,51:57.0
+Feed_Rate,0,51:57.0
+Program_Runtime_Seconds,17,51:57.0
+Rapid_Override,100,51:57.0
+Rapid_Speed,0,51:57.0
+S_Axis_Load,1,51:57.0
+Spindle_Override,100,51:57.0
+Spindle_Speed,0,51:57.0
+X_Axis_Load,5,51:57.0
+X_Position,1.386784774,51:57.0
+Y_Axis_Load,5,51:57.0
+Y_Position,496.9534,51:57.0
+Z_Axis_Load,34,51:57.0
+Z_Position,-99.86697832,51:57.0
+COR_Status,1,51:57.0
+Controller_Mode,AUTO,51:57.0
+EStop_State,ARMED,51:57.0
+Machine_Mode,5,51:57.0
+Block_Number,30,51:57.0
+Current_Tool,0,51:57.0
+Part_Count,8,51:57.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:57.0
+voltage,133.3,51:57.0
+current,6.856666667,51:57.0
+active power,726,51:57.0
+forward kWh,27.21066667,51:57.0
+reverse kWh,0.725666667,51:57.0
+frequency,60.01,51:57.0
+power factor,0.613333333,51:57.0
+featureId,UNAVAILABLE,51:58.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:58.0
+processKindId,NONE,51:58.0
+A_Axis_Load,106,51:58.0
+A_Position,-89.9995632,51:58.0
+C_Axis_Load,5,51:58.0
+C_Position,120.0005,51:58.0
+Machine_Time,2647410.622,51:58.0
+Spindle_Time,709602.711,51:58.0
+Feed_Override,100,51:58.0
+Feed_Rate,0,51:58.0
+Program_Runtime_Seconds,18,51:58.0
+Rapid_Override,100,51:58.0
+Rapid_Speed,0,51:58.0
+S_Axis_Load,0,51:58.0
+Spindle_Override,100,51:58.0
+Spindle_Speed,0,51:58.0
+X_Axis_Load,4,51:58.0
+X_Position,1.386807664,51:58.0
+Y_Axis_Load,5,51:58.0
+Y_Position,496.9534,51:58.0
+Z_Axis_Load,35,51:58.0
+Z_Position,-99.8670012,51:58.0
+COR_Status,1,51:58.0
+Controller_Mode,AUTO,51:58.0
+EStop_State,ARMED,51:58.0
+Machine_Mode,5,51:58.0
+Block_Number,30,51:58.0
+Current_Tool,85,51:58.0
+Part_Count,8,51:58.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:58.0
+voltage,133.3,51:58.0
+current,6.006666667,51:58.0
+active power,693.3333333,51:58.0
+forward kWh,27.21066667,51:58.0
+reverse kWh,0.725666667,51:58.0
+frequency,60.01,51:58.0
+power factor,0.83,51:58.0
+featureId,UNAVAILABLE,51:59.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,51:59.0
+processKindId,465E99DA-B681-4FD4-894C-3B1EF84592C2,51:59.0
+A_Axis_Load,106,51:59.0
+A_Position,-89.9995632,51:59.0
+C_Axis_Load,5,51:59.0
+C_Position,120.0005,51:59.0
+Machine_Time,2647410.622,51:59.0
+Spindle_Time,709602.711,51:59.0
+Feed_Override,100,51:59.0
+Feed_Rate,633.3333,51:59.0
+Program_Runtime_Seconds,18,51:59.0
+Rapid_Override,100,51:59.0
+Rapid_Speed,0,51:59.0
+S_Axis_Load,16,51:59.0
+Spindle_Override,100,51:59.0
+Spindle_Speed,1324.102459,51:59.0
+X_Axis_Load,28,51:59.0
+X_Position,150.0836924,51:59.0
+Y_Axis_Load,16,51:59.0
+Y_Position,340.9743342,51:59.0
+Z_Axis_Load,35,51:59.0
+Z_Position,-99.8670012,51:59.0
+COR_Status,1,51:59.0
+Controller_Mode,AUTO,51:59.0
+EStop_State,ARMED,51:59.0
+Machine_Mode,5,51:59.0
+Block_Number,32,51:59.0
+Current_Tool,85,51:59.0
+Part_Count,8,51:59.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,51:59.0
+voltage,133.3666667,51:59.0
+current,6.5,51:59.0
+active power,693.6666667,51:59.0
+forward kWh,27.21133333,51:59.0
+reverse kWh,0.725666667,51:59.0
+frequency,60.01,51:59.0
+power factor,0.68,51:59.0
+featureId,UNAVAILABLE,52:00.0
+partKindId,D2C78EB3-CB26-4FDA-ABA9-353C0E6A1AB1,52:00.0
+processKindId,465E99DA-B681-4FD4-894C-3B1EF84592C2,52:00.0
+A_Axis_Load,106,52:00.0
+A_Position,-89.9995632,52:00.0
+C_Axis_Load,5,52:00.0
+C_Position,120.0005,52:00.0
+Machine_Time,2647410.622,52:00.0
+Spindle_Time,709602.711,52:00.0
+Feed_Override,100,52:00.0
+Feed_Rate,533.3333,52:00.0
+Program_Runtime_Seconds,20,52:00.0
+Rapid_Override,100,52:00.0
+Rapid_Speed,0,52:00.0
+S_Axis_Load,0,52:00.0
+Spindle_Override,100,52:00.0
+Spindle_Speed,3036,52:00.0
+X_Axis_Load,6,52:00.0
+X_Position,379.846806,52:00.0
+Y_Axis_Load,7,52:00.0
+Y_Position,99.95383307,52:00.0
+Z_Axis_Load,38,52:00.0
+Z_Position,-235.4244223,52:00.0
+COR_Status,1,52:00.0
+Controller_Mode,AUTO,52:00.0
+EStop_State,ARMED,52:00.0
+Machine_Mode,5,52:00.0
+Block_Number,33,52:00.0
+Current_Tool,85,52:00.0
+Part_Count,8,52:00.0
+Program_Name_Running,000454_D_A_PROGRAM_4.NC,52:00.0
+voltage,132.4,52:00.0
+current,23.77666667,52:00.0
+active power,2560.333333,52:00.0
+forward kWh,27.21133333,52:00.0
+reverse kWh,0.725666667,52:00.0
+frequency,60.01,52:00.0
+power factor,1,52:00.0

@@ -73,3 +73,5 @@ in EXPLORATORY/shared/adapters.py. For now, the FDM utilization factor (u=0.9)
 is computed from spec-sheet values only.
 
 ---
+- example_project: EnergyAnalyzer produced no results from 'C:\\Users\\Administrator\\OneDrive - purdue.edu\\Documents\\python\\__pycache__\\Research python\\Oil-Pump-and-WattTime-Sustainability-Scripts\\Al6061'. Check that the CSV files match the expected naming convention.
+- example_project: EnergyAnalyzer produced no results from 'C:\\Users\\Administrator\\OneDrive - purdue.edu\\Documents\\python\\__pycache__\\Research python\\Oil-Pump-and-WattTime-Sustainability-Scripts\\Al6061'. Check that the CSV files match the expected naming convention.

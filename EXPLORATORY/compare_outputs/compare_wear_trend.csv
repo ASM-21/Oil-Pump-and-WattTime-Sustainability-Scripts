@@ -1,0 +1,4 @@
+method,n_ops_tested,n_significant_p05,median_|slope|_%/run
+register,49,7,0.568
+active_power,49,7,0.326
+diff_%,,0,-42.61

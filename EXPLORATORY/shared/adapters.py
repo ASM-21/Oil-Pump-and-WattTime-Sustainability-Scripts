@@ -315,9 +315,16 @@ def load_operation_energy() -> pd.DataFrame:
     df["end"] = pd.NaT
     df["peak_power_w"] = float("nan")
 
+    # Active-power integration column (NaN when active power stream absent in CSV)
+    if "Energy_Wh_Active" in cleaned.columns:
+        df["energy_wh_active"] = cleaned["Energy_Wh_Active"].values
+    else:
+        df["energy_wh_active"] = float("nan")
+
     contract_cols = [
         "run_id", "part", "program", "operation_id", "operation_cat",
-        "start", "end", "duration_s", "energy_wh", "mean_power_w", "peak_power_w",
+        "start", "end", "duration_s", "energy_wh", "energy_wh_active",
+        "mean_power_w", "peak_power_w",
     ]
     return df[contract_cols].reset_index(drop=True)
 
