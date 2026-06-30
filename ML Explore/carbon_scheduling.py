@@ -41,6 +41,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -213,8 +215,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Carbon-aware scheduling simulation over operation energy profiles.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/scheduling")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/scheduling"))
     ap.add_argument("--carbon-csv", default=None, help="Single carbon-intensity CSV.")
     ap.add_argument("--carbon-dir", default=None, help="Folder of archetype CSVs.")
     ap.add_argument("--time-col", default="timestamp")

@@ -33,6 +33,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -174,8 +176,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Sensor importance, redundancy, and minimal sensor set.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/sensor_study")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/sensor_study"))
     ap.add_argument("--corr-threshold", type=float, default=0.95)
     ap.add_argument("--min-per-class", type=int, default=4)
     ap.add_argument("--max-sensors", type=int, default=8)

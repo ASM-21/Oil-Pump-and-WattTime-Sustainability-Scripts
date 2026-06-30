@@ -36,6 +36,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -259,8 +261,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Sample-level signatures, phase segmentation, and early prediction.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/timeseries")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/timeseries"))
     ap.add_argument("--grid", type=int, default=25, help="Points in the normalized-time grid.")
     ap.add_argument("--min-samples", type=int, default=4,
                     help="Skip passes shorter than this for signatures/phases.")

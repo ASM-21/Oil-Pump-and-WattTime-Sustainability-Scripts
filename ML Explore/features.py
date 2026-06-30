@@ -29,6 +29,8 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -211,7 +213,7 @@ def main() -> int:
         description="Optional: dump a feature table from the per-operation CSV folder.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    ap.add_argument("--input", default="operation_csvs")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
     ap.add_argument("--output", default="ml")
     ap.add_argument("--granularity", choices=["segment", "sample"], default="segment")
     args = ap.parse_args()

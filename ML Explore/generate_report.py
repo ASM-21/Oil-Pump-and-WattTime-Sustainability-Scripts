@@ -24,6 +24,8 @@ import datetime as dt
 from pathlib import Path
 from typing import List, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import pandas as pd
 
 # section -> (subdir, title, [(csv, n_rows)], [png])
@@ -135,8 +137,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Assemble analysis outputs into one HTML report.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="ml", help="Results root containing per-script subfolders.")
-    ap.add_argument("--output", default="ml/report.html")
+    ap.add_argument("--input", default=str(_HERE / "ml"), help="Results root containing per-script subfolders.")
+    ap.add_argument("--output", default=str(_HERE / "ml/report.html"))
     args = ap.parse_args()
 
     root = Path(args.input)

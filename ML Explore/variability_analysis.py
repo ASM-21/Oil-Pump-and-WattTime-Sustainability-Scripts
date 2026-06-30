@@ -28,6 +28,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -156,8 +158,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Run-to-run variability and reproducibility per operation.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/variability")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/variability"))
     args = ap.parse_args()
 
     out_dir = Path(args.output); out_dir.mkdir(parents=True, exist_ok=True)

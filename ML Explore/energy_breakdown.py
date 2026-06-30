@@ -31,6 +31,8 @@ import argparse
 import warnings
 from pathlib import Path
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -124,8 +126,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Energy attribution across operations and programs.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/energy_breakdown")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/energy_breakdown"))
     ap.add_argument("--target", choices=["auto", "kwh_meter", "wh_integral"], default="auto")
     args = ap.parse_args()
 

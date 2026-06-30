@@ -36,6 +36,8 @@ from __future__ import annotations
 import argparse
 import warnings
 from pathlib import Path
+
+_HERE = Path(__file__).resolve().parent
 from typing import Dict, Optional
 
 import numpy as np
@@ -73,8 +75,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Carbon footprint and material-vs-manufacturing LCA bridge.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/carbon")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/carbon"))
     ap.add_argument("--emission-factor", type=float, default=0.40,
                     help="Grid emission factor in kg CO2e per kWh.")
     ap.add_argument("--material-carbon", type=float, default=None,

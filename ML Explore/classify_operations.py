@@ -36,6 +36,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -165,8 +167,8 @@ def main() -> int:
         description="Compare ML algorithms on operation classification, per operation "
                     "and per sensor group.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/classify")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/classify"))
     ap.add_argument("--label", default="operation")
     ap.add_argument("--group-col", default="source_file",
                     help="Column defining independent units held out together (the run).")

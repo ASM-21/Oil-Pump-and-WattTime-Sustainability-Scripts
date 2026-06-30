@@ -33,6 +33,8 @@ import argparse
 import warnings
 from pathlib import Path
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -116,8 +118,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Unsupervised clustering and sub-mode discovery.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/clustering")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/clustering"))
     ap.add_argument("--max-k", type=int, default=8)
     args = ap.parse_args()
 

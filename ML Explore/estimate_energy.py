@@ -44,6 +44,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -191,8 +193,8 @@ def main() -> int:
         description="Per-operation energy regression model comparison.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/energy")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/energy"))
     ap.add_argument("--target", choices=["auto", "kwh_meter", "wh_integral"], default="auto")
     ap.add_argument("--exclude-duration", action="store_true",
                     help="Drop duration/n_samples so only sensor signal predicts energy.")

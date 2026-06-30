@@ -36,6 +36,8 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -170,8 +172,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description="Tool-wear / degradation analysis across runs.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/wear")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/wear"))
     ap.add_argument("--rul-threshold", type=float, default=1.5,
                     help="Failure threshold as a multiple of baseline for the RUL proxy.")
     args = ap.parse_args()

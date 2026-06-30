@@ -36,6 +36,8 @@ import warnings
 from pathlib import Path
 from typing import List
 
+_HERE = Path(__file__).resolve().parent
+
 import numpy as np
 import pandas as pd
 
@@ -140,8 +142,8 @@ def main() -> int:
         description="Quality check the per-operation CSV folder before modeling.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    ap.add_argument("--input", default="operation_csvs")
-    ap.add_argument("--output", default="ml/quality")
+    ap.add_argument("--input", default=str(_HERE / "operation_csvs"))
+    ap.add_argument("--output", default=str(_HERE / "ml/quality"))
     ap.add_argument("--min-samples", type=int, default=6,
                     help="Passes below this many samples are flagged as too short.")
     ap.add_argument("--min-passes", type=int, default=6,

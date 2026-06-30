@@ -68,9 +68,9 @@ def main() -> int:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     ap.add_argument("--data", default=None,
                     help="Raw long-format CSV folder. If given, runs split_operations first.")
-    ap.add_argument("--input", default="operation_csvs",
+    ap.add_argument("--input", default=str(HERE / "operation_csvs"),
                     help="Per-operation CSV folder (created here if --data is given).")
-    ap.add_argument("--output-root", default="ml", help="Where each step writes its outputs.")
+    ap.add_argument("--output-root", default=str(HERE / "ml"), help="Where each step writes its outputs.")
     ap.add_argument("--names", default=None, help="processKindId -> name JSON (for split).")
     ap.add_argument("--keep-idle", action="store_true", help="Pass --keep-idle to split.")
     ap.add_argument("--material-carbon", type=float, default=None,
