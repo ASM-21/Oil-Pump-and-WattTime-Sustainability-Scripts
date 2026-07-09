@@ -28,6 +28,18 @@ ROOT = Path(__file__).resolve().parent.parent
 EXPLORATORY = Path(__file__).parent
 
 PROJECTS = [
+    # Never park: theory closed forms validated on fixtures through the
+    # real pipeline; real data only adds empirical confirmation rows.
+    "theory/estimator_errors",
+    "theory/allocation_theory",
+    "theory/power_decomposition",
+    # Always produce a fixture-verified result set; add 'measured' tables
+    # when CNC_DATA_DIR points at the real Al6061 folder.
+    "signature_mining",
+    "energy_budget",
+    "uncertainty_prediction",
+    # Park without real data (fixture mode not applicable: their claims are
+    # about the measured campaign itself).
     "estimation_ladder",   # Tier A -- build first
     "allocation",          # Tier A -- build second
     "wear_runorder",       # build after the above two

@@ -36,6 +36,29 @@ At recycled aluminum (0.5 kg CO2e/kg):  E_mat ~ 2.5 * 0.5 = 1.25 kg CO2e
 With renewable grid (0.02 kg CO2e/kWh): E_manuf ~ 0.86 * 0.02 = 0.017 kg CO2e
 Even with recycled Al: share ~ 1.3%  [goes down again]
 
+## Update 2026-07-09: owner-verified masses computed
+
+The owner verified the BOM (now committed as `EXPLORATORY/bom.csv`): body
+stock 1880 g (not the 2500 g estimated above), lid stock 518 g. With the
+context-doc energy totals (0.859 + 0.582 = 1.441 kWh CNC, still to be
+confirmed by estimation_ladder) and the Indiana grid (0.45 kg CO2e/kWh),
+the recomputed table (stdlib cross-computation; run B1_breakeven.py locally
+to regenerate the CSVs and figures):
+
+| Scenario | CF_al (kg CO2e/kg) | Mfg share |
+|---|---|---|
+| Virgin (global avg) | 12.0 | 2.20% |
+| 50% recycled mix | 6.5 | 3.99% |
+| Virgin (low-carbon smelter) | 4.0 | 6.33% |
+| Recycled (secondary) | 0.5 | 35.10% |
+
+Break-even: manufacturing reaches 5% at CF_al = 5.14, 10% at 2.43, and 20%
+at 1.08 kg CO2e/kg. The verified stock masses are smaller than the old
+estimates, which shrinks the materials term and STRENGTHENS the finding:
+manufacturing now crosses 5% even for low-carbon-smelter virgin aluminum,
+and the recycled scenario rises from ~29% to ~35%. The 2.20% baseline stays
+consistent with the paper's ~2% quote.
+
 ## Verdict
 
 **Has legs.** The break-even arithmetic is simple and produces a clear and genuine

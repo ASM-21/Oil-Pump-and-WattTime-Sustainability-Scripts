@@ -5,6 +5,19 @@ Each gap records what is missing and what you need to supply to unpark the proje
 
 ---
 
+## RESOLVED 2026-07-09: BOM / part masses
+
+`EXPLORATORY/bom.csv` is now committed with owner-verified masses
+(body 1880/443/1437 g, lid 518/70/448 g). `load_bom()` returns it; the
+L2 estimation, allocation mass rule, and specific-energy calculations are
+unblocked. The CNC measurement CSVs (below) are now the ONLY blocking gap
+for the remaining projects. Note the new projects (theory/, signature_mining,
+energy_budget, uncertainty_prediction) do not park on it: they verify
+themselves on synthetic fixtures (`shared/fixtures.py`) and add measured
+tables when the CSVs arrive.
+
+---
+
 ## CNC raw measurement CSVs (blocks all CNC projects)
 
 **Required for:** estimation_ladder, allocation, wear_runorder, all future CNC projects.

@@ -111,6 +111,45 @@ estimation shortcut is acceptable for a given machine class.
 
 ---
 
+## Results/Discussion: theory layer (new, added 2026-07-09)
+
+These are closed-form results, complete and fixture-validated now; real data
+adds only the empirical confirmation points. Derivations in `theory/README.md`,
+brute-force validation in `theory/selftest_stdlib.py`.
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Rated-power (L0) bias is the identity 1/u - 1; acceptable only when u >= 1/(1+r) | bias curve + machine-class ranges | `theory/estimator_errors/outputs/l0_bias_vs_utilization.png`, `machine_class_bias.csv` | run estimator_errors |
+| The right estimation shortcut is decidable from machine class alone | regime map on (u, CV) plane | `theory/estimator_errors/outputs/regime_map.png` | run estimator_errors |
+| Allocation error = phi(rho_E - rho_x)/(1 + phi rho_x); zero only when attribute tracks energy | error surface + rules-vs-mix curves | `theory/allocation_theory/outputs/` | run allocation_theory |
+| At 1:1 mix (quoted rho_E 0.677): mass-removed allocation errs +27.8%, economic +44.8% on the body | `rule_errors_at_mixes.csv` | same | computed (stdlib selftest); verify rho_E from data |
+| Duration-based (L1) estimation works because base load dominates: err_i = (lam_bar - lam_i)/(1 + lam_i) | per-category lambda table + split figure | `theory/power_decomposition/outputs/` | run power_decomposition |
+| Measured SEC sits inside published milling ranges | `sec_benchmark.csv` | same | needs CNC data for measured rows |
+
+## Results: signature mining (new, added 2026-07-09)
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Operation boundaries are recoverable from power alone (retrofit claim) | boundary recall/precision/F1 | `signature_mining/outputs/boundary_recovery_measured.csv` | needs CNC data (fixture set exists) |
+| Operation identity is recoverable from waveform features | LORO fingerprint accuracy | `signature_mining/outputs/` + FINDINGS.md | needs CNC data |
+| Signatures transfer across parts at category level | cross-part transfer accuracy | FINDINGS.md | needs CNC data |
+| Machine-state split (off/idle/positioning/cutting) of time and energy | `state_shares_measured.csv` + figure | `signature_mining/outputs/` | needs CNC data |
+
+## Results: energy budget closure (new, added 2026-07-09)
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Full productive vs non-productive budget (generalizes the 11.7% homing number) | `category_budget_measured.csv` + stacked figure | `energy_budget/outputs/` | needs CNC data |
+| Attribution closes against independent stream integration to < 5% | worst closure residual | `energy_budget/outputs/closure_measured.csv` | needs CNC data |
+
+## Results/Discussion: uncertainty and design-stage prediction (new, added 2026-07-09)
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Product manufacturing energy has a defensible 95% interval (MC vs delta cross-checked) | interval per part | `uncertainty_prediction/outputs/footprint_intervals_measured.csv` | needs CNC data |
+| Manufacturing-share intervals per aluminum scenario | interval fan figure | `uncertainty_prediction/outputs/mfg_share_intervals_measured.png` | needs CNC data |
+| Program energy is predictable from CAM-planned durations (design-stage claim) | LOPO mean abs error % | `uncertainty_prediction/outputs/design_stage_loo_measured.csv` + scatter | needs CNC data |
+
 ## Numbers that reviewers will specifically challenge
 
 These are the three flagged in GROUND_TRUTH.md. Make sure each has an explicit, stated basis:

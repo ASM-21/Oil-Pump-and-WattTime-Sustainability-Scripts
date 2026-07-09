@@ -220,7 +220,14 @@ def _resolve_data_dir(env_var: str, description: str) -> str:
     print(f"  No path found for {env_var}.")
     print(f"  (You can also set it with:  export {env_var}=/your/path)")
     print()
-    val = input("  Enter folder path: ").strip().strip('"').strip("'")
+    try:
+        val = input("  Enter folder path: ").strip().strip('"').strip("'")
+    except EOFError:
+        # Non-interactive environment (CI, runner, agent): park instead of crash.
+        raise DataNotInRepo(
+            f"{env_var} is not set and no interactive prompt is available. "
+            f"Set the environment variable and re-run."
+        ) from None
     if not val:
         raise DataNotInRepo(
             f"{env_var} not configured and no path entered. "
@@ -322,23 +329,99 @@ def load_operation_energy() -> pd.DataFrame:
     return df[contract_cols].reset_index(drop=True)
 
 
-def load_power_stream(run_id) -> pd.DataFrame:
+def load_power_stream(run_id, part: str | None = None) -> pd.DataFrame:
     """
     Return the 1 Hz power stream for one run, with operation identity attached.
 
-    NOT IMPLEMENTED: the existing EnergyForFeatureLib loader does not expose the
-    raw per-sample stream. Implementing this requires re-parsing the raw CSV for
-    the given run_id and joining the UUID event log -- straightforward but not
-    yet wired here.
+    Re-parses the raw Al6061_{part}{run_id}_p*.csv files from CNC_DATA_DIR and
+    joins the interleaved processKindId / partKindId / active power rows on
+    their shared timestamps, exactly as EnergyForFeatureLib.process_file does,
+    but keeping every sample instead of integrating them away.
 
-    Projects that need this (disaggregation, feature_energy) should either
-    implement it here or park themselves with DataNotInRepo.
+    Args:
+      run_id: the part number from the filename (Part_Num in the energy table).
+      part:   "body" or "lid". None loads both parts with that number.
+
+    Returns one row per 1 Hz sample with columns:
+      t             : pandas datetime
+      power_w       : float
+      operation_id  : decoded operation name ("NONE" while no operation active)
+      program       : decoded program name ("NONE" outside any program)
+      part          : "body" or "lid"
+      source_file   : which raw CSV the sample came from
+
+    Samples whose program decodes to UNKNOWN are kept and labeled, not dropped:
+    signature work needs to see what attribution would discard.
     """
-    raise DataNotInRepo(
-        "load_power_stream() is not yet implemented. "
-        "It needs to re-parse the raw 1 Hz CSV and join UUID event logs. "
-        "Add the implementation here and set CNC_DATA_DIR to your data folder."
-    )
+    data_dir = Path(_resolve_data_dir(
+        "CNC_DATA_DIR",
+        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
+    ))
+
+    parts = [part] if part else ["body", "lid"]
+    frames = []
+    EnergyAnalyzer, _ = _import_energy_analyzer()
+    analyzer = EnergyAnalyzer()
+
+    for p in parts:
+        for path in sorted(data_dir.glob(f"Al6061_{p}{run_id}_p*.csv")):
+            raw = pd.read_csv(path)
+            streams = {}
+            for name in ("processKindId", "partKindId", "active power"):
+                s = raw[raw["Dataname"] == name][["Time", "Value"]].copy()
+                s["Time"] = pd.to_datetime(s["Time"])
+                streams[name] = s
+            if any(s.empty for s in streams.values()):
+                continue
+            merged = (
+                streams["processKindId"]
+                .merge(streams["partKindId"], on="Time", suffixes=("_proc", "_part"))
+                .merge(streams["active power"], on="Time")
+            )
+            merged.columns = ["t", "proc_uuid", "part_uuid", "power_w"]
+            merged["power_w"] = pd.to_numeric(merged["power_w"], errors="coerce").clip(lower=0)
+            merged = merged.sort_values("t").reset_index(drop=True)
+            merged["operation_id"] = (
+                merged["proc_uuid"].str.strip().str.upper()
+                .map(lambda u: analyzer.uuid_to_operation.get(u, f"UNKNOWN_{str(u)[:8]}"))
+            )
+            merged["program"] = (
+                merged["part_uuid"].str.strip().str.upper()
+                .map(lambda u: analyzer.partkind_to_program.get(u, f"UNKNOWN_{str(u)[:8]}"))
+            )
+            merged["part"] = p
+            merged["source_file"] = path.name
+            frames.append(merged[
+                ["t", "power_w", "operation_id", "program", "part", "source_file"]
+            ])
+
+    if not frames:
+        raise DataNotInRepo(
+            f"No Al6061 CSV files found for run_id={run_id!r}, part={part!r} "
+            f"in {data_dir}. Check the run number and CNC_DATA_DIR."
+        )
+    return pd.concat(frames, ignore_index=True)
+
+
+def list_run_ids(part: str | None = None) -> list[tuple[str, int]]:
+    """
+    Return the (part, run_id) pairs available in CNC_DATA_DIR, from filenames
+    alone (cheap; does not parse file contents).
+    """
+    data_dir = Path(_resolve_data_dir(
+        "CNC_DATA_DIR",
+        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
+    ))
+    import re as _re
+    found = set()
+    for path in data_dir.glob("Al6061_*.csv"):
+        m = _re.search(r"Al6061_(lid|body)(\d+)_p(\d+)", path.name, _re.IGNORECASE)
+        if m:
+            found.add((m.group(1).lower(), int(m.group(2))))
+    pairs = sorted(found)
+    if part:
+        pairs = [pr for pr in pairs if pr[0] == part]
+    return pairs
 
 
 def load_program_table() -> pd.DataFrame:
