@@ -157,8 +157,11 @@ PROGRAM_SEQUENCES: dict[str, list[str]] = {
 
 # Seconds of in-program idle (processKindId = NONE) between operations, and
 # seconds of out-of-program capture (partKindId = NONE) at file start/end.
-INTER_OP_IDLE_S = (3, 6)
-FILE_PAD_S = (4, 8)
+# Idle spans must be at least as long as the changepoint detectors'
+# min_seg_len (4 s at the call sites) or boundary-recovery scores on
+# fixtures become flaky for reasons unrelated to the method.
+INTER_OP_IDLE_S = (6, 10)
+FILE_PAD_S = (6, 10)
 
 
 def _trapezoid_energy_wh(powers: list[float]) -> tuple[float, float]:
@@ -213,7 +216,6 @@ def generate_fixture_dataset(
             fname = f"Al6061_{part}{run}_p{prog_num}.csv"
             rows: list[tuple[str, str, str]] = []  # (Time, Dataname, Value)
             t = t0 + timedelta(hours=(prog_num - 1) * 2 + (run - 1) * 8)
-            offset_s = 0
 
             def emit(seconds: int, power_fn, proc_uuid: str, part_uuid: str,
                      _t=[t]) -> list[float]:
@@ -245,6 +247,7 @@ def generate_fixture_dataset(
                 emit(rng.randint(*INTER_OP_IDLE_S), idle_power, "NONE", prog_uuid)
 
                 mean_p = IDLE_POWER_W + run_level
+                offset_s = len(rows) // 3  # true sample offset incl. idle/pad
                 powers = emit(
                     dur_s,
                     lambda: rng.gauss(mean_p, mean_p * noise_sd_frac),
@@ -263,7 +266,6 @@ def generate_fixture_dataset(
                     "mean_power_w": round(sum(powers) / len(powers), 3),
                     "start_offset_s": offset_s,
                 })
-                offset_s += dur_s
 
             # Trailing in-program idle, then lead-out outside the program.
             emit(rng.randint(*INTER_OP_IDLE_S), idle_power, "NONE", prog_uuid)
@@ -280,6 +282,94 @@ def generate_fixture_dataset(
         writer.writeheader()
         writer.writerows(truth)
 
+    return truth
+
+
+# ---------------------------------------------------------------------------
+# AM (FDM) fixtures
+# ---------------------------------------------------------------------------
+# Same long Time/Dataname/Value format, but the power metric is the literal
+# 'power' (per the Additive scripts), there are no UUIDs, and each file is
+# one print: {Prefix}_Part{N}.csv. Profile: heat-up ramp to a ~200 W plateau
+# (bed+nozzle+steppers all working: the high-utilization contrast machine),
+# brief cooldown tail. A 'temperature' metric is interleaved so loaders are
+# proven to filter on Dataname.
+
+AM_PLATEAU_W = 200.0
+AM_RAMP_S = 60
+AM_COOL_S = 30
+
+_AM_PRINT_DURATION_S = {   # plateau seconds per part type (kept short; 1 Hz)
+    "DriveGear": 600,
+    "DriveShaft": 480,
+    "IdleGear": 540,
+    "IdleShaft": 420,
+}
+
+
+def generate_am_fixture_dataset(
+    out_dir: str | Path,
+    n_runs: int = 2,
+    seed: int = 7,
+    noise_sd_frac: float = 0.02,
+    start_time: str = "2025-09-10 09:00:00",
+) -> list[dict]:
+    """
+    Write one CSV per (part type, run) into out_dir; return the truth table
+    (file, part, run_id, energy_wh, duration_s, mean_power_w).
+
+    Truth energy uses the SAME integration the adapter applies (dt between
+    consecutive samples, first sample dropped, sum P*dt), so the loader must
+    reproduce it exactly, not approximately.
+    """
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    rng = random.Random(seed)
+    t0 = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+    truth: list[dict] = []
+
+    for pi, (prefix, plateau_s) in enumerate(sorted(_AM_PRINT_DURATION_S.items())):
+        for run in range(1, n_runs + 1):
+            fname = f"{prefix}_Part{run}.csv"
+            t = t0 + timedelta(hours=pi * 6 + (run - 1) * 24)
+            powers: list[float] = []
+            rows: list[tuple[str, str, str]] = []
+            n_total = AM_RAMP_S + plateau_s + AM_COOL_S
+            for i in range(n_total):
+                if i < AM_RAMP_S:
+                    base = AM_PLATEAU_W * i / AM_RAMP_S
+                elif i < AM_RAMP_S + plateau_s:
+                    base = AM_PLATEAU_W
+                else:
+                    base = AM_PLATEAU_W * 0.15
+                p = max(0.0, rng.gauss(base, AM_PLATEAU_W * noise_sd_frac))
+                stamp = t.strftime("%Y-%m-%d %H:%M:%S.%f")
+                rows.append((stamp, "power", f"{p:.1f}"))
+                rows.append((stamp, "temperature", f"{60 + base / 10:.1f}"))
+                powers.append(p)
+                t += timedelta(seconds=1)
+
+            # Truth with the adapter's rule: drop first sample, dt = 1 s.
+            energy_wh = sum(powers[1:]) / 3600.0
+            duration_s = float(n_total - 1)
+            truth.append({
+                "file": fname,
+                "part": prefix,
+                "run_id": run,
+                "energy_wh": round(energy_wh, 6),
+                "duration_s": duration_s,
+                "mean_power_w": round(energy_wh * 3600.0 / duration_s, 3),
+            })
+            with (out / fname).open("w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["Time", "Dataname", "Value"])
+                writer.writerows(rows)
+
+    truth_path = out / "am_fixture_truth.csv"
+    with truth_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(truth[0].keys()))
+        writer.writeheader()
+        writer.writerows(truth)
     return truth
 
 
@@ -308,6 +398,29 @@ def selftest() -> None:
         maps = load_production_uuid_maps()
         assert "PROGRAM_1_Body" in maps[0].values()
         assert "CAVITY_MILL_OUTSIDE" in maps[1].values()
+
+        # start_offset_s must count ALL preceding samples (idle and pad too):
+        # strictly increasing within each file, never starting at 0.
+        by_file: dict[str, list[int]] = {}
+        for r in truth:
+            by_file.setdefault(r["file"], []).append(r["start_offset_s"])
+        for fname, offsets in by_file.items():
+            assert offsets == sorted(offsets), f"offsets not increasing in {fname}"
+            assert offsets[0] >= FILE_PAD_S[0], f"first offset ignores pad in {fname}"
+
+    # AM fixtures: determinism, truth positivity, plateau near 200 W.
+    with tempfile.TemporaryDirectory() as tmp:
+        am = generate_am_fixture_dataset(tmp, n_runs=2, seed=5)
+        files = sorted(Path(tmp).glob("*_Part*.csv"))
+        assert len(files) == len(_AM_PRINT_DURATION_S) * 2, len(files)
+        assert all(r["energy_wh"] > 0 for r in am)
+        for r in am:
+            assert 0.5 * AM_PLATEAU_W < r["mean_power_w"] <= 1.05 * AM_PLATEAU_W, r
+        with tempfile.TemporaryDirectory() as tmp2:
+            generate_am_fixture_dataset(tmp2, n_runs=2, seed=5)
+            a = files[0].read_text()
+            b = (Path(tmp2) / files[0].name).read_text()
+            assert a == b, "AM generator is not deterministic for a fixed seed"
     print("fixtures selftest OK")
 
 

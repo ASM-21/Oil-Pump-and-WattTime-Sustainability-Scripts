@@ -468,6 +468,106 @@ def load_bom() -> pd.DataFrame:
     )
 
 
+# ---------------------------------------------------------------------------
+# AM (FDM printer) loaders
+# ---------------------------------------------------------------------------
+# The AM CSVs share the CNC files' long Time/Dataname/Value format but differ
+# in two ways (per Machine Specific Scripts/Additive/*): the power metric is
+# the literal 'power' (not 'active power'), and there is NO UUID interleave;
+# each file is one print of one part. Filenames: {Prefix}_Part{N}.csv with
+# Prefix in AM_PART_PREFIXES. Energy integration follows the boxplotter
+# scripts: sort by time, dt from consecutive timestamps, drop the first
+# sample, energy = sum(P * dt).
+
+AM_PART_PREFIXES = ("DriveGear", "DriveShaft", "IdleGear", "IdleShaft")
+
+# Ultimaker 2+ Extended rated power per GROUND_TRUTH.md. A quoted spec, not a
+# measurement; A2_fdm_utilization verifies the measured draw against it.
+AM_RATED_POWER_W = 221.0
+
+
+def _am_data_dir() -> Path:
+    return Path(_resolve_data_dir(
+        "AM_DATA_DIR",
+        "Folder containing your FDM CSVs ({Prefix}_Part{N}.csv, "
+        "Prefix in DriveGear/DriveShaft/IdleGear/IdleShaft).",
+    ))
+
+
+def list_am_run_ids(prefix: str | None = None) -> list[tuple[str, int]]:
+    """(prefix, part_num) pairs available in AM_DATA_DIR, from filenames."""
+    import re as _re
+    found = set()
+    for path in _am_data_dir().glob("*_Part*.csv"):
+        m = _re.match(r"(\w+)_Part(\d+)\.csv$", path.name)
+        if m and m.group(1) in AM_PART_PREFIXES:
+            found.add((m.group(1), int(m.group(2))))
+    pairs = sorted(found)
+    if prefix:
+        pairs = [p for p in pairs if p[0] == prefix]
+    return pairs
+
+
+def load_am_power_stream(prefix: str, part_num: int) -> pd.DataFrame:
+    """
+    One print's power samples: t, power_w, part, run_id, source_file.
+    Raises DataNotInRepo if the file is absent.
+    """
+    path = _am_data_dir() / f"{prefix}_Part{part_num}.csv"
+    if not path.exists():
+        raise DataNotInRepo(
+            f"AM file {path.name!r} not found in AM_DATA_DIR. "
+            f"Available: {[f'{p}_Part{n}' for p, n in list_am_run_ids()]}"
+        )
+    raw = pd.read_csv(path)
+    power = raw[raw["Dataname"] == "power"][["Time", "Value"]].copy()
+    if power.empty:
+        raise DataNotInRepo(
+            f"No 'power' rows in {path.name}; Datanames present: "
+            f"{sorted(raw['Dataname'].unique())}"
+        )
+    power["Time"] = pd.to_datetime(power["Time"], format="mixed")
+    power = power.sort_values("Time").reset_index(drop=True)
+    return pd.DataFrame({
+        "t": power["Time"],
+        "power_w": pd.to_numeric(power["Value"], errors="coerce").clip(lower=0),
+        "part": prefix,
+        "run_id": part_num,
+        "source_file": path.name,
+    })
+
+
+def load_am_energy() -> pd.DataFrame:
+    """
+    Per-print energy table for every AM file in AM_DATA_DIR:
+    part, run_id, energy_wh, duration_s, mean_power_w, peak_power_w.
+
+    Integration matches the canonical boxplotter method: dt from consecutive
+    timestamps, first sample dropped, energy = sum(P * dt).
+    """
+    pairs = list_am_run_ids()
+    if not pairs:
+        raise DataNotInRepo(
+            "No {Prefix}_Part{N}.csv files found in AM_DATA_DIR. "
+            "Expected prefixes: " + ", ".join(AM_PART_PREFIXES)
+        )
+    rows = []
+    for prefix, num in pairs:
+        s = load_am_power_stream(prefix, num)
+        dt_h = s["t"].diff().dt.total_seconds() / 3600.0
+        energy_wh = float((s["power_w"] * dt_h).iloc[1:].sum())
+        duration_s = float((s["t"].iloc[-1] - s["t"].iloc[0]).total_seconds())
+        rows.append({
+            "part": prefix,
+            "run_id": num,
+            "energy_wh": energy_wh,
+            "duration_s": duration_s,
+            "mean_power_w": energy_wh * 3600.0 / duration_s if duration_s else float("nan"),
+            "peak_power_w": float(s["power_w"].max()),
+        })
+    return pd.DataFrame(rows)
+
+
 def load_moer() -> pd.DataFrame | None:
     """
     Return WattTime MOER data if it is co-located in this repo, else None.

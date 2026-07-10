@@ -72,17 +72,22 @@ Expected columns: timestamp (UTC), moer_lbs_per_mwh (or equivalent), region.
 
 ---
 
-## AM (FDM) measurement data (partially blocks estimation_ladder FDM side)
+## AM (FDM) measurement data (partially blocks the FDM side)
 
-**Required for:** estimation_ladder (FDM utilization factor from data, not spec sheet),
-future disaggregation/feature_energy projects.
+**Required for:** computing u_FDM from data instead of the spec sheet
+(explorations/A2_fdm_utilization.py), future disaggregation projects.
 
-**What is missing:** The FDM CSV files (DriveShaft prints) are not in this repo.
-The 3dPrinter_V1.py script has a hardcoded Windows path that will not work here.
+**What is missing:** The FDM CSV files ({Prefix}_Part{N}.csv, Prefix in
+DriveGear/DriveShaft/IdleGear/IdleShaft) are not in this repo.
+
+**Status 2026-07-09:** `load_am_energy()` and `load_am_power_stream()` are now
+implemented in EXPLORATORY/shared/adapters.py (power key 'power', boxplotter
+integration rule) and are fixture-verified. Until AM_DATA_DIR is set, u_FDM
+stays a spec-sheet number (~0.90).
 
 **How to fix:**
-Set AM_DATA_DIR to your local FDM CSV folder and implement load_am_energy()
-in EXPLORATORY/shared/adapters.py. For now, the FDM utilization factor (u=0.9)
-is computed from spec-sheet values only.
+Set AM_DATA_DIR to your local FDM CSV folder and run:
+
+    python EXPLORATORY/explorations/A2_fdm_utilization.py
 
 ---

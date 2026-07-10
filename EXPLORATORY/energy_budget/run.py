@@ -163,7 +163,7 @@ def main() -> None:
 
     real_note = ("Real CNC data not reachable in this run; set CNC_DATA_DIR "
                  "and re-run for the measured budget (tag 'measured').")
-    if os.environ.get("CNC_DATA_DIR"):
+    if os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1":
         try:
             sections += analyze_source("measured")
             real_note = "Measured budget written (tag 'measured')."

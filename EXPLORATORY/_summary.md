@@ -13,8 +13,22 @@ Run order on a machine with the data:
     python EXPLORATORY/theory/selftest_stdlib.py     # passes anywhere (verified)
     python EXPLORATORY/shared/fixtures.py            # passes anywhere (verified)
     python EXPLORATORY/shared/test_shared.py         # first pandas-based gate
+    python EXPLORATORY/smoke_fixture_all.py          # ALL nine projects on fixtures
     export CNC_DATA_DIR=/path/to/Al6061_csvs
+    export AM_DATA_DIR=/path/to/FDM_csvs             # optional: u_FDM from data
     python EXPLORATORY/run_all.py
+    python EXPLORATORY/explorations/A2_fdm_utilization.py
+
+Hardening pass (2026-07-09, second commit): fixed three latent `duration_s > 0`
+asserts that would have failed on the analyzer's zero-duration
+TRANSITION_OVERHEAD rows (adapter gate, example project, estimation_ladder);
+removed the undeclared `tabulate` dependency from FINDINGS writers; made
+fixture idle gaps detector-compatible; added `smoke_fixture_all.py` (executes
+the Tier-A flagships end to end on fixtures for the first time, with
+FIXTURE_SMOKE=1 downgrading quoted-number checks that synthetic data cannot
+meet); wired the AM/FDM loader + fixtures + A2 utilization exploration; added
+open-set rejection to signature_mining; estimation_ladder and allocation now
+read masses from bom.csv.
 
 ---
 

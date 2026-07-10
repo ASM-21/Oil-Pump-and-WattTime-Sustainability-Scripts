@@ -20,6 +20,7 @@ Set CNC_DATA_DIR first -- see EXPLORATORY/shared/adapters.py header for instruct
 """
 
 from __future__ import annotations
+import os
 import sys
 from pathlib import Path
 import pandas as pd
@@ -50,16 +51,22 @@ FDM_RATED_POWER_W = 221.0     # nameplate
 FDM_MEASURED_POWER_W = 200.0  # approximate measured draw; update from your AM CSV
 
 # ---------------------------------------------------------------------------
-# Mass removed -- VERIFY FROM YOUR STOCK/FINISHED MASS RECORDS
+# Mass removed -- single source of truth is EXPLORATORY/bom.csv
 # ---------------------------------------------------------------------------
-# Values from context doc SCOPE_tier_A_B_C.md. The paper cited 72% vs 84%
-# lighter in old drafts (inconsistent basis). Pick one basis and state it.
-# These are mass_removed = stock_mass - finished_mass.
-MASS_REMOVED_G = {
-    "body": 1437.0,   # grams -- from context doc, unverified
-    "lid":   448.0,   # grams -- from context doc, unverified
-}
-MASS_DATA_VERIFIED = False  # set True once you confirm against lab records
+# Owner-verified masses live in bom.csv (body 1880/443/1437 g, lid 518/70/448 g,
+# 2026-07-09). mass_removed = stock_mass - finished_mass; removed-mass basis is
+# the paper's single stated basis. The fallback constants match bom.csv and
+# exist only so this script stays runnable if bom.csv moves.
+def _mass_removed_g() -> tuple[dict[str, float], bool]:
+    fallback = {"body": 1437.0, "lid": 448.0}
+    try:
+        bom = adapters.load_bom().set_index("part")
+        return ({p: float(bom.loc[p, "mass_removed_g"]) for p in ("body", "lid")},
+                True)
+    except Exception:
+        return fallback, False
+
+MASS_REMOVED_G, MASS_DATA_VERIFIED = _mass_removed_g()
 
 # ---------------------------------------------------------------------------
 # Specific Energy Consumption (SEC) from literature (L2 estimator)
@@ -237,7 +244,11 @@ def smoke_test(r: dict) -> None:
 
     require(len(df) > 0, "energy table is empty -- nothing to analyze")
     require((df["energy_wh"] > 0).all(), "non-positive energy_wh values in table")
-    require((df["duration_s"] > 0).all(), "non-positive duration_s values in table")
+    # Homing (TRANSITION_OVERHEAD) rows are synthesized with Duration_Sec=0
+    # by EnergyForFeatureLib; they carry energy but no attributable time.
+    require((df["duration_s"] >= 0).all(), "negative duration_s values in table")
+    require((df.loc[df["operation_cat"] != "homing", "duration_s"] > 0).all(),
+            "non-positive duration_s outside homing rows")
     require((pr["L4_energy_wh"] > 0).all(), "non-positive L4 ground truth per run")
     require(
         (pr["L0_energy_wh"] > pr["L4_energy_wh"]).all(),
@@ -256,8 +267,17 @@ def smoke_test(r: dict) -> None:
     )
     require(r["n_tested"] > 0,
             "Shapiro-Wilk test produced no results -- need at least 4 runs per operation")
-    require(not log.any_disagreements(),
-            "a cross-check DISAGREED -- investigate before reporting results")
+    # FIXTURE_SMOKE=1 (set only by EXPLORATORY/smoke_fixture_all.py) runs this
+    # project on synthetic fixtures, where checks against numbers quoted from
+    # the MEASURED campaign are expected to disagree. Structural invariants
+    # above still apply; only the quoted-number gate is downgraded to a warning.
+    if os.environ.get("FIXTURE_SMOKE") == "1":
+        if log.any_disagreements():
+            print("FIXTURE_SMOKE: quoted-number cross-checks disagreed on "
+                  "synthetic data (expected); see FINDINGS for the table")
+    else:
+        require(not log.any_disagreements(),
+                "a cross-check DISAGREED -- investigate before reporting results")
 
 
 def plot(r: dict) -> None:
@@ -343,9 +363,10 @@ def write_findings(r: dict) -> None:
         )
     error_table = "\n".join(table_lines)
 
-    verified_note = ("" if MASS_DATA_VERIFIED else
-                     "\nNOTE: MASS_REMOVED_G values are from the context doc, not yet "
-                     "verified against lab records. L2 errors are approximate until confirmed.")
+    verified_note = ("\nMasses read from EXPLORATORY/bom.csv (owner-verified 2026-07-09), "
+                     "removed-mass basis." if MASS_DATA_VERIFIED else
+                     "\nNOTE: bom.csv was not readable; MASS_REMOVED_G fell back to "
+                     "context-doc constants. L2 errors are approximate until confirmed.")
 
     avg_w = r["avg_power_w"]
     u_cnc = r["u_cnc"]

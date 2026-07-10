@@ -84,7 +84,9 @@ def test_power_stream_loader():
         stream = adapters.load_power_stream(1, part="body")
 
         require(len(stream) > 0, "empty power stream")
-        require(stream["t"].is_monotonic_increasing or True, "stream not sorted")
+        for src, sf in stream.groupby("source_file"):
+            require(sf["t"].is_monotonic_increasing,
+                    f"stream not time-sorted within {src}")
         require((stream["power_w"] >= 0).all(), "negative power in stream")
 
         # Rectangle-rule energy of one operation's samples should be within a
@@ -116,7 +118,7 @@ def test_segmentation_recovers_boundaries():
         ops = one_file["operation_id"].to_numpy()
         ref = [i for i in range(1, len(ops)) if ops[i] != ops[i - 1]]
 
-        detected = segmentation.detect_changepoints(power, min_seg_len=5)
+        detected = segmentation.detect_changepoints(power, min_seg_len=4)
         score = segmentation.boundary_recovery(detected, ref, tol_s=5)
         require(score["recall"] > 0.7,
                 f"boundary recall too low on clean fixture: {score}")
@@ -141,7 +143,7 @@ def test_fingerprint_classification():
             for run in (1, 2, 3):
                 stream = adapters.load_power_stream(run, part=part)
                 idle = float(np.percentile(stream["power_w"], 10))
-                for (op,), seg in stream.groupby(["operation_id"]):
+                for op, seg in stream.groupby("operation_id"):
                     if op == "NONE" or op.startswith("UNKNOWN"):
                         continue
                     feats = signatures.extract_features(
@@ -156,6 +158,34 @@ def test_fingerprint_classification():
                 f"fingerprint accuracy too low on clean fixture: {result['accuracy']:.2f}")
     print(f"  fingerprinting: OK (LORO accuracy {result['accuracy']:.2f} "
           f"over {result['n_total']} operation instances)")
+
+
+def test_am_fixture_loader():
+    """AM loader reproduces AM fixture truth exactly (same dt rule)."""
+    from EXPLORATORY.shared import adapters
+
+    saved = os.environ.get("AM_DATA_DIR")
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            truth = pd.DataFrame(fixtures.generate_am_fixture_dataset(tmp, n_runs=2))
+            os.environ["AM_DATA_DIR"] = tmp
+            table = adapters.load_am_energy()
+            merged = truth.merge(table, on=["part", "run_id"],
+                                 suffixes=("_truth", "_load"))
+            require(len(merged) == len(truth), "AM loader lost fixture prints")
+            rel = ((merged["energy_wh_load"] - merged["energy_wh_truth"]).abs()
+                   / merged["energy_wh_truth"])
+            require(bool((rel < 1e-6).all()),
+                    f"AM energy mismatch vs truth: worst {rel.max():.2e}")
+            stream = adapters.load_am_power_stream("DriveShaft", 1)
+            require((stream["power_w"] >= 0).all(), "negative AM power")
+            require(stream["t"].is_monotonic_increasing, "AM stream not sorted")
+    finally:
+        if saved is None:
+            os.environ.pop("AM_DATA_DIR", None)
+        else:
+            os.environ["AM_DATA_DIR"] = saved
+    print(f"  AM fixture loader: OK ({len(merged)} prints, exact energy match)")
 
 
 def test_montecarlo_agrees_with_delta_method():
@@ -210,6 +240,7 @@ ALL_TESTS = [
     test_power_stream_loader,
     test_segmentation_recovers_boundaries,
     test_fingerprint_classification,
+    test_am_fixture_loader,
     test_montecarlo_agrees_with_delta_method,
     test_injected_drift_is_visible,
 ]

@@ -38,7 +38,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 import pandas as pd
 
-from EXPLORATORY.shared.checks import CheckLog, require, SmokeTestFailure
+from EXPLORATORY.shared.checks import CheckLog, require, SmokeTestFailure, df_to_md
 from EXPLORATORY.shared.style import apply_style, save_fig, COLORS
 from EXPLORATORY.shared import fixtures
 
@@ -77,7 +77,7 @@ def measured_rho_e() -> tuple[float, str]:
     """(rho_E, provenance). Uses real data when reachable, else quoted value."""
     from EXPLORATORY.shared import adapters
 
-    if os.environ.get("CNC_DATA_DIR"):
+    if os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1":
         try:
             df = adapters.load_operation_energy()
             per_part = (df.groupby(["part", "run_id"])["energy_wh"].sum()
@@ -93,7 +93,7 @@ def measured_rho_e() -> tuple[float, str]:
 def time_ratio_from_data() -> float | None:
     from EXPLORATORY.shared import adapters
 
-    if not os.environ.get("CNC_DATA_DIR"):
+    if not (os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1"):
         return None
     try:
         df = adapters.load_operation_energy()
@@ -220,7 +220,7 @@ def main() -> None:
         "scales with production mix. Time-based allocation's ratio must come "
         "from measured durations (add CNC_DATA_DIR to fill it in).\n\n"
         "## Rule errors at representative mixes\n\n"
-        + table.to_markdown(index=False) + "\n\n"
+        + df_to_md(table) + "\n\n"
         "## Verification\n\n" + log.to_markdown() + "\n"
     )
     print("OK allocation_theory")

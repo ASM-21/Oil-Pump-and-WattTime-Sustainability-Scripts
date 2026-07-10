@@ -20,6 +20,7 @@ Set CNC_DATA_DIR first -- see EXPLORATORY/shared/adapters.py header.
 """
 
 from __future__ import annotations
+import os
 import sys
 from pathlib import Path
 import pandas as pd
@@ -135,8 +136,13 @@ def smoke_test(r: dict) -> None:
     td = r["trend_df"]
     require(not td.empty, "trend table is empty -- no operations had >= 5 runs")
     require("q_ols" in td.columns, "BH correction not applied -- statsmodels missing?")
-    require(not log.any_disagreements(),
-            "a cross-check DISAGREED -- investigate before reporting results")
+    if os.environ.get("FIXTURE_SMOKE") == "1":
+        if log.any_disagreements():
+            print("FIXTURE_SMOKE: quoted-number cross-checks disagreed on "
+                  "synthetic data (expected); see FINDINGS for the table")
+    else:
+        require(not log.any_disagreements(),
+                "a cross-check DISAGREED -- investigate before reporting results")
 
 
 def plot(r: dict) -> None:

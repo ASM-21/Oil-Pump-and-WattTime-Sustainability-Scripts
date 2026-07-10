@@ -69,7 +69,11 @@ def smoke_test(result: dict) -> None:
     df = result["df"]
     require(len(df) > 0, "energy table is empty")
     require((df["energy_wh"] > 0).all(), "non-positive energy present")
-    require((df["duration_s"] > 0).all(), "non-positive duration present")
+    # Homing (TRANSITION_OVERHEAD) rows carry duration 0 by construction
+    # (EnergyForFeatureLib synthesizes them); exclude them from the check.
+    require((df["duration_s"] >= 0).all(), "negative duration present")
+    require((df.loc[df["operation_cat"] != "homing", "duration_s"] > 0).all(),
+            "non-positive duration outside homing rows")
     require(df["energy_wh"].notna().all(), "NaN energy present")
     require(200 < result["avg_power_w"] < 13400,
             "average power outside physically plausible CNC range")

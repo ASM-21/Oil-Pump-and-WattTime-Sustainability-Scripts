@@ -38,7 +38,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 import pandas as pd
 
-from EXPLORATORY.shared.checks import CheckLog, require, SmokeTestFailure
+from EXPLORATORY.shared.checks import CheckLog, require, SmokeTestFailure, df_to_md
 from EXPLORATORY.shared.style import apply_style, save_fig, COLORS
 from EXPLORATORY.shared import fixtures
 
@@ -126,7 +126,7 @@ def validate_on_fixtures() -> tuple[pd.DataFrame, float]:
 def real_data_rows() -> tuple[pd.DataFrame, float, dict] | None:
     from EXPLORATORY.shared import adapters
 
-    if not os.environ.get("CNC_DATA_DIR"):
+    if not (os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1"):
         return None
     try:
         df = adapters.load_operation_energy()
@@ -196,10 +196,10 @@ def main() -> None:
         "makes the fleet average-power constant stable, and it is measurable "
         "per machine: report P0 and the lambda spread, not just the constant.\n\n"
         "## Fixture decomposition (known P0 = 700 W)\n\n"
-        + fix_cat.to_markdown(index=False) + "\n\n"
+        + df_to_md(fix_cat) + "\n\n"
         "## Measured data\n\n" + real_text + "\n\n"
         "## SEC benchmark (literature spans; fill measured rows from data)\n\n"
-        + sec_table.to_markdown(index=False) + "\n\n"
+        + df_to_md(sec_table) + "\n\n"
         "## Verification\n\n" + log.to_markdown() + "\n"
     )
     print("OK power_decomposition")

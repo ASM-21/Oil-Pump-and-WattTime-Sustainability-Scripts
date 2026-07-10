@@ -143,9 +143,8 @@ def design_stage_prediction(df: pd.DataFrame, tag: str) -> list[str]:
             continue
         # Per-category mean power from training programs (through-origin
         # slope of energy on duration = duration-weighted mean power).
-        slopes = (train.groupby("operation_cat")
-                  .apply(lambda g: g["energy_wh"].sum() * 3600.0
-                         / g["duration_s"].sum(), include_groups=False))
+        sums = train.groupby("operation_cat")[["energy_wh", "duration_s"]].sum()
+        slopes = sums["energy_wh"] * 3600.0 / sums["duration_s"]
         fallback = train["energy_wh"].sum() * 3600.0 / train["duration_s"].sum()
 
         for run_id, tg in test.groupby("run_id"):
@@ -224,7 +223,7 @@ def main() -> None:
 
     real_note = ("Real CNC data not reachable in this run; set CNC_DATA_DIR "
                  "and re-run for the measured intervals (tag 'measured').")
-    if os.environ.get("CNC_DATA_DIR"):
+    if os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1":
         try:
             sections += analyze_source("measured")
             real_note = "Measured tables written (tag 'measured')."

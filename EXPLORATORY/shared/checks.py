@@ -26,6 +26,20 @@ class SmokeTestFailure(AssertionError):
     """Raised when a project invariant does not hold."""
 
 
+def df_to_md(df) -> str:
+    """
+    Render a pandas DataFrame as markdown for FINDINGS files.
+
+    DataFrame.to_markdown requires the optional `tabulate` package, which is
+    not in requirements.txt; fall back to a fenced to_string block so FINDINGS
+    generation never fails on a missing pretty-printer.
+    """
+    try:
+        return df.to_markdown(index=False)
+    except ImportError:
+        return "```\n" + df.to_string(index=False) + "\n```"
+
+
 def require(condition: bool, message: str) -> None:
     """Assert an invariant. Use inside each project's smoke_test()."""
     if not condition:

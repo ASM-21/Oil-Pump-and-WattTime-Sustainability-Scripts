@@ -37,7 +37,7 @@ sys.path.insert(0, str(ROOT))
 import numpy as np
 import pandas as pd
 
-from EXPLORATORY.shared.checks import CheckLog, require, SmokeTestFailure
+from EXPLORATORY.shared.checks import CheckLog, require, SmokeTestFailure, df_to_md
 from EXPLORATORY.shared.style import apply_style, save_fig, COLORS
 from EXPLORATORY.shared import fixtures
 
@@ -130,7 +130,7 @@ def empirical_rows() -> pd.DataFrame | None:
     """If real data is reachable, compute the paper's empirical points."""
     from EXPLORATORY.shared import adapters
 
-    if not os.environ.get("CNC_DATA_DIR"):
+    if not (os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1"):
         return None
     try:
         df = adapters.load_operation_energy()
@@ -237,7 +237,7 @@ def main() -> None:
 
     findings = Path(__file__).parent / "FINDINGS.md"
     emp_text = (
-        emp.to_markdown(index=False) if emp is not None
+        df_to_md(emp) if emp is not None
         else "_Real CNC data not reachable in this run; set CNC_DATA_DIR to add "
              "the measured Hurco point. The theory and fixture validation above "
              "do not depend on it._"
@@ -251,9 +251,9 @@ def main() -> None:
         "bias about +900%) is nowhere near it. The estimation shortcut is a "
         "property of the machine class, decidable at design time.\n\n"
         "## Machine-class L0 bias ranges\n\n"
-        + classes.to_markdown(index=False) + "\n\n"
+        + df_to_md(classes) + "\n\n"
         "## Fixture validation (real pipeline, known truth)\n\n"
-        + fixture_df.to_markdown(index=False) + "\n\n"
+        + df_to_md(fixture_df) + "\n\n"
         "## Empirical point (measured data)\n\n" + emp_text + "\n\n"
         "## Verification\n\n" + log.to_markdown() + "\n"
     )

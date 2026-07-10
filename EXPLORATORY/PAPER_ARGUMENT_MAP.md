@@ -16,7 +16,7 @@ This is not a draft. It is a checklist for wiring analysis results into the manu
 | SEC x mass (L2) error depends on aluminum milling SEC assumption | `L2_mean_error_pct` per part | same | run + verify MASS_REMOVED_G |
 | Fleet average operating power = X W (two-path verified) | `avg_power_w` in FINDINGS.md | `estimation_ladder/FINDINGS.md` | run estimation_ladder |
 | CNC utilization u = X (mean/rated) | `u_cnc` in summary | `estimation_ladder/outputs/summary_by_part.csv` | run estimation_ladder |
-| FDM utilization u ~= 0.90 (contrast with CNC ~0.10) | `u_fdm` in summary | same (from spec sheet until AM data wired) | available now |
+| FDM utilization u ~= 0.90 (contrast with CNC ~0.10) | `u_fdm` in summary | spec sheet now; computed by `explorations/A2_fdm_utilization.py` once AM_DATA_DIR is set | available now |
 | Replication requirements: n = (1.96 x CV / r)^2 per category | full table | `estimation_ladder/outputs/operation_cv_replication.csv` | run estimation_ladder |
 
 **Figure:** `estimation_ladder/outputs/estimation_error_by_level.png` -- bar chart of signed % error per level per part. Goes in Results as the main estimation-fidelity exhibit.

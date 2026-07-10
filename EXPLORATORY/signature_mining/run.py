@@ -71,7 +71,7 @@ def analyze_source(tag: str) -> dict:
 
             # 1. Boundary recovery.
             ref = [i for i in range(1, len(ops)) if ops[i] != ops[i - 1]]
-            detected = segmentation.detect_changepoints(power, min_seg_len=5)
+            detected = segmentation.detect_changepoints(power, min_seg_len=4)
             score = segmentation.boundary_recovery(detected, ref, tol_s=5)
             boundary_rows.append({"source": tag, "file": src, **score})
             if example_trace is None:
@@ -119,6 +119,26 @@ def analyze_source(tag: str) -> dict:
         pred = clf.predict(lid_shared[signatures.FEATURE_NAMES].to_numpy())
         transfer = float(np.mean(pred == lid_shared["category"].to_numpy()))
 
+    # Open-set rejection: an attribution system in the field will meet
+    # operations it was never trained on; misassigning them silently would
+    # corrupt the energy ledger. Calibrate a distance threshold from the
+    # training set's own nearest-centroid distances (95th percentile), then
+    # confirm a synthetic never-seen signature (a 4x power anomaly in feature
+    # space, e.g. a fault or an unknown heavy operation) lands beyond it.
+    clf_all = signatures.NearestCentroid().fit(X, feats["op"])
+    _, d_train = clf_all.predict_with_distance(X)
+    threshold = float(np.percentile(d_train, 95))
+    anomaly = X[np.argmax(X[:, signatures.FEATURE_NAMES.index("mean_w")])].copy()
+    for col in ("mean_w", "peak_w", "p25_w", "p75_w", "mean_abs_diff_w"):
+        anomaly[signatures.FEATURE_NAMES.index(col)] *= 4.0
+    _, d_anom = clf_all.predict_with_distance(anomaly.reshape(1, -1))
+    open_set = {
+        "threshold": threshold,
+        "train_reject_rate": float(np.mean(d_train > threshold)),
+        "anomaly_distance": float(d_anom[0]),
+        "anomaly_rejected": bool(d_anom[0] > threshold),
+    }
+
     return {
         "tag": tag,
         "boundaries": boundaries,
@@ -126,6 +146,7 @@ def analyze_source(tag: str) -> dict:
         "features": feats,
         "loro": loro,
         "transfer_acc": transfer,
+        "open_set": open_set,
         "example_trace": example_trace,
     }
 
@@ -198,6 +219,12 @@ def run_and_write(result: dict) -> list[str]:
         f"- Cross-part transfer (body-trained, lid categories): "
         + (f"{result['transfer_acc']:.2f}" if result["transfer_acc"] is not None
            else "n/a"),
+        f"- Open-set rejection: threshold {result['open_set']['threshold']:.2f} "
+        f"(95th pct of training distances, "
+        f"{100 * result['open_set']['train_reject_rate']:.0f}% train rejection); "
+        f"synthetic 4x anomaly at distance "
+        f"{result['open_set']['anomaly_distance']:.2f} -> "
+        + ("REJECTED" if result["open_set"]["anomaly_rejected"] else "NOT rejected"),
         "",
     ]
     return lines
@@ -223,13 +250,16 @@ def main() -> None:
             "fixture boundary recall below 0.7; detector regressed")
     require(fix["loro"]["accuracy"] > 0.6,
             "fixture fingerprint accuracy below 0.6; features regressed")
+    require(fix["open_set"]["anomaly_rejected"],
+            "synthetic never-seen signature was NOT rejected; open-set "
+            "threshold calibration regressed")
     sections += run_and_write(fix)
 
     # 2. Real pass, only if the environment points at data.
     real_note = ("Real CNC data not reachable in this run. Set CNC_DATA_DIR "
                  "to the Al6061 folder and re-run; the measured tables will "
                  "be written next to the fixture ones with tag 'measured'.")
-    if os.environ.get("CNC_DATA_DIR"):
+    if os.environ.get("CNC_DATA_DIR") and os.environ.get("FIXTURE_SMOKE") != "1":
         try:
             real = analyze_source("measured")
             sections += run_and_write(real)
