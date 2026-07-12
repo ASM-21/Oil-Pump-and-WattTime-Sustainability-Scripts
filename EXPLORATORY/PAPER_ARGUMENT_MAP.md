@@ -7,6 +7,40 @@ This is not a draft. It is a checklist for wiring analysis results into the manu
 
 ---
 
+## MEASURED RESULTS (2026-07-11, register-based; from compare_outputs/)
+
+The measurement data is committed and the numbers below are computed, from the
+owner's `EXPLORATORY/compare_outputs/` run using the forward-kWh register.
+
+| Quantity | Value | Note for the manuscript |
+|---|---|---|
+| Fleet mean power (CNC) | 1,306 W register / 1,333 W active | quoted 1,376 W is 3 to 5% high; use measured |
+| CNC utilization u | 0.0975 | confirms the ~0.10 contrast against FDM ~0.90 |
+| L0 rated-power error | +962% | matches theory 1/u-1 = +926% |
+| L1 characterized-power error | +3.5% | the fidelity-ladder headline |
+| Lid / body energy ratio | 0.562 | **quoted 0.677 FAILS; use 0.562** |
+| Homing / transition share | ~0 under register | **the 11.7% claim is a trapezoid artifact** |
+| Distinct operations | 49 | resolves the "45 vs 49" ambiguity |
+| Wear trends | 7 of 49 significant (FDR) | run-order / condition-monitoring result |
+| Body / lid measured energy | 647.3 / 364.0 Wh per run | feeds B1 (1.011 kWh total) |
+
+**Two claims to correct in the paper, stated plainly:** the lid/body energy
+ratio is 0.562 not 0.677, and the 11.7% homing share is an artifact of
+trapezoid integration that the exact register does not reproduce. Both are
+defensible methods findings. See `_summary.md` for the blunt discrepancy list.
+
+**Method comparison** (`compare_outputs/compare_methods.py`, register vs active
+power): totals agree within ~2%, but transition/allocation attribution diverges
+sharply. The register is the reporting basis. Worth one paragraph and one table.
+
+**Future work already visible in the data:** the CNC CSVs carry a `featureId`
+channel (unused here) alongside processKindId/partKindId, plus full MTConnect
+axis-load and vibration streams. These enable feature-level (not just
+operation-level) attribution and the condition-monitoring direction in
+`ML Explore/`. Flag as future work, not this paper.
+
+---
+
 ## Results section: estimation fidelity ladder (new vs conference paper)
 
 | Claim in paper | Number / figure | Source file | Status |

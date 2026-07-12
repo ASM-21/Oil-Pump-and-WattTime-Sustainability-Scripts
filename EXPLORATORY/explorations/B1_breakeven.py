@@ -40,14 +40,15 @@ log = CheckLog()
 # Energy inputs -- UPDATE these after running estimation_ladder
 # ---------------------------------------------------------------------------
 # Total measured CNC machining energy per part (Wh), summed across all programs.
-# Context doc estimates until estimation_ladder confirms them:
-#   body total: ~4 programs x ~215 Wh/program = ~860 Wh (paper quotes 0.859 kWh CNC)
-#   lid total:  0.677 * body = ~582 Wh (paper quotes 67.7% of body)
+# MEASURED, register-based (forward kWh meter), mean per-run total across all
+# programs, from EXPLORATORY/compare_outputs/compare_allocation.csv (the
+# register method column). These replace the old context-doc estimates
+# (859 / 582 Wh). Measured lid/body ratio is 0.562, not the quoted 0.677.
 TOTAL_ENERGY_WH = {
-    "body": 859.0,   # Wh -- update from estimation_ladder/outputs/summary_by_part.csv
-    "lid":  582.0,   # Wh -- update from estimation_ladder/outputs/summary_by_part.csv
+    "body": 647.3,   # Wh -- measured register mean per run (all programs)
+    "lid":  364.0,   # Wh -- measured register mean per run (all programs)
 }
-ENERGY_VERIFIED = False  # set True once estimation_ladder has run
+ENERGY_VERIFIED = True  # measured from committed data via EnergyForFeatureLib register
 
 # ---------------------------------------------------------------------------
 # Mass inputs -- owner-verified values committed in EXPLORATORY/bom.csv

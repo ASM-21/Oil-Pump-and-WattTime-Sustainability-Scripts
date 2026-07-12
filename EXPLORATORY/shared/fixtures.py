@@ -91,6 +91,10 @@ def _invert(d: dict[str, str]) -> dict[str, str]:
 # Idle/base power of the fixture machine (W). Everything above this is process.
 IDLE_POWER_W = 700.0
 
+# Starting value of the cumulative forward-kWh register (a real meter is not
+# at zero). Its absolute value is irrelevant; only differences carry energy.
+BASE_REGISTER_KWH = 5.0
+
 # Per-operation profile: (power_above_idle_W, duration_s, cv_across_runs).
 # CV structure mirrors the paper: cavity/face/finishing tight, spotting/
 # tapping/drilling loose. Values are plausible for a VMX30Ui-class machine but
@@ -216,20 +220,29 @@ def generate_fixture_dataset(
             fname = f"Al6061_{part}{run}_p{prog_num}.csv"
             rows: list[tuple[str, str, str]] = []  # (Time, Dataname, Value)
             t = t0 + timedelta(hours=(prog_num - 1) * 2 + (run - 1) * 8)
+            # Cumulative forward-kWh register, like the real IAMMETER. Starts
+            # partway through the meter's life. The current analyzer computes
+            # energy from this register (calculate_from_register), so truth
+            # below is the register difference, matching it exactly.
+            reg = [BASE_REGISTER_KWH]
 
             def emit(seconds: int, power_fn, proc_uuid: str, part_uuid: str,
-                     _t=[t]) -> list[float]:
-                """Append `seconds` samples; returns the power values."""
-                powers = []
+                     _t=[t]) -> tuple[list[float], list[float]]:
+                """Append `seconds` samples (four Datanames each). Returns
+                (powers, register_values) for this block."""
+                powers, registers = [], []
                 for _ in range(seconds):
                     p = max(0.0, power_fn())
                     stamp = _t[0].strftime("%Y-%m-%d %H:%M:%S")
                     rows.append((stamp, "processKindId", proc_uuid))
                     rows.append((stamp, "partKindId", part_uuid))
                     rows.append((stamp, "active power", f"{p:.1f}"))
+                    rows.append((stamp, "forward kWh", f"{reg[0]:.6f}"))
+                    registers.append(reg[0])
+                    reg[0] += p / 3600.0 / 1000.0  # W-seconds -> kWh
                     powers.append(p)
                     _t[0] += timedelta(seconds=1)
-                return powers
+                return powers, registers
 
             def idle_power() -> float:
                 return rng.gauss(IDLE_POWER_W, IDLE_POWER_W * 0.01)
@@ -247,14 +260,16 @@ def generate_fixture_dataset(
                 emit(rng.randint(*INTER_OP_IDLE_S), idle_power, "NONE", prog_uuid)
 
                 mean_p = IDLE_POWER_W + run_level
-                offset_s = len(rows) // 3  # true sample offset incl. idle/pad
-                powers = emit(
+                offset_s = len(rows) // 4  # true sample offset (4 rows/sample)
+                _, registers = emit(
                     dur_s,
                     lambda: rng.gauss(mean_p, mean_p * noise_sd_frac),
                     op_uuid,
                     prog_uuid,
                 )
-                e_wh, d_s = _trapezoid_energy_wh(powers)
+                # Register-difference energy, exactly as calculate_from_register.
+                e_wh = (registers[-1] - registers[0]) * 1000.0
+                d_s = float(len(registers) - 1)
                 truth.append({
                     "file": fname,
                     "part": part,
@@ -263,7 +278,7 @@ def generate_fixture_dataset(
                     "operation": op,
                     "energy_wh": round(e_wh, 6),
                     "duration_s": d_s,
-                    "mean_power_w": round(sum(powers) / len(powers), 3),
+                    "mean_power_w": round(e_wh * 3600.0 / d_s, 3) if d_s else 0.0,
                     "start_offset_s": offset_s,
                 })
 

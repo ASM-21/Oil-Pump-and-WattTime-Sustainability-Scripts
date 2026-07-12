@@ -60,6 +60,12 @@ import pandas as pd
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _CNC_SCRIPTS = _REPO_ROOT / "Machine Specific Scripts" / "CNC"
 
+# The measurement data is now committed to the repo (Jul 2026 upload). CNC runs
+# live in two sibling folders, AM prints in one. CNC_DATA_DIR / AM_DATA_DIR
+# still override these when set, so external/local copies keep working.
+_CNC_DIRS_IN_REPO = [_REPO_ROOT / "Al6061Body", _REPO_ROOT / "Al6061Lid"]
+_AM_DIR_IN_REPO = _REPO_ROOT / "3D Printer Data"
+
 
 class DataNotInRepo(FileNotFoundError):
     """Raised when a required dataset is not present in the repository."""
@@ -244,6 +250,57 @@ def _resolve_data_dir(env_var: str, description: str) -> str:
     return val
 
 
+def _resolve_cnc_dirs() -> list[Path]:
+    """
+    Resolve the CNC data director(ies), in priority order:
+      1. CNC_DATA_DIR env var or saved config (a single external folder).
+      2. The in-repo Al6061Body + Al6061Lid folders (data committed Jul 2026).
+      3. Interactive prompt (single folder) as a last resort.
+
+    Returns a LIST because the in-repo data is split across two sibling
+    folders; callers iterate over it.
+    """
+    val = (os.environ.get("CNC_DATA_DIR", "").strip()
+           or _read_config().get("CNC_DATA_DIR", "").strip())
+    if val and Path(val).exists():
+        return [Path(val)]
+
+    in_repo = [d for d in _CNC_DIRS_IN_REPO if d.exists()]
+    if in_repo:
+        return in_repo
+
+    return [Path(_resolve_data_dir(
+        "CNC_DATA_DIR",
+        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
+    ))]
+
+
+def _cnc_csv_paths(dirs: list[Path], part: str | None = None,
+                   run_id=None) -> list[Path]:
+    """
+    All Al6061 measurement CSVs across the given dirs, matching the optional
+    part/run_id filter. Tolerant of zero-padded run numbers (body01 == body1)
+    and case (AL6061 == Al6061). Excludes *error* files (malformed captures
+    the analyzer would skip anyway) so raw re-parsing never trips on them.
+    """
+    import re as _re
+    out = []
+    for d in dirs:
+        for path in sorted(d.glob("*.csv")):
+            name = path.name
+            if "error" in name.lower():
+                continue
+            m = _re.search(r"al6061_(lid|body)(\d+)_p(\d+)", name, _re.IGNORECASE)
+            if not m:
+                continue
+            if part is not None and m.group(1).lower() != part:
+                continue
+            if run_id is not None and int(m.group(2)) != int(run_id):
+                continue
+            out.append(path)
+    return out
+
+
 # ---------------------------------------------------------------------------
 # Public adapter functions
 # ---------------------------------------------------------------------------
@@ -265,29 +322,27 @@ def load_operation_energy() -> pd.DataFrame:
     or peak power. Available by re-parsing the raw 1 Hz stream via
     load_power_stream() if needed.
     """
-    data_dir = _resolve_data_dir(
-        "CNC_DATA_DIR",
-        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
-    )
-
-    data_path = Path(data_dir)
-    csv_files = list(data_path.glob("Al6061_*.csv"))
-    if not csv_files:
+    dirs = _resolve_cnc_dirs()
+    if not _cnc_csv_paths(dirs):
         raise DataNotInRepo(
-            f"No Al6061_*.csv files found in {data_dir!r}.\n"
+            f"No Al6061 CSV files found in {[str(d) for d in dirs]}.\n"
             "Check that you pointed at the right folder.\n"
             "To re-enter the path, delete EXPLORATORY/.data_paths.txt and re-run."
         )
 
     EnergyAnalyzer, clean_data = _import_energy_analyzer()
 
-    print(f"Loading CNC data from: {data_path}")
+    # One analyzer instance accumulates results across folders (self.results
+    # persists), so the final return carries every folder's rows.
     analyzer = EnergyAnalyzer()
-    results_raw, validation, _ = analyzer.analyze(str(data_path))
+    results_raw = validation = None
+    for d in dirs:
+        print(f"Loading CNC data from: {d}")
+        results_raw, validation, _ = analyzer.analyze(str(d))
 
     if results_raw is None or results_raw.empty:
         raise DataNotInRepo(
-            f"EnergyAnalyzer produced no results from {data_dir!r}. "
+            f"EnergyAnalyzer produced no results from {[str(d) for d in dirs]}. "
             "Check that the CSV files match the expected naming convention."
         )
 
@@ -360,75 +415,67 @@ def load_power_stream(run_id, part: str | None = None) -> pd.DataFrame:
     Samples whose program decodes to UNKNOWN are kept and labeled, not dropped:
     signature work needs to see what attribution would discard.
     """
-    data_dir = Path(_resolve_data_dir(
-        "CNC_DATA_DIR",
-        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
-    ))
-
-    parts = [part] if part else ["body", "lid"]
+    import re as _re
+    dirs = _resolve_cnc_dirs()
     frames = []
     EnergyAnalyzer, _ = _import_energy_analyzer()
     analyzer = EnergyAnalyzer()
 
-    for p in parts:
-        for path in sorted(data_dir.glob(f"Al6061_{p}{run_id}_p*.csv")):
-            raw = pd.read_csv(path)
-            streams = {}
-            for name in ("processKindId", "partKindId", "active power"):
-                s = raw[raw["Dataname"] == name][["Time", "Value"]].copy()
-                s["Time"] = pd.to_datetime(s["Time"])
-                streams[name] = s
-            if any(s.empty for s in streams.values()):
-                continue
-            merged = (
-                streams["processKindId"]
-                .merge(streams["partKindId"], on="Time", suffixes=("_proc", "_part"))
-                .merge(streams["active power"], on="Time")
-            )
-            merged.columns = ["t", "proc_uuid", "part_uuid", "power_w"]
-            merged["power_w"] = pd.to_numeric(merged["power_w"], errors="coerce").clip(lower=0)
-            merged = merged.sort_values("t").reset_index(drop=True)
-            merged["operation_id"] = (
-                merged["proc_uuid"].str.strip().str.upper()
-                .map(lambda u: analyzer.uuid_to_operation.get(u, f"UNKNOWN_{str(u)[:8]}"))
-            )
-            merged["program"] = (
-                merged["part_uuid"].str.strip().str.upper()
-                .map(lambda u: analyzer.partkind_to_program.get(u, f"UNKNOWN_{str(u)[:8]}"))
-            )
-            merged["part"] = p
-            merged["source_file"] = path.name
-            frames.append(merged[
-                ["t", "power_w", "operation_id", "program", "part", "source_file"]
-            ])
+    for path in _cnc_csv_paths(dirs, part=part, run_id=run_id):
+        p = _re.search(r"al6061_(lid|body)", path.name, _re.IGNORECASE).group(1).lower()
+        raw = pd.read_csv(path)
+        streams = {}
+        for name in ("processKindId", "partKindId", "active power"):
+            s = raw[raw["Dataname"] == name][["Time", "Value"]].copy()
+            # The logger emits wall-clock or elapsed time; the analyzer's
+            # parser handles both. Reuse it so stream and energy agree.
+            s["Time"] = analyzer._parse_time(s["Time"])
+            streams[name] = s
+        if any(s.empty for s in streams.values()):
+            continue
+        merged = (
+            streams["processKindId"]
+            .merge(streams["partKindId"], on="Time", suffixes=("_proc", "_part"))
+            .merge(streams["active power"], on="Time")
+        )
+        merged.columns = ["t", "proc_uuid", "part_uuid", "power_w"]
+        merged["power_w"] = pd.to_numeric(merged["power_w"], errors="coerce").clip(lower=0)
+        merged = merged.sort_values("t").reset_index(drop=True)
+        merged["operation_id"] = (
+            merged["proc_uuid"].str.strip().str.upper()
+            .map(lambda u: analyzer.uuid_to_operation.get(u, f"UNKNOWN_{str(u)[:8]}"))
+        )
+        merged["program"] = (
+            merged["part_uuid"].str.strip().str.upper()
+            .map(lambda u: analyzer.partkind_to_program.get(u, f"UNKNOWN_{str(u)[:8]}"))
+        )
+        merged["part"] = p
+        merged["source_file"] = path.name
+        frames.append(merged[
+            ["t", "power_w", "operation_id", "program", "part", "source_file"]
+        ])
 
     if not frames:
         raise DataNotInRepo(
             f"No Al6061 CSV files found for run_id={run_id!r}, part={part!r} "
-            f"in {data_dir}. Check the run number and CNC_DATA_DIR."
+            f"in {[str(d) for d in dirs]}. Check the run number and CNC_DATA_DIR."
         )
     return pd.concat(frames, ignore_index=True)
 
 
 def list_run_ids(part: str | None = None) -> list[tuple[str, int]]:
     """
-    Return the (part, run_id) pairs available in CNC_DATA_DIR, from filenames
-    alone (cheap; does not parse file contents).
+    Return the (part, run_id) pairs available across the CNC data dirs, from
+    filenames alone (cheap; does not parse file contents). Zero-padding and
+    case tolerant; excludes error files.
     """
-    data_dir = Path(_resolve_data_dir(
-        "CNC_DATA_DIR",
-        "Folder containing your Al6061_body*.csv and Al6061_lid*.csv files from IN-MaC CNC runs.",
-    ))
     import re as _re
     found = set()
-    for path in data_dir.glob("Al6061_*.csv"):
-        m = _re.search(r"Al6061_(lid|body)(\d+)_p(\d+)", path.name, _re.IGNORECASE)
+    for path in _cnc_csv_paths(_resolve_cnc_dirs(), part=part):
+        m = _re.search(r"al6061_(lid|body)(\d+)_p(\d+)", path.name, _re.IGNORECASE)
         if m:
             found.add((m.group(1).lower(), int(m.group(2))))
-    pairs = sorted(found)
-    if part:
-        pairs = [pr for pr in pairs if pr[0] == part]
-    return pairs
+    return sorted(found)
 
 
 def load_program_table() -> pd.DataFrame:
@@ -494,6 +541,13 @@ AM_RATED_POWER_W = 221.0
 
 
 def _am_data_dir() -> Path:
+    """AM data folder: AM_DATA_DIR override, else the in-repo '3D Printer Data'."""
+    val = (os.environ.get("AM_DATA_DIR", "").strip()
+           or _read_config().get("AM_DATA_DIR", "").strip())
+    if val and Path(val).exists():
+        return Path(val)
+    if _AM_DIR_IN_REPO.exists():
+        return _AM_DIR_IN_REPO
     return Path(_resolve_data_dir(
         "AM_DATA_DIR",
         "Folder containing your FDM CSVs ({Prefix}_Part{N}.csv, "
@@ -502,13 +556,25 @@ def _am_data_dir() -> Path:
 
 
 def list_am_run_ids(prefix: str | None = None) -> list[tuple[str, int]]:
-    """(prefix, part_num) pairs available in AM_DATA_DIR, from filenames."""
+    """
+    (prefix, part_num) pairs available in the AM data dir, from filenames.
+
+    The strict `_Part{N}.csv$` match naturally excludes annotated captures
+    like 'DriveShaft_Part1 Broken sensor.csv' and '..._Part28 failed.csv';
+    those excluded files are logged once so the drop is visible, not silent.
+    """
     import re as _re
     found = set()
+    excluded = []
     for path in _am_data_dir().glob("*_Part*.csv"):
         m = _re.match(r"(\w+)_Part(\d+)\.csv$", path.name)
         if m and m.group(1) in AM_PART_PREFIXES:
             found.add((m.group(1), int(m.group(2))))
+        else:
+            excluded.append(path.name)
+    if excluded:
+        print(f"[adapter] AM: excluded {len(excluded)} annotated/failed capture(s): "
+              f"{sorted(excluded)}")
     pairs = sorted(found)
     if prefix:
         pairs = [p for p in pairs if p[0] == prefix]
