@@ -91,3 +91,5 @@ Set AM_DATA_DIR to your local FDM CSV folder and run:
     python EXPLORATORY/explorations/A2_fdm_utilization.py
 
 ---
+- example_project: EnergyAnalyzer produced no results from 'C:\\Users\\Administrator\\OneDrive - purdue.edu\\Documents\\python\\__pycache__\\Research python\\Oil-Pump-and-WattTime-Sustainability-Scripts\\Al6061'. Check that the CSV files match the expected naming convention.
+- example_project: EnergyAnalyzer produced no results from 'C:\\Users\\Administrator\\OneDrive - purdue.edu\\Documents\\python\\__pycache__\\Research python\\Oil-Pump-and-WattTime-Sustainability-Scripts\\Al6061'. Check that the CSV files match the expected naming convention.

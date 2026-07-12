@@ -1,0 +1,4 @@
+method,fleet_avg_power_w,u_cnc,L0_error_%_mean,L1_error_%_mean
+register,1306.4,0.0975,961.6,3.5
+active_power,1333.1,0.0995,942.3,3.7
+diff_%,2.04,2.05,-2.01,5.71
