@@ -26,6 +26,20 @@ class SmokeTestFailure(AssertionError):
     """Raised when a project invariant does not hold."""
 
 
+def df_to_md(df) -> str:
+    """
+    Render a pandas DataFrame as markdown for FINDINGS files.
+
+    DataFrame.to_markdown requires the optional `tabulate` package, which is
+    not in requirements.txt; fall back to a fenced to_string block so FINDINGS
+    generation never fails on a missing pretty-printer.
+    """
+    try:
+        return df.to_markdown(index=False)
+    except ImportError:
+        return "```\n" + df.to_string(index=False) + "\n```"
+
+
 def require(condition: bool, message: str) -> None:
     """Assert an invariant. Use inside each project's smoke_test()."""
     if not condition:
@@ -44,12 +58,22 @@ class CheckLog:
         value_b: float,
         rel_tol: float = 0.02,
         note: str = "",
+        kind: str = "dual_path",
     ) -> bool:
         """
         Compare two independently computed values for the same quantity.
 
         rel_tol is the allowed relative difference (default 2 percent). Returns
         True on agreement. Always records the row; never silently passes.
+
+        kind distinguishes two uses that must NOT be treated the same way:
+          "dual_path" - two independent computations of the SAME quantity.
+                        A disagreement means the code is internally inconsistent
+                        and is FATAL (any_disagreements() reports it).
+          "vs_quoted" - a computed value against a number quoted in the paper.
+                        A disagreement is a FINDING to surface, not a build
+                        failure: the quoted number may simply be wrong. These
+                        are advisory and never fail a smoke test.
         """
         if value_a == 0 and value_b == 0:
             agree = True
@@ -66,6 +90,7 @@ class CheckLog:
             "tol_pct": round(rel_tol * 100, 3),
             "verdict": "AGREE" if agree else "DISAGREE",
             "note": note,
+            "kind": kind,
         })
         return agree
 
@@ -81,13 +106,15 @@ class CheckLog:
         Compare a computed value against a number quoted in the paper/brief.
 
         These quoted numbers are expectations, not ground truth. A DISAGREE here
-        is a finding to surface, not an error to suppress. Default tolerance is
-        looser (5 percent) than dual-path because rounding in the source is
+        is a finding to surface, not an error to suppress, so it is recorded as
+        kind="vs_quoted" and does NOT trip any_disagreements(). Default tolerance
+        is looser (5 percent) than dual-path because rounding in the source is
         unknown.
         """
         return self.cross_check(
             f"[vs quoted] {label}", computed, expected, rel_tol,
             note or "quoted value is an expectation to verify, not an input",
+            kind="vs_quoted",
         )
 
     def to_markdown(self) -> str:
@@ -95,15 +122,30 @@ class CheckLog:
         if not self.rows:
             return "_No cross-checks recorded._\n"
         header = (
-            "| quantity | path A | path B | rel diff % | tol % | verdict | note |\n"
-            "|---|---|---|---|---|---|---|\n"
+            "| quantity | path A | path B | rel diff % | tol % | verdict | kind | note |\n"
+            "|---|---|---|---|---|---|---|---|\n"
         )
         body = "".join(
             f"| {r['label']} | {r['path_a']:.4g} | {r['path_b']:.4g} | "
-            f"{r['rel_diff_pct']} | {r['tol_pct']} | {r['verdict']} | {r['note']} |\n"
+            f"{r['rel_diff_pct']} | {r['tol_pct']} | {r['verdict']} | "
+            f"{r.get('kind', 'dual_path')} | {r['note']} |\n"
             for r in self.rows
         )
         return header + body
 
     def any_disagreements(self) -> bool:
-        return any(r["verdict"] == "DISAGREE" for r in self.rows)
+        """
+        True only if a DUAL-PATH check disagreed (internal inconsistency).
+
+        Quoted-number disagreements are advisory findings, not build failures,
+        so they are deliberately excluded here. Use quoted_discrepancies() to
+        surface those for reporting.
+        """
+        return any(r["verdict"] == "DISAGREE"
+                   and r.get("kind", "dual_path") == "dual_path"
+                   for r in self.rows)
+
+    def quoted_discrepancies(self) -> list[dict]:
+        """Return the vs-quoted rows that disagreed, for reporting in FINDINGS."""
+        return [r for r in self.rows
+                if r["verdict"] == "DISAGREE" and r.get("kind") == "vs_quoted"]

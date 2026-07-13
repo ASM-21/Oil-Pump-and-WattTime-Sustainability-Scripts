@@ -7,6 +7,40 @@ This is not a draft. It is a checklist for wiring analysis results into the manu
 
 ---
 
+## MEASURED RESULTS (2026-07-11, register-based; from compare_outputs/)
+
+The measurement data is committed and the numbers below are computed, from the
+owner's `EXPLORATORY/compare_outputs/` run using the forward-kWh register.
+
+| Quantity | Value | Note for the manuscript |
+|---|---|---|
+| Fleet mean power (CNC) | 1,306 W register / 1,333 W active | quoted 1,376 W is 3 to 5% high; use measured |
+| CNC utilization u | 0.0975 | confirms the ~0.10 contrast against FDM ~0.90 |
+| L0 rated-power error | +962% | matches theory 1/u-1 = +926% |
+| L1 characterized-power error | +3.5% | the fidelity-ladder headline |
+| Lid / body energy ratio | 0.562 | **quoted 0.677 FAILS; use 0.562** |
+| Homing / transition share | ~0 under register | **the 11.7% claim is a trapezoid artifact** |
+| Distinct operations | 49 | resolves the "45 vs 49" ambiguity |
+| Wear trends | 7 of 49 significant (FDR) | run-order / condition-monitoring result |
+| Body / lid measured energy | 647.3 / 364.0 Wh per run | feeds B1 (1.011 kWh total) |
+
+**Two claims to correct in the paper, stated plainly:** the lid/body energy
+ratio is 0.562 not 0.677, and the 11.7% homing share is an artifact of
+trapezoid integration that the exact register does not reproduce. Both are
+defensible methods findings. See `_summary.md` for the blunt discrepancy list.
+
+**Method comparison** (`compare_outputs/compare_methods.py`, register vs active
+power): totals agree within ~2%, but transition/allocation attribution diverges
+sharply. The register is the reporting basis. Worth one paragraph and one table.
+
+**Future work already visible in the data:** the CNC CSVs carry a `featureId`
+channel (unused here) alongside processKindId/partKindId, plus full MTConnect
+axis-load and vibration streams. These enable feature-level (not just
+operation-level) attribution and the condition-monitoring direction in
+`ML Explore/`. Flag as future work, not this paper.
+
+---
+
 ## Results section: estimation fidelity ladder (new vs conference paper)
 
 | Claim in paper | Number / figure | Source file | Status |
@@ -16,7 +50,7 @@ This is not a draft. It is a checklist for wiring analysis results into the manu
 | SEC x mass (L2) error depends on aluminum milling SEC assumption | `L2_mean_error_pct` per part | same | run + verify MASS_REMOVED_G |
 | Fleet average operating power = X W (two-path verified) | `avg_power_w` in FINDINGS.md | `estimation_ladder/FINDINGS.md` | run estimation_ladder |
 | CNC utilization u = X (mean/rated) | `u_cnc` in summary | `estimation_ladder/outputs/summary_by_part.csv` | run estimation_ladder |
-| FDM utilization u ~= 0.90 (contrast with CNC ~0.10) | `u_fdm` in summary | same (from spec sheet until AM data wired) | available now |
+| FDM utilization u ~= 0.90 (contrast with CNC ~0.10) | `u_fdm` in summary | spec sheet now; computed by `explorations/A2_fdm_utilization.py` once AM_DATA_DIR is set | available now |
 | Replication requirements: n = (1.96 x CV / r)^2 per category | full table | `estimation_ladder/outputs/operation_cv_replication.csv` | run estimation_ladder |
 
 **Figure:** `estimation_ladder/outputs/estimation_error_by_level.png` -- bar chart of signed % error per level per part. Goes in Results as the main estimation-fidelity exhibit.
@@ -110,6 +144,45 @@ The span is wide enough to make the argument that u is not a footnote: it determ
 estimation shortcut is acceptable for a given machine class.
 
 ---
+
+## Results/Discussion: theory layer (new, added 2026-07-09)
+
+These are closed-form results, complete and fixture-validated now; real data
+adds only the empirical confirmation points. Derivations in `theory/README.md`,
+brute-force validation in `theory/selftest_stdlib.py`.
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Rated-power (L0) bias is the identity 1/u - 1; acceptable only when u >= 1/(1+r) | bias curve + machine-class ranges | `theory/estimator_errors/outputs/l0_bias_vs_utilization.png`, `machine_class_bias.csv` | run estimator_errors |
+| The right estimation shortcut is decidable from machine class alone | regime map on (u, CV) plane | `theory/estimator_errors/outputs/regime_map.png` | run estimator_errors |
+| Allocation error = phi(rho_E - rho_x)/(1 + phi rho_x); zero only when attribute tracks energy | error surface + rules-vs-mix curves | `theory/allocation_theory/outputs/` | run allocation_theory |
+| At 1:1 mix (quoted rho_E 0.677): mass-removed allocation errs +27.8%, economic +44.8% on the body | `rule_errors_at_mixes.csv` | same | computed (stdlib selftest); verify rho_E from data |
+| Duration-based (L1) estimation works because base load dominates: err_i = (lam_bar - lam_i)/(1 + lam_i) | per-category lambda table + split figure | `theory/power_decomposition/outputs/` | run power_decomposition |
+| Measured SEC sits inside published milling ranges | `sec_benchmark.csv` | same | needs CNC data for measured rows |
+
+## Results: signature mining (new, added 2026-07-09)
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Operation boundaries are recoverable from power alone (retrofit claim) | boundary recall/precision/F1 | `signature_mining/outputs/boundary_recovery_measured.csv` | needs CNC data (fixture set exists) |
+| Operation identity is recoverable from waveform features | LORO fingerprint accuracy | `signature_mining/outputs/` + FINDINGS.md | needs CNC data |
+| Signatures transfer across parts at category level | cross-part transfer accuracy | FINDINGS.md | needs CNC data |
+| Machine-state split (off/idle/positioning/cutting) of time and energy | `state_shares_measured.csv` + figure | `signature_mining/outputs/` | needs CNC data |
+
+## Results: energy budget closure (new, added 2026-07-09)
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Full productive vs non-productive budget (generalizes the 11.7% homing number) | `category_budget_measured.csv` + stacked figure | `energy_budget/outputs/` | needs CNC data |
+| Attribution closes against independent stream integration to < 5% | worst closure residual | `energy_budget/outputs/closure_measured.csv` | needs CNC data |
+
+## Results/Discussion: uncertainty and design-stage prediction (new, added 2026-07-09)
+
+| Claim in paper | Number / figure | Source file | Status |
+|---|---|---|---|
+| Product manufacturing energy has a defensible 95% interval (MC vs delta cross-checked) | interval per part | `uncertainty_prediction/outputs/footprint_intervals_measured.csv` | needs CNC data |
+| Manufacturing-share intervals per aluminum scenario | interval fan figure | `uncertainty_prediction/outputs/mfg_share_intervals_measured.png` | needs CNC data |
+| Program energy is predictable from CAM-planned durations (design-stage claim) | LOPO mean abs error % | `uncertainty_prediction/outputs/design_stage_loo_measured.csv` + scatter | needs CNC data |
 
 ## Numbers that reviewers will specifically challenge
 

@@ -5,6 +5,33 @@ Each gap records what is missing and what you need to supply to unpark the proje
 
 ---
 
+## RESOLVED 2026-07-11: all measurement data is now committed
+
+The owner committed the measurement data to the repo (on `main`, merged here):
+- **CNC**: `Al6061Body/` (95 CSVs) and `Al6061Lid/` (42 CSVs). The adapter now
+  defaults to these two folders when `CNC_DATA_DIR` is unset, loads both,
+  tolerates zero-padded run numbers (`body01`), and skips `*_error*` files.
+- **AM/FDM**: `3D Printer Data/` (43 CSVs). `_am_data_dir()` defaults to it;
+  annotated `failed` / `broken sensor` captures are excluded and logged.
+
+Every project can now run with no environment variables. The remaining gaps
+below (WattTime MOER) are unrelated to the oil-pump paper.
+
+---
+
+## RESOLVED 2026-07-09: BOM / part masses
+
+`EXPLORATORY/bom.csv` is now committed with owner-verified masses
+(body 1880/443/1437 g, lid 518/70/448 g). `load_bom()` returns it; the
+L2 estimation, allocation mass rule, and specific-energy calculations are
+unblocked. The CNC measurement CSVs (below) are now the ONLY blocking gap
+for the remaining projects. Note the new projects (theory/, signature_mining,
+energy_budget, uncertainty_prediction) do not park on it: they verify
+themselves on synthetic fixtures (`shared/fixtures.py`) and add measured
+tables when the CSVs arrive.
+
+---
+
 ## CNC raw measurement CSVs (blocks all CNC projects)
 
 **Required for:** estimation_ladder, allocation, wear_runorder, all future CNC projects.
@@ -59,19 +86,13 @@ Expected columns: timestamp (UTC), moer_lbs_per_mwh (or equivalent), region.
 
 ---
 
-## AM (FDM) measurement data (partially blocks estimation_ladder FDM side)
+## AM (FDM) measurement data (RESOLVED, data committed)
 
-**Required for:** estimation_ladder (FDM utilization factor from data, not spec sheet),
-future disaggregation/feature_energy projects.
+**Required for:** computing u_FDM from data instead of the spec sheet
+(explorations/A2_fdm_utilization.py), future disaggregation projects.
 
-**What is missing:** The FDM CSV files (DriveShaft prints) are not in this repo.
-The 3dPrinter_V1.py script has a hardcoded Windows path that will not work here.
-
-**How to fix:**
-Set AM_DATA_DIR to your local FDM CSV folder and implement load_am_energy()
-in EXPLORATORY/shared/adapters.py. For now, the FDM utilization factor (u=0.9)
-is computed from spec-sheet values only.
-
----
-- example_project: EnergyAnalyzer produced no results from 'C:\\Users\\Administrator\\OneDrive - purdue.edu\\Documents\\python\\__pycache__\\Research python\\Oil-Pump-and-WattTime-Sustainability-Scripts\\Al6061'. Check that the CSV files match the expected naming convention.
-- example_project: EnergyAnalyzer produced no results from 'C:\\Users\\Administrator\\OneDrive - purdue.edu\\Documents\\python\\__pycache__\\Research python\\Oil-Pump-and-WattTime-Sustainability-Scripts\\Al6061'. Check that the CSV files match the expected naming convention.
+**Status 2026-07-11:** The FDM CSVs are committed to `3D Printer Data/`.
+`load_am_energy()` / `load_am_power_stream()` read them (power key 'power',
+boxplotter integration rule); `_am_data_dir()` defaults to that folder.
+Run `python EXPLORATORY/explorations/A2_fdm_utilization.py` to compute u_FDM
+from the data instead of the ~0.90 spec-sheet number.

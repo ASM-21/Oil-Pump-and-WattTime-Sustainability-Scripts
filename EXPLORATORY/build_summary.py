@@ -165,9 +165,18 @@ def main() -> None:
 
     # Project status
     statuses = {
-        "estimation_ladder": _project_status("estimation_ladder"),
-        "allocation":        _project_status("allocation"),
-        "wear_runorder":     _project_status("wear_runorder"),
+        name: _project_status(name)
+        for name in (
+            "theory/estimator_errors",
+            "theory/allocation_theory",
+            "theory/power_decomposition",
+            "signature_mining",
+            "energy_budget",
+            "uncertainty_prediction",
+            "estimation_ladder",
+            "allocation",
+            "wear_runorder",
+        )
     }
     exploration_notes = [
         p.stem for p in (EXPLORATORY / "explorations").glob("*.md")

@@ -40,24 +40,36 @@ log = CheckLog()
 # Energy inputs -- UPDATE these after running estimation_ladder
 # ---------------------------------------------------------------------------
 # Total measured CNC machining energy per part (Wh), summed across all programs.
-# Context doc estimates until estimation_ladder confirms them:
-#   body total: ~4 programs x ~215 Wh/program = ~860 Wh (paper quotes 0.859 kWh CNC)
-#   lid total:  0.677 * body = ~582 Wh (paper quotes 67.7% of body)
+# MEASURED, register-based (forward kWh meter), mean per-run total across all
+# programs, from EXPLORATORY/compare_outputs/compare_allocation.csv (the
+# register method column). These replace the old context-doc estimates
+# (859 / 582 Wh). Measured lid/body ratio is 0.562, not the quoted 0.677.
 TOTAL_ENERGY_WH = {
-    "body": 859.0,   # Wh -- update from estimation_ladder/outputs/summary_by_part.csv
-    "lid":  582.0,   # Wh -- update from estimation_ladder/outputs/summary_by_part.csv
+    "body": 647.3,   # Wh -- measured register mean per run (all programs)
+    "lid":  364.0,   # Wh -- measured register mean per run (all programs)
 }
-ENERGY_VERIFIED = False  # set True once estimation_ladder has run
+ENERGY_VERIFIED = True  # measured from committed data via EnergyForFeatureLib register
 
 # ---------------------------------------------------------------------------
-# Mass inputs -- UPDATE from your bom.csv once verified
+# Mass inputs -- owner-verified values committed in EXPLORATORY/bom.csv
 # ---------------------------------------------------------------------------
-# Stock mass is needed for E_materials = stock_mass * CF_aluminum
-STOCK_MASS_G = {
-    "body": 2500.0,   # g -- estimate: finished ~1063g + removed ~1437g
-    "lid":   610.0,   # g -- estimate: finished ~162g + removed ~448g
-}
-MASS_VERIFIED = False  # set True once bom.csv is filled in
+# Stock mass is needed for E_materials = stock_mass * CF_aluminum.
+# Loaded from bom.csv (single source of truth); the fallback constants below
+# match it and exist only so this script stays self-contained if bom.csv moves.
+def _stock_masses() -> dict[str, float]:
+    bom_path = ROOT / "EXPLORATORY" / "bom.csv"
+    fallback = {"body": 1880.0, "lid": 518.0}  # owner-verified 2026-07-09
+    if not bom_path.exists():
+        return fallback
+    masses = {}
+    for line in bom_path.read_text().splitlines()[1:]:
+        cells = line.split(",")
+        if len(cells) >= 2 and cells[0] in fallback:
+            masses[cells[0]] = float(cells[1])
+    return masses or fallback
+
+STOCK_MASS_G = _stock_masses()
+MASS_VERIFIED = True  # bom.csv holds owner-verified masses (2026-07-09)
 
 # AM parts (drive shaft) omitted here because AM energy is small and masses
 # are not estimated. Add when AM data is available.
@@ -219,8 +231,12 @@ def write_findings(r: dict) -> None:
                    "\nNOTE: Total energy values are context doc estimates. "
                    "Update TOTAL_ENERGY_WH from estimation_ladder/outputs/summary_by_part.csv "
                    "after running that project.")
-    mass_note = ("" if MASS_VERIFIED else
-                 "\nNOTE: Stock masses are estimates (body 2500 g, lid 610 g). "
+    mass_note = ("\nNOTE: Stock masses are owner-verified from bom.csv "
+                 "(body 1880 g, lid 518 g). Earlier drafts used estimates of "
+                 "2500 g and 610 g; the smaller verified stock lowers the "
+                 "materials term and RAISES the manufacturing share vs old numbers."
+                 if MASS_VERIFIED else
+                 "\nNOTE: Stock masses are estimates. "
                  "Update STOCK_MASS_G from bom.csv once verified.")
 
     scen_lines = ["| Scenario | CF (kg CO2e/kg) | E_mat | E_mfg | Mfg share |",
@@ -264,7 +280,8 @@ def write_findings(r: dict) -> None:
         f"{energy_note}\n{mass_note}\n\n"
         "## Caveats\n"
         "- Total energy is summed across body and lid CNC machining only (AM parts excluded).\n"
-        "- Stock mass estimates are from context docs, not measured.\n"
+        "- Stock masses are owner-verified (bom.csv); energy totals remain estimates until\n"
+        "  estimation_ladder runs on the measurement CSVs.\n"
         "- Grid carbon intensity (Indiana/MISO) is an approximate annual average.\n"
         "  Marginal/hourly intensity from WattTime MOER would sharpen this.\n"
         "- This is a parametric exhibit, not a sensitivity analysis of measured uncertainty.\n\n"
@@ -274,7 +291,6 @@ def write_findings(r: dict) -> None:
         "establishes will matter more as aluminum decarbonizes. Produces a citable figure.\n\n"
         "## How to extend\n"
         "- Replace TOTAL_ENERGY_WH with verified values from estimation_ladder.\n"
-        "- Replace STOCK_MASS_G with values from bom.csv.\n"
         "- Replace INDIANA_GRID_CI with MOER-derived marginal intensity once available.\n"
     )
     (Path(__file__).parent / "B1_breakeven_FINDINGS.md").write_text(findings_text)

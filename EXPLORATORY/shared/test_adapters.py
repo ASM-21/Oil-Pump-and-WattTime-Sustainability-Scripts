@@ -50,7 +50,13 @@ def test_load_operation_energy() -> bool:
             print(f"FAIL - missing columns: {missing}")
             return False
         assert (df["energy_wh"] > 0).all(), "non-positive energy_wh found"
-        assert (df["duration_s"] > 0).all(), "non-positive duration_s found"
+        # Homing (TRANSITION_OVERHEAD) rows are synthesized by
+        # EnergyForFeatureLib with Duration_Sec=0: energy is real, duration
+        # is not attributable. Only non-homing rows must have positive time.
+        assert (df["duration_s"] >= 0).all(), "negative duration_s found"
+        non_homing = df[df["operation_cat"] != "homing"]
+        assert (non_homing["duration_s"] > 0).all(), \
+            "non-positive duration_s outside homing rows"
         assert df["part"].isin(["body", "lid", "am_driveshaft"]).all(), \
             f"unexpected part values: {df['part'].unique()}"
         assert not df["operation_cat"].eq("unknown").any() or True, \
@@ -128,13 +134,13 @@ def test_load_moer() -> None:
 def test_load_power_stream() -> None:
     print("[GATE] load_power_stream     ...", end=" ", flush=True)
     try:
-        adapters.load_power_stream(run_id=1)
-        print("OK")
+        stream = adapters.load_power_stream(run_id=1)
+        print(f"shape={stream.shape}  OK")
     except (adapters.DataNotInRepo, NotImplementedError) as e:
-        print("PARKED (not implemented -- needed only by disaggregation/)")
+        print("PARKED (CNC_DATA_DIR not set or run 1 not found)")
         _log_gap("load_power_stream",
-                 "Not yet wired. Needed by disaggregation/ and feature_energy/ only. "
-                 "Implement in adapters.py when those projects are built.")
+                 f"Implemented, but no data reachable: {e} "
+                 "Needed by signature_mining/ and energy_budget/ real-data passes.")
 
 
 def main() -> None:
