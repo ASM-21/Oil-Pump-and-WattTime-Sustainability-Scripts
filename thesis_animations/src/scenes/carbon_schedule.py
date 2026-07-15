@@ -141,9 +141,16 @@ class CarbonSchedule(Scene):
         self.wait(0.8)
 
         # ---------- summary ----------
-        reduction_pct = round((fixed_y - trigger_y) / fixed_y * 100)
+        # Guard against archetypes/thresholds where the triggered point isn't
+        # actually lower (e.g. no low-carbon window found before the fallback
+        # hour) so the callout never claims a nonsensical negative reduction.
+        if fixed_y > 0 and trigger_y < fixed_y:
+            reduction_pct = round((fixed_y - trigger_y) / fixed_y * 100)
+            summary_text = f"~{reduction_pct}% lower carbon intensity at execution"
+        else:
+            summary_text = "waits for a lower-carbon window than the fixed rule"
         summary = Text(
-            f"~{reduction_pct}% lower carbon intensity at execution",
+            summary_text,
             font_size=theme.CALLOUT_SIZE,
             weight=BOLD,
             color=theme.GOOD,

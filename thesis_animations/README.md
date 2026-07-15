@@ -47,10 +47,13 @@ thesis_animations/
 
 ## Rendering
 
-Single scene, from `src/scenes/`:
+Single scene, from the `thesis_animations/` root (not `src/scenes/` — manim
+only looks for `manim.cfg` in the current working directory, so running from
+the package root is what makes output land in `./media` instead of
+`src/scenes/media`):
 ```
-manim -qm carbon_schedule.py CarbonSchedule      # medium quality, fast iteration
-manim -qh carbon_schedule.py CarbonSchedule      # high quality, for a talk/paper
+manim -qm src/scenes/carbon_schedule.py CarbonSchedule      # medium quality, fast iteration
+manim -qh src/scenes/carbon_schedule.py CarbonSchedule      # high quality, for a talk/paper
 ```
 
 All scenes at once:
