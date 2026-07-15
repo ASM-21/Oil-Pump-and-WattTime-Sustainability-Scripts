@@ -50,7 +50,7 @@ operation-level) attribution and the condition-monitoring direction in
 | SEC x mass (L2) error depends on aluminum milling SEC assumption | `L2_mean_error_pct` per part | same | run + verify MASS_REMOVED_G |
 | Fleet average operating power = X W (two-path verified) | `avg_power_w` in FINDINGS.md | `estimation_ladder/FINDINGS.md` | run estimation_ladder |
 | CNC utilization u = X (mean/rated) | `u_cnc` in summary | `estimation_ladder/outputs/summary_by_part.csv` | run estimation_ladder |
-| FDM utilization u ~= 0.90 (contrast with CNC ~0.10) | `u_fdm` in summary | spec sheet now; computed by `explorations/A2_fdm_utilization.py` once AM_DATA_DIR is set | available now |
+| FDM utilization u ~= 0.90 (contrast with CNC ~0.10) | u_FDM = 0.845 (39 valid prints, 4 excluded failed/broken-sensor captures) | `explorations/A2_fdm_utilization_stdlib_FINDINGS.md` (pandas-free companion to `A2_fdm_utilization.py`, since this environment can't install pandas); mean power 186.8 W vs quoted ~200 W (-6.6%) | measured; cross-check against `A2_fdm_utilization.py`'s own run once pandas is available, numbers should match to rounding |
 | Replication requirements: n = (1.96 x CV / r)^2 per category | full table | `estimation_ladder/outputs/operation_cv_replication.csv` | run estimation_ladder |
 
 **Figure:** `estimation_ladder/outputs/estimation_error_by_level.png` -- bar chart of signed % error per level per part. Goes in Results as the main estimation-fidelity exhibit.
