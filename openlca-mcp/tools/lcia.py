@@ -32,6 +32,16 @@ def _all_amounts_none(items: list, field: str = "amount") -> bool:
     return all(item.get(field) is None for item in items)
 
 
+def _all_none(items: list, *fields: str) -> bool:
+    """True if every item has None in ALL of `fields`. Stricter than
+    _all_amounts_none: catches a shape bug that only breaks identity fields
+    (e.g. process/process_id) while amount still comes through fine, which
+    _all_amounts_none alone would miss."""
+    if not items:
+        return False
+    return all(all(item.get(f) is None for f in fields) for item in items)
+
+
 def list_impact_methods() -> dict:
     """List all LCIA methods. REQUIRED before any calculation that needs a method_id.
 
@@ -118,24 +128,37 @@ def get_impact_contributions(
         )
         out = []
         for c in sorted_contribs[:MAX_CONTRIBUTIONS]:
-            tf = getattr(c, "tech_flow", None)
-            provider = getattr(tf, "provider", None) if tf else None
+            # olca_schema.ContributionItem exposes the contributing entity as
+            # `item` (a Ref with .id/.name directly), not `tech_flow.provider`
+            # -- confirmed against the published ContributionItem field list
+            # (item: Ref, amount: float, share: float, rest: bool, unit: str).
+            # The old `tech_flow`/`provider` access was the "best-guess" this
+            # module's own §14 note warned about: it silently produced
+            # process="unknown"/process_id=None for every row while `amount`
+            # (a top-level field) still came through fine, so the old
+            # _all_amounts_none guard never caught it. Falling back to the old
+            # path defensively in case an older olca-ipc build differs.
+            item = getattr(c, "item", None) or getattr(
+                getattr(c, "tech_flow", None), "provider", None
+            )
             out.append(
                 {
-                    "process": getattr(provider, "name", "unknown"),
-                    "process_id": getattr(provider, "id", None),
+                    "process": getattr(item, "name", "unknown") if item else "unknown",
+                    "process_id": getattr(item, "id", None) if item else None,
                     "amount": getattr(c, "amount", None),
                     "share": getattr(c, "share", None),
                 }
             )
-        # Silent-failure guard: if every amount is None, our access path is wrong
-        if _all_amounts_none(out):
+        # Silent-failure guard: catches a bad access path whether it breaks
+        # `amount` alone, `process`/`process_id` alone (the bug this exact
+        # guard used to miss), or all of them.
+        if _all_amounts_none(out) or _all_none(out, "process_id"):
             return {
                 "error": (
-                    "All contribution amounts came back as None. The shape access "
-                    "path in get_impact_contributions is likely wrong (see §14). "
-                    "Check tools/lcia.py and probe the real entry shape with "
-                    "print(repr(contribs[0]))."
+                    "All contribution amounts or process IDs came back as None. "
+                    "The shape access path in get_impact_contributions is likely "
+                    "wrong (see §14). Check tools/lcia.py and probe the real "
+                    "entry shape with print(repr(contribs[0]))."
                 ),
                 "total_available": len(contribs),
             }

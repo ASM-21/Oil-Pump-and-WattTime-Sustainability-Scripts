@@ -98,13 +98,25 @@ Useful event types: `ollama_request`, `ollama_response`, `tool_call`,
 These are flagged with `NOTE:` comments in the source where they apply.
 
 - **Contribution entry shape** in `tools/lcia.py::get_impact_contributions`
-  uses `entry.tech_flow.provider.{name,id}` access. If a probe shows a
-  different shape, adjust the access path. The integration test
-  `test_get_impact_contributions_oil_pump` is the canary.
-- **Grouped result entry shape** in `get_grouped_impact_results` is a
-  best-guess from the method name. Same pattern: probe and adjust.
-- **EnviFlowValue shape** in `get_total_flows` is a best-guess. Probe and
-  adjust if the integration smoke test surfaces a key error.
+  used `entry.tech_flow.provider.{name,id}` access. Checked against
+  olca-ipc's published `ContributionItem` field list (`item: Ref, amount,
+  share, rest, unit` -- no `tech_flow` field at all) without a live IPC
+  connection available in this environment; **fixed** to read `.item`
+  directly, with the old path kept as a defensive fallback in case an older
+  olca-ipc build differs. This was a real silent-failure gap: `amount` is a
+  top-level field so it always came through non-None, meaning the module's
+  own `_all_amounts_none` guard never fired even though `process`/
+  `process_id` were silently wrong on every row. The guard now also checks
+  `process_id` (see `_all_none` in `tools/lcia.py`). Still worth confirming
+  live with `test_get_impact_contributions_oil_pump` before trusting it
+  fully -- this was verified against public API documentation, not a live
+  probe.
+- **Grouped result entry shape** in `get_grouped_impact_results` is still a
+  best-guess from the method name; could not confirm the real field names
+  for this one via public documentation search. Probe and adjust.
+- **EnviFlowValue shape** in `get_total_flows` is still a best-guess for the
+  same reason. Probe and adjust if the integration smoke test surfaces a key
+  error.
 
 ## Out of scope (v0.1)
 
