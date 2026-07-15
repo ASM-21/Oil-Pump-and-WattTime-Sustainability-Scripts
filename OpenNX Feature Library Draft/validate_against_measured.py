@@ -30,6 +30,7 @@ crosswalk from the CAM system.
 """
 
 import csv
+import datetime as dt
 import glob
 import os
 import statistics as stats
@@ -120,6 +121,40 @@ NO_ANALOG = [
     'LID_FINISH_UPPER_WALL', 'LID_FINISH_OUTER_PROFILE', 'ENGRAVING',
 ]
 
+# Corroboration, not an input to the category mapping above: the owner's own
+# richer archetype scheme from
+# Machine Specific Scripts/CNC/EnergyForFeatureLib_otherValsV2.py
+# (OPERATION_ARCHETYPES). Used below only to sanity-check whether each
+# OpenNX category groups operations the owner already considers
+# mechanistically alike (same archetype) or conflates distinct process types
+# (e.g. roughing and finishing) under one energy lookup.
+OPERATION_ARCHETYPES = {
+    'CAVITY_MILL_OUTSIDE': 'ROUGH_MILL', 'CAVITY_MILL_INSIDE': 'ROUGH_MILL',
+    'LID_CAVITY_MILL': 'ROUGH_MILL', 'LID_POCKETING': 'ROUGH_MILL',
+    'FACE_DATUM_A': 'FACING', 'FACE_TOP_PLANE': 'FACING',
+    'FACE_TOP_PLANE_COPY': 'FACING', 'FLOOR_FACING': 'FACING',
+    'LID_FLOOR_FACING': 'FACING', 'LID_FINISH_FACE': 'FACING',
+    'FINISH_OUTER_WALL': 'FINISH_MILL', 'FINISH_OUTER_PROFILE': 'FINISH_MILL',
+    'FINISH_INNER_PROFILE': 'FINISH_MILL', 'FINISH_POCKET_HOLE': 'FINISH_MILL',
+    'FINISH_CBORE': 'FINISH_MILL', 'LID_FINISH_SURFACES': 'FINISH_MILL',
+    'LID_FINISH_UPPER_WALL': 'FINISH_MILL', 'LID_FINISH_OUTER_PROFILE': 'FINISH_MILL',
+    'WALL_FLOOR_PROFILING': 'PROFILING', 'PLANAR_PROFILING_AGAIN': 'PROFILING',
+    'PLANAR_PROFILING_AGAIN_COPY': 'PROFILING',
+    'PLANAR_DEBURRING': 'DEBURR_CHAMFER', 'LID_CHAMFER_EDGES': 'DEBURR_CHAMFER',
+    'LID_CHAMFER_EDGES_AGAIN': 'DEBURR_CHAMFER',
+    'SPOTTING_LID_HOLES': 'SPOT_DRILL', 'SPOTTING_LH': 'SPOT_DRILL',
+    'SPOTTING_CBORE': 'SPOT_DRILL', 'SPOTTING_POCKET_HOLE': 'SPOT_DRILL',
+    'SPOTTING_NPT_TOP': 'SPOT_DRILL', 'SPOTTING_NPT_BOTTOM': 'SPOT_DRILL',
+    'LID_SPOTTING_HOLES': 'SPOT_DRILL', 'LID_SPOTTING_SHAFT_HOLES': 'SPOT_DRILL',
+    'DRILLING_LID_HOLES': 'DRILLING', 'DRILLING_LH': 'DRILLING',
+    'DRILLING_POCKET_HOLE': 'DRILLING', 'DRILLING_CBORE': 'DRILLING',
+    'DRILLING_NPT_TOP': 'DRILLING', 'DRILLING_NPT_BOTTOM': 'DRILLING',
+    'LID_DRILLING_HOLES': 'DRILLING', 'LID_DRILLING_SHAFT_HOLES': 'DRILLING',
+    'TAPPING_LID_HOLES': 'TAPPING', 'TAPPING_NPT_TOP': 'TAPPING',
+    'TAPPING_NPT_BOTTOM': 'TAPPING', 'LID_HOLE_MILLING': 'HOLE_MILL',
+    'ENGRAVING': 'ENGRAVING',
+}
+
 OP_TO_CATEGORY = {}
 for cat, ops in CATEGORY_MAP.items():
     for op in ops:
@@ -165,31 +200,52 @@ LIBRARY_ENERGY_WH = {
 }
 
 
+def _parse_time(s):
+    # Raw Time values look like "2025-07-10 11:27:56.384634".
+    try:
+        return dt.datetime.fromisoformat(s.strip())
+    except (ValueError, AttributeError):
+        return None
+
+
 def measured_operation_energy(csv_path):
-    """Per-run register energy (Wh) for one operation CSV: group by
-    source_file, energy = last forward-kWh - first forward-kWh within the run
-    (exact, gap-immune -- the convention used throughout this repo)."""
+    """Per-run register energy (Wh) and duration (s) for one operation CSV:
+    group by source_file, energy = last forward-kWh - first forward-kWh
+    within the run (exact, gap-immune -- the convention used throughout this
+    repo), duration = last Time - first Time within the run."""
     runs = {}
     with open(csv_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             src = row.get("source_file")
+            t = _parse_time(row.get("Time", ""))
             try:
                 kwh = float(row["forward kWh"])
             except (TypeError, ValueError, KeyError):
                 continue
             if src not in runs:
-                runs[src] = [kwh, kwh]
+                runs[src] = {"kwh_lo": kwh, "kwh_hi": kwh, "t_lo": t, "t_hi": t}
             else:
-                runs[src][0] = min(runs[src][0], kwh)
-                runs[src][1] = max(runs[src][1], kwh)
+                r = runs[src]
+                r["kwh_lo"] = min(r["kwh_lo"], kwh)
+                r["kwh_hi"] = max(r["kwh_hi"], kwh)
+                if t is not None:
+                    if r["t_lo"] is None or t < r["t_lo"]:
+                        r["t_lo"] = t
+                    if r["t_hi"] is None or t > r["t_hi"]:
+                        r["t_hi"] = t
 
-    energies_wh = []
-    for lo, hi in runs.values():
-        delta = (hi - lo) * 1000.0
-        if delta >= 0:
-            energies_wh.append(delta)
-    return energies_wh
+    energies_wh, durations_s = [], []
+    for r in runs.values():
+        delta = (r["kwh_hi"] - r["kwh_lo"]) * 1000.0
+        if delta < 0:
+            continue
+        energies_wh.append(delta)
+        if r["t_lo"] is not None and r["t_hi"] is not None:
+            durations_s.append((r["t_hi"] - r["t_lo"]).total_seconds())
+        else:
+            durations_s.append(None)
+    return energies_wh, durations_s
 
 
 def main():
@@ -197,6 +253,7 @@ def main():
     files = [f for f in files if not f.endswith("unavailable.csv")]
 
     per_op = {}  # operation_name -> list of per-run Wh across all programs it appears in
+    per_op_durations = {}  # operation_name -> list of per-run duration_s (parallel to per_op)
     unmatched_uuids = set()
 
     for fp in files:
@@ -210,8 +267,11 @@ def main():
         if op_name is None:
             unmatched_uuids.add(uuid)
             continue
-        energies = measured_operation_energy(fp)
+        energies, durations = measured_operation_energy(fp)
         per_op.setdefault(op_name, []).extend(energies)
+        per_op_durations.setdefault(op_name, []).extend(
+            d for d in durations if d is not None
+        )
 
     # Group measured operations into library categories
     by_category = {}
@@ -267,7 +327,8 @@ def main():
     lines.append("| Category | Measured ops (n) | Measured mean energy_wh (range across ops) | Placeholder library range (n rows) | Verdict |")
     lines.append("|---|---|---|---|---|")
 
-    csv_rows = [("category", "operation", "n_runs", "mean_wh", "min_wh", "max_wh")]
+    csv_rows = [("category", "operation", "archetype", "n_runs", "mean_wh",
+                 "min_wh", "max_wh", "mean_duration_s", "mean_power_w")]
 
     for cat in sorted(by_category):
         if cat == 'no_library_analog':
@@ -277,8 +338,15 @@ def main():
         for op_name, energies in sorted(ops.items()):
             m = stats.mean(energies)
             op_means.append(m)
-            csv_rows.append((cat, op_name, len(energies), round(m, 4),
-                              round(min(energies), 4), round(max(energies), 4)))
+            durs = per_op_durations.get(op_name, [])
+            mean_dur = stats.mean(durs) if durs else None
+            mean_power = (m / (mean_dur / 3600.0)) if mean_dur else None
+            csv_rows.append((
+                cat, op_name, OPERATION_ARCHETYPES.get(op_name, "?"), len(energies),
+                round(m, 4), round(min(energies), 4), round(max(energies), 4),
+                round(mean_dur, 1) if mean_dur else None,
+                round(mean_power, 1) if mean_power else None,
+            ))
 
         lib_vals = LIBRARY_ENERGY_WH.get(cat, [])
         lib_lo, lib_hi = (min(lib_vals), max(lib_vals)) if lib_vals else (None, None)
@@ -332,6 +400,47 @@ def main():
     lines.append("chamfer, most of tap_operation) are tens of Wh, far above this")
     lines.append("noise floor, so their above-range verdicts are not quantization")
     lines.append("artifacts.")
+    lines.append("")
+    lines.append("## Archetype cross-check")
+    lines.append("")
+    lines.append("Corroboration for the category assignments above (not an input to")
+    lines.append("them): does each OpenNX category group operations the owner's own,")
+    lines.append("independently-defined `OPERATION_ARCHETYPES`")
+    lines.append("(`EnergyForFeatureLib_otherValsV2.py`) also considers mechanistically")
+    lines.append("alike? A category spanning >1 archetype is mixing process types")
+    lines.append("(e.g. roughing and finishing) under one energy lookup, which is a")
+    lines.append("second, independent reason a single point estimate per category")
+    lines.append("can be too coarse, on top of the missing-dimension problem above.")
+    lines.append("")
+    for cat in sorted(by_category):
+        if cat == 'no_library_analog':
+            continue
+        archetypes = sorted({OPERATION_ARCHETYPES.get(op, '?') for op in by_category[cat]})
+        flag = "" if len(archetypes) <= 1 else " -- MIXED ARCHETYPES"
+        lines.append(f"- `{cat}`: {', '.join(archetypes)}{flag}")
+    lines.append("")
+    lines.append("## Anomaly worth a second look: finishing costs more than roughing")
+    lines.append("")
+    lines.append("For both hole-type features with a finishing pass in the data,")
+    lines.append("`FINISH_*` measures several times higher than the `DRILLING_*`/")
+    lines.append("`SPOTTING_*` steps on the same hole, which is the opposite of what")
+    lines.append("\"finishing\" suggests (a light final pass). Flagging rather than")
+    lines.append("explaining -- possible causes include the finish step actually")
+    lines.append("being a slow-feed boring/reaming pass rather than a light skim, or")
+    lines.append("a labeling mismatch; worth checking against the CAM program before")
+    lines.append("using either number:")
+    lines.append("")
+    for finish_op, rough_ops in [
+        ("FINISH_CBORE", ["SPOTTING_CBORE", "DRILLING_CBORE"]),
+        ("FINISH_POCKET_HOLE", ["SPOTTING_POCKET_HOLE", "DRILLING_POCKET_HOLE"]),
+    ]:
+        if finish_op in per_op and per_op[finish_op]:
+            finish_mean = stats.mean(per_op[finish_op])
+            parts = [f"{finish_op}={finish_mean:.3f} Wh"]
+            for r in rough_ops:
+                if r in per_op and per_op[r]:
+                    parts.append(f"{r}={stats.mean(per_op[r]):.3f} Wh")
+            lines.append(f"- {', '.join(parts)}")
     lines.append("")
     lines.append("## Operations with no library category")
     lines.append("")

@@ -77,6 +77,38 @@ chamfer, most of tap_operation) are tens of Wh, far above this
 noise floor, so their above-range verdicts are not quantization
 artifacts.
 
+## Archetype cross-check
+
+Corroboration for the category assignments above (not an input to
+them): does each OpenNX category group operations the owner's own,
+independently-defined `OPERATION_ARCHETYPES`
+(`EnergyForFeatureLib_otherValsV2.py`) also considers mechanistically
+alike? A category spanning >1 archetype is mixing process types
+(e.g. roughing and finishing) under one energy lookup, which is a
+second, independent reason a single point estimate per category
+can be too coarse, on top of the missing-dimension problem above.
+
+- `chamfer`: DEBURR_CHAMFER
+- `counterbore_operation`: DRILLING, FINISH_MILL, SPOT_DRILL -- MIXED ARCHETYPES
+- `face`: FACING
+- `hole_simple`: DRILLING, FINISH_MILL, HOLE_MILL, SPOT_DRILL -- MIXED ARCHETYPES
+- `pocket_rectangular`: ROUGH_MILL
+- `tap_operation`: TAPPING
+
+## Anomaly worth a second look: finishing costs more than roughing
+
+For both hole-type features with a finishing pass in the data,
+`FINISH_*` measures several times higher than the `DRILLING_*`/
+`SPOTTING_*` steps on the same hole, which is the opposite of what
+"finishing" suggests (a light final pass). Flagging rather than
+explaining -- possible causes include the finish step actually
+being a slow-feed boring/reaming pass rather than a light skim, or
+a labeling mismatch; worth checking against the CAM program before
+using either number:
+
+- FINISH_CBORE=7.107 Wh, SPOTTING_CBORE=0.272 Wh, DRILLING_CBORE=1.062 Wh
+- FINISH_POCKET_HOLE=12.827 Wh, SPOTTING_POCKET_HOLE=0.222 Wh, DRILLING_POCKET_HOLE=1.296 Wh
+
 ## Operations with no library category
 
 These measured operations (wall/profile finishing passes, plus
