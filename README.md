@@ -12,6 +12,8 @@ This repository is a working research archive for MS-level sustainability work c
 | `Machine Specific Scripts/` | Exploratory machine-data analysis | CNC and additive scripts for energy traces, feature-library inputs, and machine-specific plots. | [`Machine Specific Scripts/README.md`](Machine%20Specific%20Scripts/README.md) |
 | `OpenNX Feature Library Draft/` | NX draft tool | NXOpen feature extraction and energy lookup prototype for CAD-phase machining energy estimation. | [`OpenNX Feature Library Draft/README.md`](OpenNX%20Feature%20Library%20Draft/README.md) |
 | `Background watttime scripts/` | Legacy helpers | Early WattTime authentication, region, and location-test utilities. | [`Background watttime scripts/README.md`](Background%20watttime%20scripts/README.md) |
+| `Brillinger CNC Pipeline/` | Prototype, unverified against real data | Operation-level energy pipeline (NC parsing, Z-map material removal, cross-source comparison) for the external Brillinger et al. Mendeley CNC dataset. | [`Brillinger CNC Pipeline/README.md`](Brillinger%20CNC%20Pipeline/README.md) |
+| `thesis_animations/` | Presentation kit | Manim scenes visualizing carbon-aware scheduling and energy attribution for thesis/paper figures. | [`thesis_animations/README.md`](thesis_animations/README.md) |
 
 ## Suggested reader paths
 
