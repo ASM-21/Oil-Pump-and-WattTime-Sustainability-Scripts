@@ -789,12 +789,15 @@ REGIONS = {
         "description": "Midcontinent Independent System Operator",
         "coordinates": (39.7684, -86.1581),  # Indianapolis, IN
     },
-    "BPA": {  # Signals: AOER
-        "name": "Bonneville Power Administration",
-        "timezone": "America/Los_Angeles",
-        "description": "Bonneville Power Administration (Pacific NW)",
-        "coordinates": (45.6387, -122.6615),  # Portland, OR
-    },
+    # "BPA" intentionally not redefined here -- this was a duplicate key
+    # (Python silently kept only this later definition, discarding the
+    # "BPA": {...} entry above at the Pacific NW utilities cluster, which
+    # claimed "Signals: MOER, AOER" vs. this one's "AOER" only). BPA is one
+    # of the six regions the actual GridMixStudy analysis uses directly
+    # (see CODE_GUIDE.md), and the study relies on MOER, so the earlier,
+    # MOER+AOER definition is kept as canonical and this duplicate removed
+    # rather than the other way around. If WattTime's real API disagrees,
+    # fix the surviving entry above instead of re-adding this one.
     "CAISO": {  # Signals: AOER
         "name": "California ISO",
      "timezone": "America/Los_Angeles",
