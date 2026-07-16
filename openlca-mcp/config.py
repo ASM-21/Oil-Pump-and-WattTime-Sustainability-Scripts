@@ -16,6 +16,11 @@ MAX_CONTRIBUTIONS = 25      # cap on per-process contribution lists
 MAX_FLOWS = 25              # cap on total flow lists
 TOOL_RESULT_LOG_BYTES = 2048
 
+# list_processes fuzzy fallback (see tools/inventory.py::_search_processes
+# and _token_overlap_score for why this is per-token, not whole-string).
+FUZZY_TOKEN_MATCH = 0.75   # difflib ratio for one query word to count as matching one name word
+FUZZY_TOKEN_SCORE = 0.7    # fraction of query words that must match for a name to qualify
+
 # Agent loop safety
 MAX_TOOL_ITERATIONS = 10    # hard cap on tool calls per user turn
 OLLAMA_TIMEOUT_S = 120      # request timeout for /api/chat

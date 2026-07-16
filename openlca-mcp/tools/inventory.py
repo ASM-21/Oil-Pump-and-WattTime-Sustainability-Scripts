@@ -1,10 +1,15 @@
 """Inventory tools."""
 
+import difflib
+import re
+
 from requests.exceptions import ConnectionError
 
 import olca_schema as o
 from ipc_client import get_client
-from config import MAX_DESCRIPTORS, MAX_FLOWS
+from config import FUZZY_TOKEN_MATCH, FUZZY_TOKEN_SCORE, MAX_DESCRIPTORS, MAX_FLOWS
+
+_TOKEN_RE = re.compile(r"[a-z0-9]+")
 
 
 def _all_amounts_none(items: list, field: str = "amount") -> bool:
@@ -13,26 +18,100 @@ def _all_amounts_none(items: list, field: str = "amount") -> bool:
     return all(item.get(field) is None for item in items)
 
 
+def _tokens(text: str) -> list:
+    return _TOKEN_RE.findall((text or "").lower())
+
+
+def _token_overlap_score(query_tokens: list, name: str) -> float:
+    """Fraction of query_tokens that fuzzy-match some word in `name`.
+
+    Plain difflib.get_close_matches() over WHOLE process names was tried
+    first and rejected: LCA database names are long, structured, comma-
+    qualified strings ("aluminium ingot, primary, at plant" vs "aluminium
+    sheet rolling"), and whole-string SequenceMatcher.ratio() is dominated
+    by overall length/composition, not by whether the meaningful words
+    match. Empirically, querying "aluminum ingot" against a small sample
+    scored the WRONG process ("aluminium sheet rolling", ratio 0.649) above
+    the right one ("aluminium ingot, primary, at plant", ratio 0.583).
+    Per-token matching (does each query word have a close match somewhere
+    in the name) doesn't have that failure mode and is the standard fix for
+    fuzzy-matching structured/qualified names.
+    """
+    name_tokens = _tokens(name)
+    if not query_tokens or not name_tokens:
+        return 0.0
+    matched = 0
+    for qt in query_tokens:
+        if any(qt == nt or qt in nt or nt in qt for nt in name_tokens):
+            matched += 1
+            continue
+        best = max(
+            (difflib.SequenceMatcher(None, qt, nt).ratio() for nt in name_tokens),
+            default=0.0,
+        )
+        if best >= FUZZY_TOKEN_MATCH:
+            matched += 1
+    return matched / len(query_tokens)
+
+
+def _search_processes(descriptors: list, keyword: str) -> tuple[list, bool]:
+    """Case-insensitive substring match on process name; if that finds
+    nothing, fall back to a per-token fuzzy match over all names (see
+    _token_overlap_score for why token-level, not whole-string, matching).
+
+    LCA database naming is inconsistent in exactly the ways that break exact
+    substring search: regional spelling ("aluminum" vs "aluminium"),
+    qualifier order ("aluminium ingot, primary" vs "primary aluminium
+    ingot"), abbreviations. A local model asked to find a process from a
+    natural-language description will often guess a keyword that is close
+    but not a substring; returning zero results in that case forces several
+    wasted tool-call round trips (and risks hitting MAX_TOOL_ITERATIONS)
+    before the model tries a lucky exact phrase. Falling back to fuzzy
+    matching turns that into one call. Returns (matches, was_fuzzy), ranked
+    best-score-first when fuzzy.
+    """
+    kw = (keyword or "").lower().strip()
+    if not kw:
+        return list(descriptors), False
+
+    exact = [d for d in descriptors if kw in (d.name or "").lower()]
+    if exact:
+        return exact, False
+
+    query_tokens = _tokens(kw)
+    scored = [(d, _token_overlap_score(query_tokens, d.name or "")) for d in descriptors]
+    scored = [(d, s) for d, s in scored if s >= FUZZY_TOKEN_SCORE]
+    if not scored:
+        return [], False
+    scored.sort(key=lambda ds: ds[1], reverse=True)
+    return [d for d, _ in scored], True
+
+
 def list_processes(keyword: str = "") -> dict:
-    """Search processes by case-insensitive substring on name. Capped at MAX_DESCRIPTORS.
+    """Search processes by name. Capped at MAX_DESCRIPTORS.
+
+    Tries a case-insensitive substring match first. If that finds nothing,
+    falls back to a fuzzy (edit-distance) match over all process names --
+    check the `fuzzy_match` field in the result: when true, these are
+    approximate matches, not confirmed exact hits, and should be presented
+    to the user as candidates ("did you mean...") rather than treated as
+    the one correct process.
 
     Args: keyword (required - empty string returns the first 50 of 25k+ processes).
-    Returns: {processes: [{id, name}, ...], returned, total_matching, total_in_db}
+    Returns: {processes: [{id, name}, ...], returned, total_matching,
+    total_in_db, fuzzy_match}
     """
     try:
         client = get_client()
         descriptors = client.get_descriptors(o.Process)
-        kw = (keyword or "").lower().strip()
-        if kw:
-            filtered = [d for d in descriptors if kw in (d.name or "").lower()]
-        else:
-            filtered = list(descriptors)
+        filtered, fuzzy = _search_processes(descriptors, keyword)
         out = [{"id": d.id, "name": d.name} for d in filtered[:MAX_DESCRIPTORS]]
         return {
             "processes": out,
             "returned": len(out),
             "total_matching": len(filtered),
             "total_in_db": len(descriptors),
+            "fuzzy_match": fuzzy,
         }
     except ConnectionError:
         return {"error": "OpenLCA IPC unreachable on port 8081."}

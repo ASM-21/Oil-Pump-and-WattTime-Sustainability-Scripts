@@ -67,6 +67,7 @@ openlca-mcp/
 ├── tests/
 │   ├── test_connection.py   # smoke test, runs as plain python
 │   ├── test_validation.py   # pure unit tests, no IPC needed
+│   ├── test_inventory.py    # pure unit tests (fuzzy matching), no IPC needed
 │   └── test_tools.py        # pytest integration, needs live OpenLCA
 ├── requirements.txt
 └── README.md
@@ -76,7 +77,7 @@ openlca-mcp/
 
 ```bash
 # Pure unit tests, no environment needed
-pytest tests/test_validation.py -v
+pytest tests/test_validation.py tests/test_inventory.py -v
 
 # Integration tests, needs OpenLCA + IPC up
 pytest tests/test_tools.py -v -s
@@ -135,6 +136,20 @@ assuming well-formed tool calls:
   qwen3 (empty output, or `/think`/`/no_think` tokens leaking into visible
   content). The comment in `call_ollama()` exists so a future edit doesn't
   reintroduce this by adding the parameter back "for clarity."
+- **`list_processes` now falls back to fuzzy matching** (`tools/inventory.py`)
+  when an exact case-insensitive substring search finds nothing. LCA
+  database names are long, structured, comma-qualified strings ("aluminium
+  ingot, primary, at plant") with regional-spelling and word-order variants
+  a small model will often guess wrong on the first try -- returning zero
+  results then costs several wasted tool-call round trips. Deliberately
+  NOT plain `difflib.get_close_matches()` over whole names: tested that
+  first and it scored an unrelated process above the right one, because
+  whole-string edit-distance ratio is dominated by overall length on names
+  this long. Uses per-token fuzzy matching instead (see
+  `_token_overlap_score`'s docstring for the concrete failure case it
+  fixes). The result's `fuzzy_match` field tells the caller/model whether
+  matches are approximate -- present them as candidates, not a confirmed
+  hit. Tests in `tests/test_inventory.py` (no IPC needed).
 
 None of this could be verified against a live Ollama/OpenLCA connection in
 the environment these changes were made in (no local model, no IPC server
