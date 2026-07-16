@@ -58,7 +58,7 @@ def load_health_data():
     health_path = LIBRARY_DIR / HEALTH_SIGNAL / "historical" / f"{HEALTH_REGION}.parquet"
     if not health_path.exists():
         print(f"  ⚠️ File not found: {health_path}")
-        print(f"  To collect: set SIGNAL='health_damage' in 01_data_collection_v2.py")
+        print(f"  To collect: set SIGNAL='health_damage' in 01_data_collection.py")
         return None
     try:
         df = pd.read_parquet(health_path)

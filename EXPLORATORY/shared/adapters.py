@@ -42,6 +42,12 @@ column names; projects depend on them):
       t             : pandas datetime (1 Hz)
       power_w       : float
       operation_id  : str or NaN
+      register_kwh  : float, the cumulative forward-kWh meter reading at each
+                      sample (added so cross-checks can use the same exact,
+                      gap-immune register basis as load_operation_energy()'s
+                      energy_wh, instead of re-integrating power_w -- the two
+                      are NOT interchangeable energy bases; see the closure
+                      note in energy_budget/run.py)
 
   load_program_table() -> DataFrame: program structure + mean durations
   load_bom()           -> DataFrame: bill of materials incl. masses if present
@@ -411,6 +417,9 @@ def load_power_stream(run_id, part: str | None = None) -> pd.DataFrame:
       program       : decoded program name ("NONE" outside any program)
       part          : "body" or "lid"
       source_file   : which raw CSV the sample came from
+      register_kwh  : cumulative forward-kWh meter reading (see module
+                      docstring; use this, not power_w integration, for any
+                      cross-check against load_operation_energy()'s energy_wh)
 
     Samples whose program decodes to UNKNOWN are kept and labeled, not dropped:
     signature work needs to see what attribution would discard.
@@ -425,7 +434,7 @@ def load_power_stream(run_id, part: str | None = None) -> pd.DataFrame:
         p = _re.search(r"al6061_(lid|body)", path.name, _re.IGNORECASE).group(1).lower()
         raw = pd.read_csv(path)
         streams = {}
-        for name in ("processKindId", "partKindId", "active power"):
+        for name in ("processKindId", "partKindId", "active power", "forward kWh"):
             s = raw[raw["Dataname"] == name][["Time", "Value"]].copy()
             # The logger emits wall-clock or elapsed time; the analyzer's
             # parser handles both. Reuse it so stream and energy agree.
@@ -437,9 +446,11 @@ def load_power_stream(run_id, part: str | None = None) -> pd.DataFrame:
             streams["processKindId"]
             .merge(streams["partKindId"], on="Time", suffixes=("_proc", "_part"))
             .merge(streams["active power"], on="Time")
+            .merge(streams["forward kWh"], on="Time", suffixes=("", "_reg"))
         )
-        merged.columns = ["t", "proc_uuid", "part_uuid", "power_w"]
+        merged.columns = ["t", "proc_uuid", "part_uuid", "power_w", "register_kwh"]
         merged["power_w"] = pd.to_numeric(merged["power_w"], errors="coerce").clip(lower=0)
+        merged["register_kwh"] = pd.to_numeric(merged["register_kwh"], errors="coerce")
         merged = merged.sort_values("t").reset_index(drop=True)
         merged["operation_id"] = (
             merged["proc_uuid"].str.strip().str.upper()
@@ -452,7 +463,8 @@ def load_power_stream(run_id, part: str | None = None) -> pd.DataFrame:
         merged["part"] = p
         merged["source_file"] = path.name
         frames.append(merged[
-            ["t", "power_w", "operation_id", "program", "part", "source_file"]
+            ["t", "power_w", "operation_id", "program", "part", "source_file",
+             "register_kwh"]
         ])
 
     if not frames:

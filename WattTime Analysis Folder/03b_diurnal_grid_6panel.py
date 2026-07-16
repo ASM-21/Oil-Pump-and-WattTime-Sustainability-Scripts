@@ -1,5 +1,7 @@
 """
-03.2_temporal_patterns_gridfigure.py - Six-Panel Diurnal MOER Profile Grid
+03b_diurnal_grid_6panel.py - Six-Panel Diurnal MOER Profile Grid
+(renamed from 03.2_temporal_patters_gridfigure.py per CODE_GUIDE.md's
+consolidation guide; logic unchanged)
 
 Creates a single figure with all six regions as subplots.
 Each panel: median (solid) + mean (dashed), P25-P75 and P10-P90 bands.
@@ -7,7 +9,7 @@ Each panel: median (solid) + mean (dashed), P25-P75 and P10-P90 bands.
 Usage:
     1. Run 02_data_processing.py first to create a run folder
     2. Edit RUN_FOLDER below
-    3. Run: python 03.2_temporal_patterns_gridfigure.py
+    3. Run: python 03b_diurnal_grid_6panel.py
 
 Output:
     - figures/03_diurnal_grid_6panel.png

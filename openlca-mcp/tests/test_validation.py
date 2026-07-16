@@ -8,7 +8,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from validation import UUID_RE, UuidRegistry, validate_args
+from validation import (
+    UUID_RE,
+    UuidRegistry,
+    coerce_tool_args,
+    validate_against_schema,
+    validate_args,
+)
 
 
 # ---------- Regex sanity ----------
@@ -185,3 +191,101 @@ def test_registry_format_check_runs_before_lookup():
     err = validate_args("get_product_system", args, r)
     assert err is not None
     assert "Invalid UUID format" in err["error"]
+
+
+# ---------- coerce_tool_args: repairing the Ollama stringified-args bug ----------
+
+def test_coerce_passes_through_dict():
+    d = {"a": 1}
+    out, err = coerce_tool_args(d)
+    assert err is None
+    assert out is d
+
+
+def test_coerce_none_becomes_empty_dict():
+    out, err = coerce_tool_args(None)
+    assert err is None
+    assert out == {}
+
+
+def test_coerce_parses_json_object_string():
+    out, err = coerce_tool_args('{"product_system_id": "abc"}')
+    assert err is None
+    assert out == {"product_system_id": "abc"}
+
+
+def test_coerce_rejects_malformed_json_string():
+    out, err = coerce_tool_args('{"product_system_id": ', "calculate_product_system")
+    assert out is None
+    assert err is not None
+    assert "calculate_product_system" in err["error"]
+
+
+def test_coerce_rejects_json_array_string():
+    out, err = coerce_tool_args("[1, 2, 3]")
+    assert out is None
+    assert err is not None
+    assert "list" in err["error"]
+
+
+def test_coerce_rejects_non_string_non_dict():
+    out, err = coerce_tool_args(42)
+    assert out is None
+    assert err is not None
+    assert "int" in err["error"]
+
+
+# ---------- validate_against_schema: structural pre-dispatch check ----------
+
+SAMPLE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "product_system_id": {"type": "string"},
+        "method_id": {"type": "string"},
+        "amount": {"type": "number"},
+    },
+    "required": ["product_system_id", "method_id"],
+}
+
+
+def test_schema_passes_valid_args():
+    args = {"product_system_id": "x", "method_id": "y", "amount": 1.0}
+    assert validate_against_schema("calculate_product_system", args, SAMPLE_SCHEMA) is None
+
+
+def test_schema_flags_missing_required():
+    args = {"product_system_id": "x"}
+    err = validate_against_schema("calculate_product_system", args, SAMPLE_SCHEMA)
+    assert err is not None
+    assert "method_id" in err["error"]
+
+
+def test_schema_flags_null_required():
+    args = {"product_system_id": "x", "method_id": None}
+    err = validate_against_schema("calculate_product_system", args, SAMPLE_SCHEMA)
+    assert err is not None
+    assert "method_id" in err["error"]
+
+
+def test_schema_flags_wrong_type():
+    args = {"product_system_id": "x", "method_id": "y", "amount": "a lot"}
+    err = validate_against_schema("calculate_product_system", args, SAMPLE_SCHEMA)
+    assert err is not None
+    assert "amount" in err["error"]
+
+
+def test_schema_bool_not_accepted_as_number():
+    """bool is an int subclass in Python; must not silently pass as a number."""
+    args = {"product_system_id": "x", "method_id": "y", "amount": True}
+    err = validate_against_schema("calculate_product_system", args, SAMPLE_SCHEMA)
+    assert err is not None
+    assert "amount" in err["error"]
+
+
+def test_schema_none_schema_is_noop():
+    assert validate_against_schema("anything", {}, None) is None
+
+
+def test_schema_ignores_unknown_extra_property():
+    args = {"product_system_id": "x", "method_id": "y", "extra_field": 123}
+    assert validate_against_schema("calculate_product_system", args, SAMPLE_SCHEMA) is None

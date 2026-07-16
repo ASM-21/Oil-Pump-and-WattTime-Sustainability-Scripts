@@ -33,7 +33,16 @@ This folder contains scripts for updating and inspecting oil-pump energy values 
 
 ## Safety notes before sharing
 
-- Replace private IP addresses, UUIDs, and database-specific identifiers with documented placeholders if the database cannot be shared.
+- Replace private IP addresses, UUIDs, and database-specific identifiers with documented placeholders if the database cannot be shared. **Checked:** none of the four scripts have hardcoded IPs, filesystem paths, or UUIDs as of this pass -- all connection/ID config already goes through `os.getenv(..., "PLACEHOLDER")`.
 - Explain which values come from measured machine data, CAD estimates, or assumptions.
 - Keep the `openlca-mcp/README.md` as the starting point for agent-based OpenLCA querying.
+
+## Correctness findings (new)
+
+See [`FINDINGS.md`](FINDINGS.md) for a static-verification pass (no OpenLCA
+desktop available to run these live): a real crash in `update_static.py`
+(missing `import os`, now fixed) and a ~100x data-entry error in the legacy
+`OpenLCA tester Updater.py` (now fixed), plus two flagged-but-unverified
+risks -- an internal MJ/kWh unit contradiction in that same legacy script,
+and `update_gui.py` updating Tkinter widgets from background threads.
 

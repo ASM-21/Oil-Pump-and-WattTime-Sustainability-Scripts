@@ -39,3 +39,28 @@ This folder contains a Siemens NXOpen prototype for estimating machining energy 
 - NXOpen scripts typically run inside the NX-managed Python environment rather than a normal terminal.
 - The energy library should document units and measurement source for each feature-energy value.
 
+## Validation against measured data (new)
+
+`aluminum_expanded.xlsx` is 100% placeholder data (see
+`build_aluminum_library.py`: every row has `source="placeholder"` and an
+empty `uuid` column, waiting for real IN-MaC measurements to be dropped in).
+That comparison had never been run. `validate_against_measured.py` does a
+first, stdlib-only pass: it maps the real per-operation energy already
+committed in `../ML Explore/operation_csvs/` onto this library's feature
+categories (via the UUID name table in
+`../Machine Specific Scripts/CNC/EnergyForFeatureLib.py`) and checks whether
+the placeholder ranges are even in the right order of magnitude.
+
+Headline result: `pocket_rectangular` (cavity milling) is measured 12x above
+the placeholder table's largest entry — the table's dimensional range doesn't
+reach this part's actual roughing volumes. `chamfer` and `face` also read
+high, with caveats (per-edge basis, respectively a smaller gap) noted in the
+findings. About a third of the part's real operations (wall/profile finishing
+passes) have no matching category in the library at all. Run it yourself:
+
+    python3 "validate_against_measured.py"
+
+See `library_validation_findings.md` (full write-up, caveats, and the
+category-by-category table) and `library_validation_results.csv` (per-operation
+numbers behind it).
+

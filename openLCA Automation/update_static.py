@@ -10,6 +10,8 @@ To use:
   3. Run: python update_static.py
 """
 
+import os
+
 from olca_ipc import Client
 import olca_schema as o
 

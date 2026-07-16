@@ -8,7 +8,18 @@ a complete, auditable energy budget:
 2. **Closure** - bottom-up attributed energy reconciled against an
    independent integration of the full raw power stream, per
    (part, run, program). The residual is what attribution silently loses;
-   the smoke test fails if it exceeds 5%.
+   the smoke test fails if it exceeds 5%. **Both sides of this check now use
+   the forward-kWh register** (start-to-end delta over each program's span),
+   matching the register basis `load_operation_energy()`'s `energy_wh` already
+   uses. An earlier version rectangle-integrated the raw "active power"
+   stream for the independent side instead, which this repo's own
+   `compare_methods` work shows can diverge from the register by far more
+   than 5% on individual programs even though totals agree within ~2% -- that
+   would have measured the register-vs-active-power methodology gap, not
+   attribution loss, and could have failed (or falsely passed) the 5%
+   requirement for the wrong reason. Fixed in `shared/adapters.py`'s
+   `load_power_stream()` (now also returns `register_kwh`) and this file's
+   `closure_table()`.
 
 ## Run
 

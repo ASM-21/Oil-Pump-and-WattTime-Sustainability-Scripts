@@ -1,6 +1,19 @@
 """
 openLCA Batch Energy Update - Multiple Exchanges
 Updates all electricity inputs in a process based on description matching
+
+Superseded by update_static.py / update_gui.py in this folder (simpler,
+consistent kWh handling, no MJ conversion). Kept for reference. Two known
+issues, not fixed beyond the one obvious typo below because this file isn't
+the recommended path anymore:
+  1. update_exchange() computes mean_mj = mean_kwh * 1 / std_mj = std_kwh * 1
+     (i.e. no actual unit conversion) but its own print statements assume the
+     OLD value read from the exchange is in MJ (dividing by 3.6 to show
+     kWh). Those two assumptions contradict each other: either the exchange
+     unit isn't MJ (so the print's /3.6 is wrong) or the write is missing a
+     *3.6 (so every pushed value would be ~3.6x too small). update_static.py
+     and update_gui.py both write mean_kwh directly with no MJ math at all,
+     which is the current, simpler understanding -- use those instead.
 """
 
 import os
@@ -19,7 +32,13 @@ PROCESS_ID = os.getenv("OPENLCA_PROCESS_ID", "PLACEHOLDER")  # UUID is more reli
 
 # Define component energy data (mean_kWh, std_kWh)
 printed_parts = {
-    'DriveGear': (42.1, 0.080957), # 'DriveGear': (0.224604, 0.080957),
+    'DriveGear': (0.421000, 0.080957),  # was 42.1 -- ~100x typo (digits of 0.421
+                                        # rearranged past the decimal point);
+                                        # 0.421000 matches update_static.py/
+                                        # update_gui.py's current value.
+                                        # Prior comment '0.224604' was an even
+                                        # older value; not restored since it
+                                        # disagrees with the canonical scripts.
     'DriveShaft': (0.092925, 0.000015),
     'IdleGear': (0.219209, 0.006082),
     'IdleShaft': (0.058885, 0.004750)

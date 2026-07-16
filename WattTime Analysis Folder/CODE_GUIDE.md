@@ -218,6 +218,20 @@ These four scripts sit outside the main section structure but are part of Chapte
 
 ## 4. Versioned / Duplicate Scripts — Consolidation Guide
 
+**Status: executed.** The renames and archiving this section recommends have
+been carried out: `03_temporal_patterns_v4.py` -> `03_temporal_patterns.py`,
+`06_heuristics_v3.py` -> `06_heuristics.py`, `01_data_collection v1.py` ->
+`01_data_collection.py`, `03.2_temporal_patters_gridfigure.py` ->
+`03b_diurnal_grid_6panel.py`, `03.3_representative_week_grid.py` ->
+`03c_representative_week_6panel.py`, `ch3_supp_outlierFigs copy.py` ->
+`ch3_supp_outlier_figures.py`. The retired versions (v1-v3 of temporal
+patterns, v1-v2 of heuristics, `01_data_collection v2.py`, the Kansas debug
+script, the AOER explore-test script, and the abandoned
+`Ch3_defesneercotandspp_...` script) now live in `archive/` rather than being
+deleted, so the history below is still traceable. The analysis below is kept
+as the record of *why* -- it was correct at the time and nothing in the
+reasoning has changed, only the file layout it recommends acting on.
+
 These are the scripts with multiple versions. Each group is analyzed below.
 
 ---
@@ -320,6 +334,10 @@ These are development artifacts and not part of any analysis pipeline:
 
 ## 6. Consolidation Summary
 
+**This table records the plan; see the "Status: executed" note in section 4
+above for what actually happened.** The filenames below are pre-consolidation
+names, kept as-is here since this is the historical record of the decision.
+
 | Action | Scripts Affected |
 |--------|-----------------|
 | **Keep as-is (canonical, no changes needed)** | `config.py`, all `utils/`, `00`, `02`, `04`–`06_v3`, `07`–`13`, all `ch3_common.py`, all `ch3_s*`, all `ch3_supp_*` (except copy), all `ch3_extended_*`, all `Ch3Tod*`, `Ch3ForecastEval`, `Ch3MethodComparison`, both `CH3_FIG_*` |
@@ -334,7 +352,10 @@ These are development artifacts and not part of any analysis pipeline:
 
 ## 7. Recommended "Clean" Script Set (Post-Consolidation)
 
-After consolidation, the project should have approximately **47 scripts** (down from 63):
+**This is now the actual script set** (see section 4's "Status: executed"
+note) -- the `<- (was ...)` annotations below describe what happened, not
+what still needs to happen. After consolidation, the project has
+approximately **47 scripts** (down from 63):
 
 ```
 config.py
@@ -552,9 +573,16 @@ There are three existing guide files in the project root plus the new `CODE_GUID
 
 ---
 
-### `README.md` (~976 lines) — **The Primary Reference**
+### `old readme.md` (~976 lines) — **The Primary Reference (moved here after this guide was written)**
 
-The most current and comprehensive guide in the project. Covers:
+**Correction:** this section originally described this content as living in
+`README.md`. A later documentation-cleanup pass replaced the folder's
+`README.md` with a short orientation page (see the repo-root `docs/` handoff
+work) and preserved the detailed content below under `old readme.md` instead.
+The content itself was not rewritten, so everything below is still accurate
+about what it covers -- only the filename changed.
+
+The most current and comprehensive per-script guide in the project. Covers:
 - Project overview and research context
 - Quick-reference table (script # → core question → primary output)
 - Full directory structure diagram
@@ -565,9 +593,14 @@ The most current and comprehensive guide in the project. Covers:
 - Template for writing a new pipeline script (new module convention)
 - Troubleshooting section (common errors and fixes)
 
-**Status:** Up to date with v4 temporal patterns, v3 heuristics, and the library/runs architecture. References the correct run folder naming convention. The most useful document for someone continuing the pipeline work.
+**Status:** Up to date with v4 temporal patterns, v3 heuristics, and the library/runs architecture. References the correct run folder naming convention. The most useful document for someone continuing the pipeline work. (The consolidation this guide recommended below has since been carried out -- v4/v3 are now the canonical `03_temporal_patterns.py`/`06_heuristics.py`, so "v4 temporal patterns, v3 heuristics" here means "the file now just called `03_temporal_patterns.py`/`06_heuristics.py`.")
 
 **Gap:** Does not cover the ch3 scripts at all — treats them as outside scope.
+
+**The new `README.md`** (short, ~46 lines) is the folder's front door: current
+status, research purpose, a group-by-group file table, suggested reading
+order (this guide included), and reproducibility/safety notes. Read it
+first, then come here or to `old readme.md` for depth.
 
 ---
 
@@ -624,9 +657,11 @@ What this document adds that the others don't:
 ### How the Four Guides Relate
 
 ```
+README.md                      — Folder front door: status, purpose, reading order (new, short)
+         ↓ expands to
 watttime_quick_reference.md    — One-page cheat sheet, run order, output lookup
          ↓ expands to
-README.md                      — Full pipeline reference, per-script docs, template for new scripts
+old readme.md                  — Full pipeline reference, per-script docs, template for new scripts
          ↓ this file adds
 CODE_GUIDE.md                  — Duplication map, infrastructure critique, ch3 overlap analysis
          ↓ deeper narrative in
@@ -634,10 +669,11 @@ watttime_heuristic_tool_guide.md — Older guide; still useful for output interp
 ```
 
 **For a new person taking over the project, the recommended reading order:**
-1. `README.md` — understand the pipeline architecture and how to run it
-2. `watttime_quick_reference.md` — keep open as a cheat sheet while working
-3. `CODE_GUIDE.md` (this file) — understand what's a duplicate vs canonical and why things are organized the way they are
-4. `watttime_heuristic_tool_guide.md` Section 7 — understand what "good" results look like
+1. `README.md` — the short folder front door
+2. `old readme.md` — understand the pipeline architecture and how to run it
+3. `watttime_quick_reference.md` — keep open as a cheat sheet while working
+4. `CODE_GUIDE.md` (this file) — understand what's a duplicate vs canonical and why things are organized the way they are
+5. `watttime_heuristic_tool_guide.md` Section 7 — understand what "good" results look like
 
 ---
 
