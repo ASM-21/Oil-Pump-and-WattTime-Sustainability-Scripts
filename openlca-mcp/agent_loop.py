@@ -14,6 +14,7 @@ Slash commands:
 
 import asyncio
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -33,7 +34,12 @@ from config import (
     TOOL_RESULT_LOG_BYTES,
 )
 from logger import log_event
-from validation import UuidRegistry, validate_args
+from validation import (
+    UuidRegistry,
+    coerce_tool_args,
+    validate_against_schema,
+    validate_args,
+)
 
 
 SYSTEM_PROMPT = """You answer questions about life cycle assessment data in an OpenLCA database. You have tools that query the database directly.
@@ -82,7 +88,17 @@ def convert_to_ollama(tool) -> dict:
 # ---------- Ollama HTTP ----------
 
 def call_ollama(history: list, tools: list) -> dict:
-    """POST to Ollama /api/chat. Returns the full response dict."""
+    """POST to Ollama /api/chat. Returns the full response dict.
+
+    Deliberately does NOT pass a "think" key. Ollama's qwen3 handling has
+    open bugs where explicitly combining think=true (or false) with the
+    tools parameter produces empty output or leaks /think and /no_think
+    tokens into visible content (ollama/ollama issues #10976, #14601, as of
+    2025-2026). Omitting the key and taking Ollama's default for this model
+    is the path that is actually known to return usable `message.thinking`
+    content (see the LOG_THINKING handling below) -- don't "fix" this by
+    adding an explicit think parameter without re-checking those issues.
+    """
     resp = requests.post(
         f"{OLLAMA_URL}/api/chat",
         json={
@@ -173,6 +189,41 @@ def extract_payload(call_result) -> dict:
     return {"value": str(call_result)}
 
 
+# ---------- Grounding diagnostic (non-blocking) ----------
+
+_NUMBER_RE = re.compile(r"-?\d[\d,]*\.?\d*")
+
+
+def _numbers_in(text: str) -> set:
+    return {m.replace(",", "") for m in _NUMBER_RE.findall(text)}
+
+
+def check_numeric_grounding(final_answer: str, turn_tool_contents: list) -> list:
+    """Non-blocking diagnostic: numbers stated in the final answer that don't
+    appear in any tool result returned during this turn are suspicious --
+    possibly fabricated rather than read off a real result, the specific
+    failure mode SYSTEM_PROMPT rule 1 forbids. This never edits or blocks
+    the answer (the model may legitimately compute a derived number, e.g. a
+    percentage of two tool-returned values, that won't appear verbatim); it
+    only logs a warning so the transcript can be spot-checked. Skips
+    magnitude-under-10 numbers since those are usually counts/indices
+    restated in prose (e.g. "3 categories"), not values worth fact-checking.
+    """
+    grounded = set()
+    for content in turn_tool_contents:
+        grounded |= _numbers_in(content)
+    suspicious = []
+    for n in _numbers_in(final_answer):
+        try:
+            if abs(float(n)) < 10:
+                continue
+        except ValueError:
+            continue
+        if n not in grounded:
+            suspicious.append(n)
+    return suspicious
+
+
 # ---------- Display helpers ----------
 
 def _short_args(args: dict) -> str:
@@ -195,8 +246,18 @@ async def run_turn(
     ollama_tools: list,
     mcp: Client,
     registry: UuidRegistry,
+    tool_schemas: dict | None = None,
 ) -> None:
-    """Loop until the model produces a no-tool-call response."""
+    """Loop until the model produces a no-tool-call response.
+
+    tool_schemas maps tool name -> its JSON inputSchema (from
+    convert_to_ollama), used for pre-dispatch structural validation. Optional
+    and defaults to no schema checking so this function still works if a
+    caller doesn't have schemas handy.
+    """
+    tool_schemas = tool_schemas or {}
+    known_tool_names = set(tool_schemas.keys())
+    turn_tool_contents: list = []
     iterations = 0
     while True:
         if iterations >= MAX_TOOL_ITERATIONS:
@@ -250,6 +311,9 @@ async def run_turn(
         if not tool_calls:
             final = msg.get("content", "")
             print(f"\n{final}")
+            suspicious = check_numeric_grounding(final, turn_tool_contents)
+            if suspicious:
+                log_event("grounding_warning", numbers=suspicious, content=final[:500])
             log_event("final_answer", content=final)
             return
 
@@ -258,15 +322,52 @@ async def run_turn(
             tc_id = tc.get("id", "")
             fn = tc.get("function", {})
             name = fn.get("name", "")
-            args = fn.get("arguments", {}) or {}
-            log_event("tool_call", id=tc_id, name=name, args=args)
+            raw_args = fn.get("arguments", {})
+            log_event("tool_call", id=tc_id, name=name, args=raw_args)
+
+            # Repair the documented Ollama failure mode where `arguments`
+            # arrives as a JSON-encoded string instead of an object, before
+            # any further validation (including the live preview below)
+            # assumes it's already a dict.
+            args, coerce_err = coerce_tool_args(raw_args, name)
 
             # Live announce so the user can see what's happening
-            args_preview = _short_args(args)
+            args_preview = _short_args(args or {})
             preview_str = f"({args_preview})" if args_preview else "()"
             print(f"  -> {name}{preview_str}", flush=True)
 
-            err = validate_args(name, args, registry)
+            if coerce_err is not None:
+                log_event(
+                    "validation_error", id=tc_id, name=name, args=raw_args,
+                    reason=coerce_err["error"],
+                )
+                history.append({
+                    "role": "tool", "tool_call_id": tc_id,
+                    "content": json.dumps(coerce_err),
+                })
+                continue
+
+            if known_tool_names and name not in known_tool_names:
+                err = {
+                    "error": (
+                        f"Unknown tool '{name}'. Available tools: "
+                        f"{', '.join(sorted(known_tool_names))}. "
+                        "Call one of these exact names."
+                    )
+                }
+                log_event(
+                    "validation_error", id=tc_id, name=name, args=args,
+                    reason=err["error"],
+                )
+                history.append({
+                    "role": "tool", "tool_call_id": tc_id,
+                    "content": json.dumps(err),
+                })
+                continue
+
+            err = validate_against_schema(name, args, tool_schemas.get(name))
+            if err is None:
+                err = validate_args(name, args, registry)
             if err is not None:
                 log_event(
                     "validation_error",
@@ -302,6 +403,7 @@ async def run_turn(
                 registry.track_result(name, payload)
 
             content_str = json.dumps(payload, default=str)
+            turn_tool_contents.append(content_str)
             log_event(
                 "tool_result",
                 id=tc_id,
@@ -366,6 +468,10 @@ async def amain() -> None:
     async with client as mcp:
         tools = await mcp.list_tools()
         ollama_tools = [convert_to_ollama(t) for t in tools]
+        tool_schemas = {
+            ot["function"]["name"]: ot["function"]["parameters"]
+            for ot in ollama_tools
+        }
         log_event("startup", tools=[t.name for t in tools], model=MODEL_NAME)
 
         history: list = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -393,7 +499,7 @@ async def amain() -> None:
             history.append({"role": "user", "content": user_input})
 
             try:
-                await run_turn(history, ollama_tools, mcp, registry)
+                await run_turn(history, ollama_tools, mcp, registry, tool_schemas)
             except Exception as e:
                 log_event("error", phase="run_turn", type=type(e).__name__, message=str(e))
                 print(f"\n[turn error] {e}")
