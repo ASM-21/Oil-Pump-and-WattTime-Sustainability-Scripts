@@ -6,6 +6,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           DATA PIPELINE                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
+│  00_validate_data       │  Data quality checks on the library│  Run first    │
 │  01_data_collection     │  WattTime API → raw parquet       │  Run once     │
 │  02_data_processing     │  Feature engineering, timezones   │  Run once     │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -35,7 +36,8 @@
 │  09_shutdown_planning   │  Maintenance windows, calendar    │  Strategic    │
 │  10_forecast_horizon    │  Reliability by horizon/season    │  Guidance     │
 │  11_threshold_buckets   │  Traffic light rules              │  Operators    │
-│  12_multiday_planning   │  Weekly production optimization   │  Scheduling   │
+│  12_multiday_optimization │ Weekly production optimization   │  Scheduling   │
+│  13_grafana_operator_deploy │ Operator dashboard artifacts    │  Deployment   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -45,6 +47,7 @@
 
 | # | Module | Core Question | Time Scale | Primary User |
 |---|--------|---------------|------------|--------------|
+| 00 | validate_data | Is the library data clean? | — | Setup |
 | 01 | data_collection | — | — | Setup |
 | 02 | data_processing | — | — | Setup |
 | 03 | temporal_patterns | When is the grid cleanest? | Hours | Analyst |
@@ -56,7 +59,8 @@
 | 09 | shutdown_planning | When should we schedule downtime? | Weeks-Months | Plant Manager |
 | 10 | forecast_horizon | When to use forecast vs heuristic? | Hours-Days | System Designer |
 | 11 | threshold_buckets | Can we use a traffic light system? | Real-time | Operator |
-| 12 | multiday_planning | How to allocate weekly production? | Days-Week | Scheduler |
+| 12 | multiday_optimization | How to allocate weekly production? | Days-Week | Scheduler |
+| 13 | grafana_operator_deploy | How do operators see this live? | Real-time | Operator |
 
 ---
 
@@ -125,6 +129,7 @@
 
 ### Full Pipeline (First Time)
 ```bash
+python 00_validate_data.py      # ~1 min, run first if the library changed
 python 01_data_collection.py    # ~20-30 min
 python 02_data_processing.py    # ~2-5 min
 python 03_temporal_patterns.py  # ~1 min
@@ -136,7 +141,8 @@ python 08_grid_stress.py        # ~2 min
 python 09_shutdown_planning.py  # ~2 min
 python 10_forecast_horizon.py   # ~3 min
 python 11_threshold_buckets.py  # ~2 min
-python 12_multiday_planning.py  # ~5 min
+python 12_multiday_optimization.py  # ~5 min
+python 13_grafana_operator_deploy.py  # ~1 min, operator dashboard artifacts
 ```
 
 ### Re-run Analysis Only
@@ -206,7 +212,7 @@ WEEKLY_WORKLOADS = [20, 30, 40, 50, 60]
 
 - [ ] WattTime credentials in config.py?
 - [ ] `pip install -r requirements.txt` completed?
-- [ ] Run 01 before 02, run 02 before 03-12?
+- [ ] Run 00 to check the library, 01 before 02, run 02 before 03-13?
 - [ ] Check `runs/` for output location?
 - [ ] Windows? Add `encoding="utf-8"` to file writes
 - [ ] API 429 error? Add sleep, check rate limits

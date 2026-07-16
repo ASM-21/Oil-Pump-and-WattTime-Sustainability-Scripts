@@ -1,5 +1,7 @@
 """
-03.3_representative_week_grid.py - Six-Panel Raw Weekly MOER Traces
+03c_representative_week_6panel.py - Six-Panel Raw Weekly MOER Traces
+(renamed from 03.3_representative_week_grid.py per CODE_GUIDE.md's
+consolidation guide; logic unchanged)
 
 Shows one representative week of 5-minute MOER data per region.
 Day/night shading, P25/P75 threshold lines overlaid.
@@ -7,7 +9,7 @@ Day/night shading, P25/P75 threshold lines overlaid.
 Usage:
     1. Run 02_data_processing.py first to create a run folder
     2. Edit CONFIG section below
-    3. Run: python 03.3_representative_week_grid.py
+    3. Run: python 03c_representative_week_6panel.py
 
 Output:
     - figures/03_weekly_traces_6panel.png
