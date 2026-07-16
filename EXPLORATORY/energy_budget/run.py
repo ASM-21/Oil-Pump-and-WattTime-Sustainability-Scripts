@@ -61,8 +61,22 @@ def category_budget(df: pd.DataFrame) -> pd.DataFrame:
 def closure_table(df: pd.DataFrame) -> pd.DataFrame:
     """
     Bottom-up attributed energy vs independent stream integration, per
-    (part, run, program). The stream path re-reads the raw CSV and integrates
-    every in-program sample; the attributed path sums the adapter's rows.
+    (part, run, program). The stream path re-reads the raw CSV and takes the
+    cumulative forward-kWh register's start-to-end delta over the full
+    in-program span; the attributed path sums the adapter's per-operation
+    energy_wh rows. Both sides must be on the SAME register basis: energy_wh
+    already comes from the register (EnergyAnalyzer.calculate_from_register,
+    exact and gap-immune -- see adapters.load_operation_energy()), so the
+    independent check has to use the register too. An earlier version of
+    this function rectangle-integrated the raw "active power" stream instead,
+    which this repo's own compare_methods work
+    (EXPLORATORY/compare_outputs/compare_methods.py, PAPER_ARGUMENT_MAP.md)
+    already shows can diverge from the register by ~2% on totals but far more
+    (up to ~186% seen on one transition-attribution line) on individual
+    programs -- comparing across that gap would have measured the
+    register-vs-active-power methodology difference, not attribution loss,
+    and could have tripped the < 5% closure requirement below for reasons
+    unrelated to attribution.
     """
     from EXPLORATORY.shared import adapters
 
@@ -70,9 +84,14 @@ def closure_table(df: pd.DataFrame) -> pd.DataFrame:
     for (part, run_id), g in df.groupby(["part", "run_id"]):
         stream = adapters.load_power_stream(run_id, part=part)
         for program, pg in g.groupby("program"):
-            s = stream[stream["program"] == program]
-            # Rectangle-rule integral of the full in-program stream.
-            e_stream = float(s["power_w"].sum()) / 3600.0
+            s = stream[stream["program"] == program].sort_values("t")
+            reg = s["register_kwh"].dropna()
+            if len(reg) < 2:
+                e_stream = float("nan")
+            else:
+                e_stream = float(reg.iloc[-1] - reg.iloc[0]) * 1000.0
+                if e_stream < 0:  # register rollover within this program span
+                    e_stream = float("nan")
             e_attr = float(pg["energy_wh"].sum())
             rows.append({
                 "part": part, "run_id": run_id, "program": program,
