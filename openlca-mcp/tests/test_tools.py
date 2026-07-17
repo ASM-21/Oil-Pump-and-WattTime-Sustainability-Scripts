@@ -9,6 +9,7 @@ Run:
 If OpenLCA isn't running, every test will skip rather than fail.
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -47,6 +48,39 @@ def test_list_product_systems_finds_oil_pump():
     assert "systems" in out
     names = [s["name"].lower() for s in out["systems"]]
     assert any("oil pump" in n for n in names), f"Oil pump system missing. Got: {names}"
+
+
+def test_get_product_system_serializes_cleanly():
+    """Regression test for the to_json()/to_dict() shape bug: fetch one
+    product system and confirm nested fields came back as JSON-serializable
+    dicts/primitives, not raw olca_schema objects. Before the fix, this
+    would have fallen through to dict(ps.__dict__), leaving fields like
+    ref_process/ref_exchange as non-serializable objects (json.dumps would
+    still "work" downstream via default=str, but as an opaque repr string
+    instead of structured data -- this test catches that directly rather
+    than relying on eyeballing the output)."""
+    _require_ipc()
+    systems = list_product_systems()["systems"]
+    if not systems:
+        pytest.skip("No product systems in this database")
+    data = get_product_system(systems[0]["id"])
+    assert "error" not in data, f"get_product_system errored: {data}"
+    assert data.get("name"), "expected a name field"
+    try:
+        json.dumps(data)
+    except TypeError as e:
+        pytest.fail(
+            f"get_product_system's result is not directly JSON-serializable "
+            f"(fell back to a non-recursive serialization path): {e}"
+        )
+    # Spot-check one commonly-present nested field, if the fixture database
+    # has it populated: it must be a dict (id/name), not an object repr string.
+    ref_process = data.get("ref_process") or data.get("refProcess")
+    if ref_process is not None:
+        assert isinstance(ref_process, dict), (
+            f"ref_process should be a nested dict, got {type(ref_process).__name__}: "
+            f"{ref_process!r}"
+        )
 
 
 def test_list_impact_methods_finds_traci():
@@ -131,5 +165,27 @@ def test_list_processes_with_keyword():
     out = list_processes("aluminium")
     assert "processes" in out
     assert out["returned"] <= 50
-    if out["returned"] > 0:
+    # Exact substring match is expected for this keyword against a real
+    # ecoinvent-style database, so fuzzy_match should be False here -- but
+    # only assert the literal-substring property when it actually is an
+    # exact match. A fuzzy fallback (see tools/inventory.py::_search_processes)
+    # can legitimately return names that don't contain the keyword verbatim
+    # (that's the point of it), so asserting substring containment
+    # unconditionally would fail on a correctly-working fuzzy result.
+    if out["returned"] > 0 and not out.get("fuzzy_match"):
         assert all("aluminium" in p["name"].lower() for p in out["processes"])
+
+
+def test_list_processes_fuzzy_fallback_on_misspelling():
+    """US spelling against a database that (per test_list_processes_with_keyword)
+    uses UK/database spelling "aluminium" should have zero exact hits and
+    fall back to fuzzy matching -- exercises the fallback against a live
+    database, which tests/test_inventory.py's fake descriptors cannot."""
+    _require_ipc()
+    out = list_processes("aluminum")  # US spelling, deliberately not in the DB
+    assert "processes" in out
+    if out["returned"] > 0:
+        assert out["fuzzy_match"] is True, (
+            "expected the US-spelling query to only find matches via the "
+            f"fuzzy fallback, got fuzzy_match={out.get('fuzzy_match')}"
+        )
