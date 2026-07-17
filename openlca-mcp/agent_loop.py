@@ -13,6 +13,7 @@ Slash commands:
 """
 
 import asyncio
+import copy
 import json
 import re
 import sys
@@ -61,6 +62,63 @@ If a tool returns an error, report it plainly to the user and stop. Do not retry
 
 Always include units. Units come from the tool result, not your memory. Examples: kg CO2-Eq, kg SO2-Eq, CTUe, CTUh.
 """
+
+
+# Few-shot example of a correct tool-calling trajectory, injected into
+# history as real turn-formatted messages (not prose inside SYSTEM_PROMPT).
+# Per current tool-calling literature (e.g. the LangChain few-shot-for-
+# tool-calling writeup), models handle genuine role-tagged example messages
+# better than the same content flattened into one system-prompt string, and
+# few-shot examples measurably improve tool-calling precision for smaller
+# models -- exactly this project's situation (qwen3:8b). Uses obviously
+# placeholder UUIDs (sequential, all-zero prefix) so the model can't mistake
+# them for real, reusable IDs; the point is demonstrating the CALL SHAPE and
+# ordering (discover before use, ground the final number, include units),
+# not IDs to remember. One example only, covering the workflow SYSTEM_PROMPT
+# spends the most words on (impact calculation) -- kept to one to bound
+# token overhead on an 8B model's context; add a second (e.g. the
+# tool-error-then-stop rule) only after checking token budget on the actual
+# deployment, since this could not be tuned against a live model here.
+#
+# IMPORTANT: truncate_history() is written to always preserve this preamble
+# verbatim (see preserve_prefix_len) so it survives no matter how long the
+# real conversation grows -- do not reorder this above SYSTEM_PROMPT or
+# change its length without also checking every call site below that passes
+# len(FEWSHOT_MESSAGES).
+FEWSHOT_MESSAGES: list = [
+    {"role": "user", "content": "What is the climate change impact of the oil pump V1 system using TRACI 2.1?"},
+    {"role": "assistant", "content": "", "tool_calls": [
+        {"id": "ex_1", "function": {"name": "list_product_systems", "arguments": {}}},
+    ]},
+    {"role": "tool", "tool_call_id": "ex_1", "content": json.dumps(
+        {"systems": [{"id": "00000000-0000-4000-8000-000000000001", "name": "Oil Pump V1"}], "count": 1}
+    )},
+    {"role": "assistant", "content": "", "tool_calls": [
+        {"id": "ex_2", "function": {"name": "list_impact_methods", "arguments": {}}},
+    ]},
+    {"role": "tool", "tool_call_id": "ex_2", "content": json.dumps(
+        {"methods": [{"id": "00000000-0000-4000-8000-000000000002",
+                      "name": "TRACI 2.1", "description": "US EPA TRACI 2.1"}], "count": 1}
+    )},
+    {"role": "assistant", "content": "", "tool_calls": [
+        {"id": "ex_3", "function": {"name": "calculate_product_system", "arguments": {
+            "product_system_id": "00000000-0000-4000-8000-000000000001",
+            "method_id": "00000000-0000-4000-8000-000000000002",
+        }}},
+    ]},
+    {"role": "tool", "tool_call_id": "ex_3", "content": json.dumps({
+        "impacts": [
+            {"category": "Climate change", "category_id": "00000000-0000-4000-8000-000000000003",
+             "amount": 32.32, "unit": "kg CO2-Eq"},
+            {"category": "Acidification", "category_id": "00000000-0000-4000-8000-000000000004",
+             "amount": 0.18, "unit": "kg SO2-Eq"},
+        ],
+        "count": 2,
+    })},
+    {"role": "assistant",
+     "content": "The climate change impact of Oil Pump V1 under TRACI 2.1 is 32.32 kg CO2-Eq.",
+     "tool_calls": []},
+]
 
 
 SLASH_HELP = """Slash commands:
@@ -115,26 +173,34 @@ def call_ollama(history: list, tools: list) -> dict:
 
 # ---------- History truncation (§6) ----------
 
-def _turn_starts(history: list) -> list:
-    """Indices of user-role messages, plus an end sentinel."""
-    starts = [i for i, m in enumerate(history) if m.get("role") == "user"]
+def _turn_starts(history: list, start_at: int = 0) -> list:
+    """Indices (>= start_at) of user-role messages, plus an end sentinel."""
+    starts = [i for i, m in enumerate(history) if i >= start_at and m.get("role") == "user"]
     starts.append(len(history))
     return starts
 
 
-def truncate_history(history: list) -> list:
+def truncate_history(history: list, preserve_prefix_len: int = 0) -> list:
     """Apply §6 truncation rules in place. Returns the same list for chaining.
 
     1. Keep system prompt always.
-    2. Keep current turn intact.
-    3. Keep last N_RECENT_TURNS in full.
-    4. Older turns: stub tool messages to a small preview.
-    5. Drop everything older than N_MAX_TURNS turns.
+    2. Keep the next `preserve_prefix_len` messages always, verbatim, and
+       excluded from turn-counting -- for FEWSHOT_MESSAGES, a fixed example
+       transcript that should never be dropped or stubbed no matter how long
+       the real conversation grows (defaults to 0, reproducing the exact
+       original behavior for any caller that doesn't pass it).
+    3. Keep current turn intact.
+    4. Keep last N_RECENT_TURNS in full.
+    5. Older turns: stub tool messages to a small preview.
+    6. Drop everything older than N_MAX_TURNS turns.
 
     Important: turns are dropped or kept whole, never split. This preserves
     the assistant-with-tool_calls -> tool-result pairing that Ollama requires.
     """
-    starts = _turn_starts(history)
+    has_system = bool(history) and history[0].get("role") == "system"
+    base = (1 if has_system else 0) + preserve_prefix_len
+
+    starts = _turn_starts(history, start_at=base)
     user_starts = starts[:-1]
     n_turns = len(user_starts)
 
@@ -144,18 +210,18 @@ def truncate_history(history: list) -> list:
     # Drop turns older than N_MAX_TURNS (whole turns, never partial)
     if n_turns > N_MAX_TURNS:
         cutoff = user_starts[-N_MAX_TURNS]
-        kept = [history[0]] if history and history[0].get("role") == "system" else []
+        kept = list(history[:base])
         kept.extend(history[cutoff:])
         history.clear()
         history.extend(kept)
-        starts = _turn_starts(history)
+        starts = _turn_starts(history, start_at=base)
         user_starts = starts[:-1]
         n_turns = len(user_starts)
 
     # Stub tool messages in turns older than N_RECENT_TURNS
     if n_turns > N_RECENT_TURNS:
         recent_cutoff = user_starts[-N_RECENT_TURNS]
-        for i in range(recent_cutoff):
+        for i in range(base, recent_cutoff):
             msg = history[i]
             if msg.get("role") == "tool" and not msg.get("_summarized"):
                 original = msg.get("content", "")
@@ -267,7 +333,7 @@ async def run_turn(
             return
         iterations += 1
 
-        truncate_history(history)
+        truncate_history(history, preserve_prefix_len=len(FEWSHOT_MESSAGES))
         log_event(
             "ollama_request",
             model=MODEL_NAME,
@@ -432,11 +498,12 @@ def handle_slash(
     cmd = cmd.lower().strip()
 
     if cmd in ("/reset", "/clear"):
-        # Keep the system message, drop everything else
+        # Keep the system message and the few-shot preamble, drop everything else
         sys_msg = history[0] if history and history[0].get("role") == "system" else None
         history.clear()
         if sys_msg is not None:
             history.append(sys_msg)
+        history.extend(copy.deepcopy(FEWSHOT_MESSAGES))
         registry.clear()
         log_event("reset")
         print("[history cleared]")
@@ -475,6 +542,7 @@ async def amain() -> None:
         log_event("startup", tools=[t.name for t in tools], model=MODEL_NAME)
 
         history: list = [{"role": "system", "content": SYSTEM_PROMPT}]
+        history.extend(copy.deepcopy(FEWSHOT_MESSAGES))
         registry = UuidRegistry()
 
         print(f"OpenLCA agent ready. {len(tools)} tools, model {MODEL_NAME}.")

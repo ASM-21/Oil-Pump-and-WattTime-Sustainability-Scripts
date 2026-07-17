@@ -68,6 +68,7 @@ openlca-mcp/
 │   ├── test_connection.py   # smoke test, runs as plain python
 │   ├── test_validation.py   # pure unit tests, no IPC needed
 │   ├── test_inventory.py    # pure unit tests (fuzzy matching), no IPC needed
+│   ├── test_history.py      # pure unit tests (truncation + few-shot), no IPC needed
 │   └── test_tools.py        # pytest integration, needs live OpenLCA
 ├── requirements.txt
 └── README.md
@@ -77,7 +78,7 @@ openlca-mcp/
 
 ```bash
 # Pure unit tests, no environment needed
-pytest tests/test_validation.py tests/test_inventory.py -v
+pytest tests/test_validation.py tests/test_inventory.py tests/test_history.py -v
 
 # Integration tests, needs OpenLCA + IPC up
 pytest tests/test_tools.py -v -s
@@ -98,7 +99,40 @@ Useful event types: `ollama_request`, `ollama_response`, `tool_call`,
 `tool_result`, `validation_error`, `final_answer`, `error`,
 `grounding_warning` (see below).
 
-## Accuracy hardening (new)
+## Few-shot example (new)
+
+`FEWSHOT_MESSAGES` in `agent_loop.py` injects one worked example (a full
+question -> discover product system -> discover method -> calculate ->
+grounded answer-with-units trajectory) into `history` as real turn-formatted
+messages, right after the system message -- not as prose pasted into
+SYSTEM_PROMPT. Per current tool-calling literature (e.g. LangChain's
+few-shot-for-tool-calling writeup), models handle genuine role-tagged
+example messages better than the same content flattened into one string,
+and few-shot examples measurably improve tool-calling precision for smaller
+models, which is exactly this project's situation (qwen3:8b). Uses
+obviously-placeholder UUIDs (sequential, all-zero prefix) so the model
+can't mistake them for reusable real IDs.
+
+This required a real change to history truncation, not just an addition:
+the existing §6 rules drop/stub turns older than N_MAX_TURNS/N_RECENT_TURNS,
+and a few-shot example is exactly what should NOT be dropped after 8 turns
+just because the real conversation kept going. `truncate_history()` gained
+a `preserve_prefix_len` parameter (defaults to 0, reproducing the exact
+prior behavior for any caller that doesn't pass it -- verified with a
+regression test) that keeps the first N messages after the system prompt
+untouched and excluded from turn-counting. `/reset` also preserves the
+preamble now (previously it kept only the system message). See
+`tests/test_history.py` (9 tests, no IPC needed) including a direct
+byte-for-byte check that the preamble survives truncation past
+`N_MAX_TURNS + 5` real turns, and that it doesn't itself consume a turn slot.
+
+One example only, covering the workflow SYSTEM_PROMPT spends the most words
+on -- kept to one to bound token overhead on an 8B model's context. A
+second example (e.g. the tool-error-then-stop rule) is a reasonable next
+addition but should only go in after checking actual token budget on a live
+deployment; that couldn't be tuned here since no live model was available.
+
+## Accuracy hardening
 
 The local tool-calling stack this project depends on (Ollama + qwen3:8b) is
 documented -- by Qwen's own function-calling guidance, and by several
