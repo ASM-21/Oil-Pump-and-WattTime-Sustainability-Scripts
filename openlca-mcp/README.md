@@ -54,8 +54,8 @@ First call is slow (~35 s for model warmup); subsequent turns are ~4 s each.
 openlca-mcp/
 ├── agent_loop.py        # Ollama HTTP client + MCP stdio client + REPL
 ├── mcp_server.py        # FastMCP wrapper, exposes tools/ via stdio
-├── ipc_client.py        # Singleton olca_ipc.Client
-├── config.py            # Constants (ports, model, truncation thresholds)
+├── ipc_client.py        # Singleton olca_ipc.Client + short-TTL descriptor cache
+├── config.py            # Constants (ports, model, truncation thresholds, cache TTL)
 ├── validation.py        # UUID regex + validate_args
 ├── logger.py            # JSONL event logger
 ├── tools/
@@ -69,6 +69,7 @@ openlca-mcp/
 │   ├── test_validation.py   # pure unit tests, no IPC needed
 │   ├── test_inventory.py    # pure unit tests (fuzzy matching), no IPC needed
 │   ├── test_history.py      # pure unit tests (truncation + few-shot), no IPC needed
+│   ├── test_ipc_cache.py    # pure unit tests (descriptor cache TTL), no IPC needed
 │   └── test_tools.py        # pytest integration, needs live OpenLCA
 ├── requirements.txt
 └── README.md
@@ -78,7 +79,7 @@ openlca-mcp/
 
 ```bash
 # Pure unit tests, no environment needed
-pytest tests/test_validation.py tests/test_inventory.py tests/test_history.py -v
+pytest tests/test_validation.py tests/test_inventory.py tests/test_history.py tests/test_ipc_cache.py -v
 
 # Integration tests, needs OpenLCA + IPC up
 pytest tests/test_tools.py -v -s
@@ -195,6 +196,42 @@ through the four new failure modes end to end (not committed here since it
 needs the stub scaffolding inline; recreate it if you want to re-verify
 after further changes). Confirm behavior against a live model before
 depending on it in production.
+
+## More fixes from a deeper pass
+
+- **`get_product_system` was serializing product systems wrong.** It tried
+  `ps.to_dict()`, falling back to `dict(ps.__dict__)` if that method didn't
+  exist. Checked against the public `olca-schema` source: entities
+  serialize via `to_json()` (which despite the name returns a dict, built
+  recursively field by field), and there is no `to_dict()` method at all --
+  so the `hasattr` check was always false in practice, and every call fell
+  through to the non-recursive `__dict__` fallback. That fallback leaves
+  nested entities (`ref_process`, `target_flow_property`, `ref_exchange`)
+  as raw dataclass objects, which `agent_loop.py`'s
+  `json.dumps(payload, default=str)` then mangles into unhelpful repr
+  strings instead of clean nested JSON -- degrading the tool's usefulness
+  for the model on every single call. Fixed to try `to_json()` first, with
+  the old `to_dict()` guess and the `__dict__` fallback both kept as
+  further-defensive fallbacks.
+- **Descriptor caching.** `list_processes`, `list_product_systems`, and
+  `list_impact_methods` each re-fetched their entire descriptor list (Process
+  can be tens of thousands of rows) from OpenLCA on every call. The fuzzy-match
+  fallback added above makes repeated same-class calls within one exchange
+  more likely (an empty exact search retried with a different keyword still
+  re-fetches the same catalog). `ipc_client.get_descriptors_cached()` adds a
+  short (`DESCRIPTOR_CACHE_TTL_S`, 30s) per-class cache -- short on purpose,
+  since this is a local database the user may be actively editing mid-session
+  and a long-lived cache would trade accuracy for speed rather than latency
+  for speed. `ping_server` deliberately does NOT use the cache: its entire
+  purpose is confirming the IPC connection is live right now, and serving a
+  cached result would report a dead connection as healthy. New `/refresh`
+  slash command force-clears the cache if you know the database changed.
+  Tests in `tests/test_ipc_cache.py` (6 tests, fake client + injectable
+  clock, no IPC or real time.sleep needed).
+- **Checked `get_grouped_impact_results`/`get_total_flows` again** (the two
+  remaining "best-guess" shapes from the earlier pass) -- could still not
+  find their field names in public documentation via search. Left as-is
+  rather than guessing further; still flagged below.
 
 ## Known open risks
 

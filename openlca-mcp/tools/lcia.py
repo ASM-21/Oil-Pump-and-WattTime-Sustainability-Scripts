@@ -13,7 +13,7 @@ Silent-failure guard:
 from requests.exceptions import ConnectionError
 
 import olca_schema as o
-from ipc_client import get_client
+from ipc_client import get_client, get_descriptors_cached
 from config import MAX_CONTRIBUTIONS
 
 
@@ -48,8 +48,7 @@ def list_impact_methods() -> dict:
     Returns: {methods: [{id, name, description}, ...], count}
     """
     try:
-        client = get_client()
-        descriptors = client.get_descriptors(o.ImpactMethod)
+        descriptors = get_descriptors_cached(o.ImpactMethod)
         out = [
             {
                 "id": d.id,

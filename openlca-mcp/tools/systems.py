@@ -3,7 +3,7 @@
 from requests.exceptions import ConnectionError
 
 import olca_schema as o
-from ipc_client import get_client
+from ipc_client import get_client, get_descriptors_cached
 
 
 def list_product_systems() -> dict:
@@ -12,8 +12,7 @@ def list_product_systems() -> dict:
     Returns: {systems: [{id, name, description}, ...], count}
     """
     try:
-        client = get_client()
-        descriptors = client.get_descriptors(o.ProductSystem)
+        descriptors = get_descriptors_cached(o.ProductSystem)
         out = [
             {
                 "id": d.id,
@@ -40,7 +39,23 @@ def get_product_system(id: str) -> dict:
         ps = client.get(o.ProductSystem, id)
         if ps is None:
             return {"error": f"No product system with id {id}"}
-        data = ps.to_dict() if hasattr(ps, "to_dict") else dict(ps.__dict__)
+        # olca_schema entities serialize via to_json() (which, despite the
+        # name, returns a dict -- confirmed against the public olca-schema
+        # source: RootEntity.to_json() builds a dict recursively field by
+        # field). There is no to_dict() method on these classes; the old
+        # `ps.to_dict() if hasattr(...)` check was checking for a method
+        # name that doesn't exist, so it always fell through to
+        # dict(ps.__dict__), which does NOT recursively serialize nested
+        # entities (ref_process, target_flow_property, ref_exchange) -- those
+        # would come back as raw dataclass objects and get mangled into
+        # unhelpful repr strings by agent_loop.py's json.dumps(default=str).
+        # Kept both old fallbacks in case an older olca-schema build differs.
+        if hasattr(ps, "to_json"):
+            data = ps.to_json()
+        elif hasattr(ps, "to_dict"):
+            data = ps.to_dict()
+        else:
+            data = dict(ps.__dict__)
         # Trim the heaviest fields for the LLM context
         for heavy in ("processes", "process_links", "parameter_sets"):
             if heavy in data and isinstance(data[heavy], list):

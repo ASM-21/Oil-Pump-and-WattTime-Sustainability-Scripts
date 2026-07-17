@@ -6,7 +6,7 @@ import re
 from requests.exceptions import ConnectionError
 
 import olca_schema as o
-from ipc_client import get_client
+from ipc_client import get_client, get_descriptors_cached
 from config import FUZZY_TOKEN_MATCH, FUZZY_TOKEN_SCORE, MAX_DESCRIPTORS, MAX_FLOWS
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
@@ -102,8 +102,7 @@ def list_processes(keyword: str = "") -> dict:
     total_in_db, fuzzy_match}
     """
     try:
-        client = get_client()
-        descriptors = client.get_descriptors(o.Process)
+        descriptors = get_descriptors_cached(o.Process)
         filtered, fuzzy = _search_processes(descriptors, keyword)
         out = [{"id": d.id, "name": d.name} for d in filtered[:MAX_DESCRIPTORS]]
         return {

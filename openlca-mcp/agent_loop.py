@@ -8,6 +8,7 @@ Run with OpenLCA + IPC up, ollama serve up:
 
 Slash commands:
     /reset    Wipe history (keeps the MCP connection open).
+    /refresh  Force-refresh the cached process/product-system/method lists.
     /help     Show available slash commands.
     /tools    List available tools.
 """
@@ -34,6 +35,7 @@ from config import (
     OLLAMA_URL,
     TOOL_RESULT_LOG_BYTES,
 )
+from ipc_client import clear_descriptor_cache
 from logger import log_event
 from validation import (
     UuidRegistry,
@@ -123,6 +125,8 @@ FEWSHOT_MESSAGES: list = [
 
 SLASH_HELP = """Slash commands:
   /reset    Wipe history (MCP connection stays open, no model warmup penalty).
+  /refresh  Force-refresh the process/product-system/method list cache
+            (use if you changed the OpenLCA database mid-session).
   /tools    List available tools.
   /help     Show this message.
   (empty)   Exit."""
@@ -507,6 +511,13 @@ def handle_slash(
         registry.clear()
         log_event("reset")
         print("[history cleared]")
+        return True
+
+    if cmd == "/refresh":
+        clear_descriptor_cache()
+        log_event("refresh")
+        print("[descriptor cache cleared -- next list_processes/list_product_systems/"
+              "list_impact_methods call will re-fetch from OpenLCA]")
         return True
 
     if cmd in ("/help", "/?"):

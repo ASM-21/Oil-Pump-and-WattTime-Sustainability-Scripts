@@ -21,6 +21,11 @@ TOOL_RESULT_LOG_BYTES = 2048
 FUZZY_TOKEN_MATCH = 0.75   # difflib ratio for one query word to count as matching one name word
 FUZZY_TOKEN_SCORE = 0.7    # fraction of query words that must match for a name to qualify
 
+# get_descriptors() cache (see ipc_client.py::get_descriptors_cached).
+# Short on purpose: trades a small staleness window for fewer large IPC
+# round trips within one exchange, not a claim the database is immutable.
+DESCRIPTOR_CACHE_TTL_S = 30
+
 # Agent loop safety
 MAX_TOOL_ITERATIONS = 10    # hard cap on tool calls per user turn
 OLLAMA_TIMEOUT_S = 120      # request timeout for /api/chat

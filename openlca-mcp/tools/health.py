@@ -7,7 +7,13 @@ from ipc_client import get_client
 
 
 def ping_server() -> dict:
-    """Check OpenLCA IPC reachability. Returns {ok: bool, product_system_count?: int, error?: str}."""
+    """Check OpenLCA IPC reachability. Returns {ok: bool, product_system_count?: int, error?: str}.
+
+    Deliberately does NOT use the cached get_descriptors_cached(): this
+    tool's entire purpose is confirming the IPC connection is live right
+    now. Serving a cached count on a connection that just dropped would
+    report "ok": true on a dead connection, defeating the check.
+    """
     try:
         client = get_client()
         descriptors = client.get_descriptors(o.ProductSystem)
